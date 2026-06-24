@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# 환경변수 (API 키 — 절대 커밋 금지)
+.env
+
+# 로그·생성물 (개인정보 보호: 발화 로그는 올리지 않음)
+data/logs/
+reports/expression_candidates.csv
+data/testset_augmented.jsonl
+
+# OS
+.DS_Store
+Thumbs.db

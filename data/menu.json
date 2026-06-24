@@ -1,0 +1,30 @@
+{
+  "version": "0.1",
+  "currency": "KRW",
+  "items": [
+    {"id": "hot-americano", "easy_name": "따뜻한 커피", "original_name": "아메리카노(HOT)", "category": "마실 것", "price": 2500, "temp": "hot", "tags": ["쓰다", "진하다"]},
+    {"id": "ice-americano", "easy_name": "시원한 커피", "original_name": "아이스 아메리카노", "category": "마실 것", "price": 2500, "temp": "ice", "tags": ["쓰다", "진하다"]},
+    {"id": "hot-latte", "easy_name": "따뜻한 우유 커피", "original_name": "카페라떼(HOT)", "category": "마실 것", "price": 3000, "temp": "hot", "tags": ["부드럽다", "고소하다"], "popular": true},
+    {"id": "ice-latte", "easy_name": "시원한 우유 커피", "original_name": "아이스 카페라떼", "category": "마실 것", "price": 3000, "temp": "ice", "tags": ["부드럽다", "고소하다"]},
+    {"id": "dolce-caramel-macchiato", "easy_name": "카라멜 든 달달한 우유 커피", "original_name": "아이스 돌체 카라멜 마키아토", "category": "마실 것", "price": 4300, "temp": "ice", "tags": ["달다", "부드럽다"]},
+    {"id": "black-sesame-latte", "easy_name": "검은깨 고소한 우유 음료", "original_name": "흑임자 라떼", "category": "마실 것", "price": 4300, "temp": "hot", "tags": ["고소하다", "부드럽다"]},
+    {"id": "sweet-potato-latte", "easy_name": "고구마 우유 음료", "original_name": "고구마 라떼", "category": "마실 것", "price": 4300, "temp": "hot", "tags": ["달다", "고소하다", "부드럽다"]},
+    {"id": "grain-latte", "easy_name": "미숫가루 음료", "original_name": "곡물 라떼", "category": "마실 것", "price": 3800, "temp": "ice", "tags": ["고소하다"]},
+    {"id": "yuja-tea", "easy_name": "유자차", "original_name": "", "category": "마실 것", "price": 3000, "temp": "hot", "tags": ["달다", "새콤하다"]},
+    {"id": "ssanghwa-tea", "easy_name": "쌍화차", "original_name": "", "category": "마실 것", "price": 3500, "temp": "hot", "tags": ["쓰다", "진하다"]},
+    {"id": "sikhye", "easy_name": "식혜", "original_name": "", "category": "마실 것", "price": 2500, "temp": "ice", "tags": ["달다"], "popular": true},
+    {"id": "cola", "easy_name": "콜라", "original_name": "코카콜라", "category": "마실 것", "price": 2000, "temp": "ice", "tags": ["달다", "톡쏘다"]},
+    {"id": "cider", "easy_name": "사이다", "original_name": "스프라이트", "category": "마실 것", "price": 2000, "temp": "ice", "tags": ["달다", "톡쏘다"]},
+    {"id": "strawberry-juice", "easy_name": "딸기 주스", "original_name": "생딸기 주스", "category": "마실 것", "price": 4000, "temp": "ice", "tags": ["달다", "새콤하다"]},
+    {"id": "castella", "easy_name": "카스텔라", "original_name": "", "category": "먹을 것", "price": 3500, "temp": "none", "tags": ["부드럽다", "달다"], "popular": true},
+    {"id": "red-bean-bread", "easy_name": "단팥빵", "original_name": "", "category": "먹을 것", "price": 2000, "temp": "none", "tags": ["달다", "부드럽다"]},
+    {"id": "cheesecake", "easy_name": "치즈 케이크", "original_name": "뉴욕 치즈케이크", "category": "먹을 것", "price": 4500, "temp": "none", "tags": ["부드럽다", "달다"]},
+    {"id": "pudding", "easy_name": "푸딩", "original_name": "커스터드 푸딩", "category": "먹을 것", "price": 3000, "temp": "none", "tags": ["부드럽다", "달다", "말랑하다"]},
+    {"id": "yakgwa", "easy_name": "약과", "original_name": "", "category": "먹을 것", "price": 1500, "temp": "none", "tags": ["달다", "쫀득하다"]},
+    {"id": "honey-rice-cake", "easy_name": "꿀떡", "original_name": "", "category": "먹을 것", "price": 2500, "temp": "none", "tags": ["달다", "쫀득하다", "말랑하다"]},
+    {"id": "croffle", "easy_name": "와플 빵", "original_name": "크로플", "category": "먹을 것", "price": 3800, "temp": "none", "tags": ["바삭하다", "달다"]},
+    {"id": "scone", "easy_name": "담백한 빵", "original_name": "플레인 스콘", "category": "먹을 것", "price": 3000, "temp": "none", "tags": ["담백하다"]},
+    {"id": "choco-cake", "easy_name": "초코 케이크", "original_name": "가나슈 초코케이크", "category": "먹을 것", "price": 4500, "temp": "none", "tags": ["달다", "부드럽다"]},
+    {"id": "walnut-cookie", "easy_name": "호두 과자", "original_name": "", "category": "먹을 것", "price": 2000, "temp": "none", "tags": ["고소하다", "달다"]}
+  ]
+}

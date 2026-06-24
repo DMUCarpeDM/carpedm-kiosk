@@ -1,0 +1,37 @@
+flowchart TD
+    A["🕐 대기 화면<br/>(PIR 감지 → 먼저 인사)"] --> B["🏠 시작<br/>무엇을 드시고 싶으세요?"]
+
+    B -->|"🎤 말로 주문"| C["듣기 화면<br/>(음성 인식 / 안 되면 그림 버튼으로)"]
+    B -->|"👆 그림 보고 누르기"| D["메뉴 화면<br/>(큰 카드 · 우리말 우선 · 수량 ±)"]
+
+    C --> E["🤖 AI 해석<br/>발화 → 정형 주문(JSON)"]
+    E -->|"애매하면"| F["되묻기<br/>(후보 제시 · 음성+버튼)"]
+    F -->|"말로 답함"| C
+    F -->|"버튼으로 고름"| D
+
+    E -->|"명확하면"| G["✅ 주문 확인<br/>큰 글씨 + 음성 재확인"]
+    E -->|"'추천해줘' '뭐가 맛있어'"| R["💡 추천<br/>(조건 맞춰 1~3개 제안 + 이유)"]
+    R -->|"이걸로 할게요"| G
+    R -->|"다른 거 보기"| D
+    D --> G
+
+    G -->|"'콜라 빼줘' '하나 더'"| H["멀티턴 수정<br/>(명령 5종: 추가·수량·제거·취소·확인)"]
+    H --> G
+
+    G -->|"네, 맞아요"| I["주문 완료"]
+    I --> J["🔔 직원 호출<br/>(모의 결제 — PoC 범위)"]
+
+    K["⚙️ 모든 화면 공통: 글자 크게 · 다시 듣기 · 처음으로 · 타임아웃 없음"]
+
+    style A fill:#F3E7D7,stroke:#22180F,color:#22180F
+    style B fill:#FFF8EE,stroke:#22180F,color:#22180F
+    style C fill:#FCEBE4,stroke:#B6451F,color:#22180F
+    style E fill:#FCEBE4,stroke:#B6451F,color:#22180F
+    style F fill:#FCEBE4,stroke:#B6451F,color:#22180F
+    style R fill:#FBF0D9,stroke:#9A6A00,color:#22180F
+    style D fill:#FFF8EE,stroke:#6B5A48,color:#22180F
+    style G fill:#E8F0E9,stroke:#2E5A34,color:#22180F
+    style H fill:#E8F0E9,stroke:#2E5A34,color:#22180F
+    style I fill:#E8F0E9,stroke:#2E5A34,color:#22180F
+    style J fill:#FFF8EE,stroke:#22180F,color:#22180F
+    style K fill:#FFFFFF,stroke:#E6D9C8,color:#6B5A48
