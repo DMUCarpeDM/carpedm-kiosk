@@ -1,0 +1,106 @@
+{"id":"S001","type":"single","tag":"dict","cart_before":[],"utterance":"검은 탄산 물 하나 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1}]}}
+{"id":"S002","type":"single","tag":"dict","cart_before":[],"utterance":"까만 사이다 한 병 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1}]}}
+{"id":"S003","type":"single","tag":"dict","cart_before":[],"utterance":"쏘는 물 줘","expected":{"action":"update","cart":[{"id":"cider","qty":1}]}}
+{"id":"S004","type":"single","tag":"dict","cart_before":[],"utterance":"뜨거운 진한 커피 한 잔 줘","expected":{"action":"update","cart":[{"id":"hot-americano","qty":1}]}}
+{"id":"S005","type":"single","tag":"dict","cart_before":[],"utterance":"시원한 쓴 커피 하나","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1}]}}
+{"id":"S006","type":"single","tag":"dict","cart_before":[],"utterance":"따뜻한 우유 든 커피 줘","expected":{"action":"update","cart":[{"id":"hot-latte","qty":1}]}}
+{"id":"S007","type":"single","tag":"dict","cart_before":[],"utterance":"부드러운 커피 차가운 걸로","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1}]}}
+{"id":"S008","type":"single","tag":"dict","cart_before":[],"utterance":"검은깨 들어간 거 하나 줘","expected":{"action":"update","cart":[{"id":"black-sesame-latte","qty":1}]}}
+{"id":"S009","type":"single","tag":"dict","cart_before":[],"utterance":"고구마 들어간 음료 하나","expected":{"action":"update","cart":[{"id":"sweet-potato-latte","qty":1}]}}
+{"id":"S010","type":"single","tag":"dict","cart_before":[],"utterance":"미숫가루 한 잔 타 줘","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1}]}}
+{"id":"S011","type":"single","tag":"dict","cart_before":[],"utterance":"유자차 한 잔 주세요","expected":{"action":"update","cart":[{"id":"yuja-tea","qty":1}]}}
+{"id":"S012","type":"single","tag":"dict","cart_before":[],"utterance":"쌍화차 하나","expected":{"action":"update","cart":[{"id":"ssanghwa-tea","qty":1}]}}
+{"id":"S013","type":"single","tag":"dict","cart_before":[],"utterance":"식혜 두 잔 줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":2}]}}
+{"id":"S014","type":"single","tag":"dict","cart_before":[],"utterance":"감주 있으면 하나 줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":1}]}}
+{"id":"S015","type":"single","tag":"dict","cart_before":[],"utterance":"딸기 들어간 거 줘","expected":{"action":"update","cart":[{"id":"strawberry-juice","qty":1}]}}
+{"id":"S016","type":"single","tag":"dict","cart_before":[],"utterance":"단팥 든 빵 하나","expected":{"action":"update","cart":[{"id":"red-bean-bread","qty":1}]}}
+{"id":"S017","type":"single","tag":"dict","cart_before":[],"utterance":"약과 세 개 줘","expected":{"action":"update","cart":[{"id":"yakgwa","qty":3}]}}
+{"id":"S018","type":"single","tag":"dict","cart_before":[],"utterance":"꿀떡 하나 주세요","expected":{"action":"update","cart":[{"id":"honey-rice-cake","qty":1}]}}
+{"id":"S019","type":"single","tag":"dict","cart_before":[],"utterance":"호두 들어간 과자 줘","expected":{"action":"update","cart":[{"id":"walnut-cookie","qty":1}]}}
+{"id":"S020","type":"single","tag":"dict","cart_before":[],"utterance":"와플 빵 하나 줘","expected":{"action":"update","cart":[{"id":"croffle","qty":1}]}}
+{"id":"S021","type":"single","tag":"dict","cart_before":[],"utterance":"담백한 빵 있어? 하나 줘","expected":{"action":"update","cart":[{"id":"scone","qty":1}]}}
+{"id":"S022","type":"single","tag":"dict","cart_before":[],"utterance":"카스테라 한 개","expected":{"action":"update","cart":[{"id":"castella","qty":1}]}}
+{"id":"S023","type":"single","tag":"dict","cart_before":[],"utterance":"푸딩 둘 줘","expected":{"action":"update","cart":[{"id":"pudding","qty":2}]}}
+{"id":"S024","type":"single","tag":"dict","cart_before":[],"utterance":"콜라 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1}]}}
+{"id":"S025","type":"single","tag":"dict","cart_before":[],"utterance":"뜨신 거 커피로 하나","expected":{"action":"update","cart":[{"id":"hot-americano","qty":1}]}}
+{"id":"S026","type":"single","tag":"dict","cart_before":[],"utterance":"얼음 띄운 커피 한 잔","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1}]}}
+{"id":"S027","type":"single","tag":"dict","cart_before":[],"utterance":"흰 우유 커피 시원하게 줘","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1}]}}
+{"id":"S028","type":"single","tag":"dict","cart_before":[],"utterance":"팥빵 두 개","expected":{"action":"update","cart":[{"id":"red-bean-bread","qty":2}]}}
+{"id":"S029","type":"single","tag":"dict","cart_before":[],"utterance":"떡 종류 하나 줘","expected":{"action":"update","cart":[{"id":"honey-rice-cake","qty":1}]}}
+{"id":"S030","type":"single","tag":"attr","cart_before":[],"utterance":"카라멜 들어간 달달한 커피 하나","expected":{"action":"update","cart":[{"id":"dolce-caramel-macchiato","qty":1}]}}
+{"id":"S031","type":"single","tag":"attr","cart_before":[],"utterance":"그 마키아토인가 뭔가 하는 거 줘","expected":{"action":"update","cart":[{"id":"dolce-caramel-macchiato","qty":1}]}}
+{"id":"S032","type":"single","tag":"attr","cart_before":[],"utterance":"아이스 돌체 카라멜 마키아토 하나","expected":{"action":"update","cart":[{"id":"dolce-caramel-macchiato","qty":1}]}}
+{"id":"S033","type":"single","tag":"attr","cart_before":[],"utterance":"흑임자 라떼 한 잔","expected":{"action":"update","cart":[{"id":"black-sesame-latte","qty":1}]}}
+{"id":"S034","type":"single","tag":"attr","cart_before":[],"utterance":"달고 부드러운 빵 줘","expected":{"action":"update","cart":[{"id":"castella","qty":1}]}}
+{"id":"S035","type":"single","tag":"attr","cart_before":[],"utterance":"몸에 좋은 차 한 잔","expected":{"action":"update","cart":[{"id":"ssanghwa-tea","qty":1}]}}
+{"id":"S036","type":"single","tag":"attr","cart_before":[],"utterance":"얼음 든 곡물 음료 줘","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1}]}}
+{"id":"S037","type":"single","tag":"attr","cart_before":[],"utterance":"새콤한 거 시원한 걸로","expected":{"action":"update","cart":[{"id":"strawberry-juice","qty":1}]}}
+{"id":"S038","type":"single","tag":"qty","cart_before":[],"utterance":"콜라 두 개랑 단팥빵 하나 줘","expected":{"action":"update","cart":[{"id":"cola","qty":2},{"id":"red-bean-bread","qty":1}]}}
+{"id":"S039","type":"single","tag":"qty","cart_before":[],"utterance":"따뜻한 커피 둘이랑 꿀떡 두 개","expected":{"action":"update","cart":[{"id":"hot-americano","qty":2},{"id":"honey-rice-cake","qty":2}]}}
+{"id":"S040","type":"single","tag":"qty","cart_before":[],"utterance":"약과 5개 포장해줘","expected":{"action":"update","cart":[{"id":"yakgwa","qty":5}]}}
+{"id":"S041","type":"single","tag":"qty","cart_before":[],"utterance":"식혜 3잔","expected":{"action":"update","cart":[{"id":"sikhye","qty":3}]}}
+{"id":"S042","type":"single","tag":"qty","cart_before":[],"utterance":"시원한 커피 하나랑 치즈 케이크 하나","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1},{"id":"cheesecake","qty":1}]}}
+{"id":"S043","type":"single","tag":"qty","cart_before":[],"utterance":"유자차 두 잔 주세요","expected":{"action":"update","cart":[{"id":"yuja-tea","qty":2}]}}
+{"id":"S044","type":"single","tag":"qty","cart_before":[],"utterance":"푸딩 하나 카스텔라 하나","expected":{"action":"update","cart":[{"id":"pudding","qty":1},{"id":"castella","qty":1}]}}
+{"id":"S045","type":"single","tag":"qty","cart_before":[],"utterance":"사이다 네 병","expected":{"action":"update","cart":[{"id":"cider","qty":4}]}}
+{"id":"S046","type":"single","tag":"qty","cart_before":[],"utterance":"호두 과자 두 봉지 줘","expected":{"action":"update","cart":[{"id":"walnut-cookie","qty":2}]}}
+{"id":"S047","type":"single","tag":"qty","cart_before":[],"utterance":"콜라 사이다 하나씩","expected":{"action":"update","cart":[{"id":"cola","qty":1},{"id":"cider","qty":1}]}}
+{"id":"S048","type":"single","tag":"name","cart_before":[],"utterance":"아메리카노 차가운 걸로 한 잔","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1}]}}
+{"id":"S049","type":"single","tag":"name","cart_before":[],"utterance":"카페라떼 뜨거운 거","expected":{"action":"update","cart":[{"id":"hot-latte","qty":1}]}}
+{"id":"S050","type":"single","tag":"name","cart_before":[],"utterance":"스프라이트 하나","expected":{"action":"update","cart":[{"id":"cider","qty":1}]}}
+{"id":"S051","type":"single","tag":"name","cart_before":[],"utterance":"뉴욕 치즈케이크 한 조각","expected":{"action":"update","cart":[{"id":"cheesecake","qty":1}]}}
+{"id":"S052","type":"single","tag":"name","cart_before":[],"utterance":"크로플 하나 줘","expected":{"action":"update","cart":[{"id":"croffle","qty":1}]}}
+{"id":"S053","type":"single","tag":"name","cart_before":[],"utterance":"곡물 라떼 한 잔","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1}]}}
+{"id":"S054","type":"single","tag":"name","cart_before":[],"utterance":"생딸기 주스 줘","expected":{"action":"update","cart":[{"id":"strawberry-juice","qty":1}]}}
+{"id":"S055","type":"single","tag":"name","cart_before":[],"utterance":"코카콜라 두 캔","expected":{"action":"update","cart":[{"id":"cola","qty":2}]}}
+{"id":"S056","type":"single","tag":"clarify","cart_before":[],"utterance":"부드러운 거 하나 줘","expected":{"action":"clarify"}}
+{"id":"S057","type":"single","tag":"clarify","cart_before":[],"utterance":"달달한 빵 줘","expected":{"action":"clarify"}}
+{"id":"S058","type":"single","tag":"clarify","cart_before":[],"utterance":"커피 한 잔 줘","expected":{"action":"clarify"}}
+{"id":"S059","type":"single","tag":"clarify","cart_before":[],"utterance":"케이크 주세요","expected":{"action":"clarify"}}
+{"id":"S060","type":"single","tag":"clarify","cart_before":[],"utterance":"시원한 거 아무거나","expected":{"action":"clarify"}}
+{"id":"S061","type":"single","tag":"clarify","cart_before":[],"utterance":"말랑말랑한 거 있어?","expected":{"action":"clarify"}}
+{"id":"S062","type":"single","tag":"clarify","cart_before":[],"utterance":"고소한 우유 음료 따뜻한 거","expected":{"action":"clarify"}}
+{"id":"S063","type":"single","tag":"clarify","cart_before":[],"utterance":"톡 쏘는 거 하나","expected":{"action":"clarify"}}
+{"id":"S064","type":"single","tag":"clarify","cart_before":[],"utterance":"라떼 주세요","expected":{"action":"clarify"}}
+{"id":"S065","type":"single","tag":"clarify","cart_before":[],"utterance":"빵 하나 줘","expected":{"action":"clarify"}}
+{"id":"S066","type":"single","tag":"reject","cart_before":[],"utterance":"김치찌개 하나 줘","expected":{"action":"reject"}}
+{"id":"S067","type":"single","tag":"reject","cart_before":[],"utterance":"햄버거 세트 있어요?","expected":{"action":"reject"}}
+{"id":"S068","type":"single","tag":"reject","cart_before":[],"utterance":"아이스크림 콘 하나","expected":{"action":"reject"}}
+{"id":"S069","type":"single","tag":"reject","cart_before":[],"utterance":"소주 한 병 줘","expected":{"action":"reject"}}
+{"id":"S070","type":"single","tag":"reject","cart_before":[],"utterance":"담배 한 갑 주세요","expected":{"action":"reject"}}
+{"id":"M001","type":"multi","tag":"add","cart_before":[{"id":"cola","qty":1}],"utterance":"단팥빵도 하나 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1},{"id":"red-bean-bread","qty":1}]}}
+{"id":"M002","type":"multi","tag":"add","cart_before":[{"id":"hot-americano","qty":1}],"utterance":"꿀떡 두 개 추가해줘","expected":{"action":"update","cart":[{"id":"hot-americano","qty":1},{"id":"honey-rice-cake","qty":2}]}}
+{"id":"M003","type":"multi","tag":"add","cart_before":[{"id":"sikhye","qty":1}],"utterance":"약과도 같이 줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":1},{"id":"yakgwa","qty":1}]}}
+{"id":"M004","type":"multi","tag":"add","cart_before":[{"id":"ice-latte","qty":1}],"utterance":"케이크는 초코로 하나 추가","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1},{"id":"choco-cake","qty":1}]}}
+{"id":"M005","type":"multi","tag":"add","cart_before":[{"id":"cola","qty":2}],"utterance":"사이다도 하나","expected":{"action":"update","cart":[{"id":"cola","qty":2},{"id":"cider","qty":1}]}}
+{"id":"M006","type":"multi","tag":"add","cart_before":[{"id":"castella","qty":1}],"utterance":"따뜻한 커피 한 잔 추가요","expected":{"action":"update","cart":[{"id":"castella","qty":1},{"id":"hot-americano","qty":1}]}}
+{"id":"M007","type":"multi","tag":"add","cart_before":[{"id":"yuja-tea","qty":1}],"utterance":"호두 과자도 둘 줘","expected":{"action":"update","cart":[{"id":"yuja-tea","qty":1},{"id":"walnut-cookie","qty":2}]}}
+{"id":"M008","type":"multi","tag":"add","cart_before":[{"id":"grain-latte","qty":1}],"utterance":"딸기 주스 하나 더해줘","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1},{"id":"strawberry-juice","qty":1}]}}
+{"id":"M009","type":"multi","tag":"remove","cart_before":[{"id":"cola","qty":1},{"id":"castella","qty":1}],"utterance":"콜라는 빼줘","expected":{"action":"update","cart":[{"id":"castella","qty":1}]}}
+{"id":"M010","type":"multi","tag":"remove","cart_before":[{"id":"hot-americano","qty":2},{"id":"yakgwa","qty":3}],"utterance":"약과 취소해줘","expected":{"action":"update","cart":[{"id":"hot-americano","qty":2}]}}
+{"id":"M011","type":"multi","tag":"remove","cart_before":[{"id":"ice-latte","qty":1},{"id":"pudding","qty":1},{"id":"cola","qty":1}],"utterance":"푸딩 말고 다 주세요","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1},{"id":"cola","qty":1}]}}
+{"id":"M012","type":"multi","tag":"remove","cart_before":[{"id":"sikhye","qty":2}],"utterance":"식혜 하나는 빼줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":1}]}}
+{"id":"M013","type":"multi","tag":"remove","cart_before":[{"id":"cheesecake","qty":1},{"id":"choco-cake","qty":1}],"utterance":"치즈 케이크 빼","expected":{"action":"update","cart":[{"id":"choco-cake","qty":1}]}}
+{"id":"M014","type":"multi","tag":"remove","cart_before":[{"id":"cola","qty":1},{"id":"cider","qty":1}],"utterance":"탄산은 다 빼줘","expected":{"action":"update","cart":[]}}
+{"id":"M015","type":"multi","tag":"remove","cart_before":[{"id":"hot-latte","qty":1},{"id":"scone","qty":1}],"utterance":"빵은 됐어요 빼주세요","expected":{"action":"update","cart":[{"id":"hot-latte","qty":1}]}}
+{"id":"M016","type":"multi","tag":"qty","cart_before":[{"id":"cola","qty":1}],"utterance":"콜라 두 개로 바꿔줘","expected":{"action":"update","cart":[{"id":"cola","qty":2}]}}
+{"id":"M017","type":"multi","tag":"qty","cart_before":[{"id":"yakgwa","qty":5}],"utterance":"약과는 두 개만 줘","expected":{"action":"update","cart":[{"id":"yakgwa","qty":2}]}}
+{"id":"M018","type":"multi","tag":"qty","cart_before":[{"id":"hot-americano","qty":1}],"utterance":"한 잔 더","expected":{"action":"update","cart":[{"id":"hot-americano","qty":2}]}}
+{"id":"M019","type":"multi","tag":"qty","cart_before":[{"id":"honey-rice-cake","qty":2}],"utterance":"꿀떡 하나 더 추가","expected":{"action":"update","cart":[{"id":"honey-rice-cake","qty":3}]}}
+{"id":"M020","type":"multi","tag":"qty","cart_before":[{"id":"ice-americano","qty":2},{"id":"castella","qty":1}],"utterance":"시원한 커피는 세 잔으로 해줘","expected":{"action":"update","cart":[{"id":"ice-americano","qty":3},{"id":"castella","qty":1}]}}
+{"id":"M021","type":"multi","tag":"qty","cart_before":[{"id":"pudding","qty":1}],"utterance":"하나 더 줘","expected":{"action":"update","cart":[{"id":"pudding","qty":2}]}}
+{"id":"M022","type":"multi","tag":"cancel","cart_before":[{"id":"cola","qty":1},{"id":"yakgwa","qty":2}],"utterance":"전부 취소해 주세요","expected":{"action":"update","cart":[]}}
+{"id":"M023","type":"multi","tag":"cancel","cart_before":[{"id":"hot-latte","qty":1}],"utterance":"다 빼줘","expected":{"action":"update","cart":[]}}
+{"id":"M024","type":"multi","tag":"cancel","cart_before":[{"id":"sikhye","qty":1},{"id":"red-bean-bread","qty":1}],"utterance":"주문 전체 취소","expected":{"action":"update","cart":[]}}
+{"id":"M025","type":"multi","tag":"cancel","cart_before":[{"id":"choco-cake","qty":1}],"utterance":"아니야 다 취소할게","expected":{"action":"update","cart":[]}}
+{"id":"M026","type":"multi","tag":"confirm","cart_before":[{"id":"cola","qty":1}],"utterance":"네 맞아요","expected":{"action":"confirm"}}
+{"id":"M027","type":"multi","tag":"confirm","cart_before":[{"id":"hot-americano","qty":1},{"id":"castella","qty":1}],"utterance":"응 그걸로 줘","expected":{"action":"confirm"}}
+{"id":"M028","type":"multi","tag":"confirm","cart_before":[{"id":"yuja-tea","qty":2}],"utterance":"예 그렇게 주문해 주세요","expected":{"action":"confirm"}}
+{"id":"M029","type":"multi","tag":"confirm","cart_before":[{"id":"ice-latte","qty":1}],"utterance":"맞습니다","expected":{"action":"confirm"}}
+{"id":"M030","type":"multi","tag":"confirm","cart_before":[{"id":"dolce-caramel-macchiato","qty":1},{"id":"pudding","qty":1}],"utterance":"확인이요 그대로 주세요","expected":{"action":"confirm"}}
+{"id":"R001","type":"single","tag":"recommend","cart_before":[],"utterance":"뭐가 맛있어요?","expected":{"action":"recommend"}}
+{"id":"R002","type":"single","tag":"recommend","cart_before":[],"utterance":"따뜻한 거 하나 추천해줘","expected":{"action":"recommend"}}
+{"id":"R003","type":"single","tag":"recommend","cart_before":[],"utterance":"달달한 거 좋은 거 없나","expected":{"action":"recommend"}}
+{"id":"R004","type":"single","tag":"recommend","cart_before":[],"utterance":"아무거나 인기 있는 걸로 알려줘","expected":{"action":"recommend"}}
+{"id":"R005","type":"single","tag":"recommend","cart_before":[],"utterance":"부드러운 간식 뭐 추천해요","expected":{"action":"recommend"}}
+{"id":"R006","type":"multi","tag":"recommend","cart_before":[{"id":"hot-americano","qty":1}],"utterance":"같이 먹을 거 뭐가 좋아요?","expected":{"action":"recommend"}}
