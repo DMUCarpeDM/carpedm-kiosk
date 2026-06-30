@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { menuDisplayName, menuSubName } from "./api";
 import { menuImageSrc } from "./menuImages";
 import type { MenuItem } from "./types";
 
@@ -182,7 +183,7 @@ export function MenuCard({
   return (
     <button type="button" className="menu-card" onClick={onClick}>
       <MenuImage item={item} />
-      <span className="menu-card__name">{item.easy_name}</span>
+      <span className="menu-card__name">{menuDisplayName(item)}</span>
       <span className="menu-card__price">{price}</span>
     </button>
   );
@@ -203,25 +204,31 @@ export function RecommendedMenuCard({
   item,
   price,
   qty,
+  showAsk = true,
+  showBadge = true,
 }: {
   item: MenuItem;
   price: string;
   qty?: number;
+  showAsk?: boolean;
+  showBadge?: boolean;
 }) {
   return (
     <div className="rec-card">
-      <div className="rec-card__badge">
-        <IconCheckBadge />
-        <span>추천 메뉴</span>
-      </div>
+      {showBadge ? (
+        <div className="rec-card__badge">
+          <IconCheckBadge />
+          <span>추천 메뉴</span>
+        </div>
+      ) : null}
       <div className="rec-card__body">
         <MenuImage item={item} />
         <div className="rec-card__info">
-          <h2 className="rec-card__name">{item.easy_name}</h2>
-          {item.original_name ? <p className="rec-card__sub">{item.original_name}</p> : null}
+          <h2 className="rec-card__name">{menuDisplayName(item)}</h2>
+          {menuSubName(item) ? <p className="rec-card__sub">{menuSubName(item)}</p> : null}
           <p className="rec-card__price">{price}</p>
           {qty && qty > 1 ? <p className="rec-card__qty">수량 {qty}개</p> : null}
-          <p className="rec-card__ask">이 메뉴가 맞으신가요?</p>
+          {showAsk ? <p className="rec-card__ask">이 메뉴가 맞으신가요?</p> : null}
         </div>
       </div>
     </div>

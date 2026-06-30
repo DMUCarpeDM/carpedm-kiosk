@@ -84,13 +84,6 @@ export default function App() {
     void handleInterpret(text, cart);
   };
 
-  const onVoiceConfirm = () => {
-    if (voiceView?.kind === "menu") {
-      setCart([{ id: voiceView.menuId, qty: voiceView.qty }]);
-    }
-    goComplete();
-  };
-
   const onVoiceRetry = () => {
     setVoiceView(null);
     setVoiceRetry(true);
@@ -103,12 +96,42 @@ export default function App() {
     setScreen("menu-detail");
   };
 
+  const addToCart = (id: string, qty: number) => {
+    setCart((prev) => {
+      const found = prev.find((c) => c.id === id);
+      if (found) {
+        return prev.map((c) => (c.id === id ? { ...c, qty: c.qty + qty } : c));
+      }
+      return [...prev, { id, qty }];
+    });
+    setDetailQty(1);
+    setScreen("menu-list");
+  };
+
+  const updateCartQty = (id: string, qty: number) => {
+    setCart((prev) => {
+      if (qty <= 0) return prev.filter((c) => c.id !== id);
+      return prev.map((c) => (c.id === id ? { ...c, qty } : c));
+    });
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart((prev) => prev.filter((c) => c.id !== id));
+  };
+
   if (menuError && screen === "main") {
     return (
       <div className="app">
-        <div className="screen screen--main">
-          <p className="error-text">{menuError}</p>
-          <button type="button" className="btn btn--primary" onClick={() => void loadMenu()}>
+        <div className="screen screen--lotte-page screen--lotte-error">
+          <header className="lotte-sign lotte-sign--inline" aria-label="롯데리아">
+            <div className="lotte-sign__bar">
+              <span className="lotte-sign__line" aria-hidden="true" />
+              <span className="lotte-sign__logo">LOTTERIA</span>
+              <span className="lotte-sign__line" aria-hidden="true" />
+            </div>
+          </header>
+          <p className="lotte-error-text">{menuError}</p>
+          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--pay" onClick={() => void loadMenu()}>
             다시 시도
           </button>
         </div>
@@ -142,8 +165,6 @@ export default function App() {
           view={voiceView}
           menu={menu}
           onRetry={onVoiceRetry}
-          onConfirm={onVoiceConfirm}
-          onMenuSelect={() => setScreen("menu-list")}
           onBack={goMain}
         />
       ) : null}
@@ -151,21 +172,26 @@ export default function App() {
       {screen === "menu-list" ? (
         <MenuListScreen
           items={menu}
+          cart={cart}
           onSelect={(id) => openMenuDetail(id)}
+          onUpdateQty={updateCartQty}
+          onRemoveItem={removeFromCart}
           onBack={goMain}
+          onCancel={goMain}
+          onPay={() => {
+            if (cart.length > 0) goComplete();
+          }}
         />
       ) : null}
 
       {screen === "menu-detail" && selectedMenuId ? (
         <MenuDetailScreen
+          key={selectedMenuId}
           menuId={selectedMenuId}
           menu={menu}
           qty={detailQty}
           onQtyChange={setDetailQty}
-          onOrder={() => {
-            setCart([{ id: selectedMenuId, qty: detailQty }]);
-            goComplete();
-          }}
+          onOrder={() => addToCart(selectedMenuId, detailQty)}
           onBack={() => setScreen("menu-list")}
         />
       ) : null}

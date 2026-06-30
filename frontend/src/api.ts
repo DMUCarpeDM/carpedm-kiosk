@@ -31,6 +31,19 @@ export function formatPrice(price: number): string {
   return `${new Intl.NumberFormat("ko-KR").format(price)}원`;
 }
 
+export function formatMenuPrice(price: number): string {
+  return `${new Intl.NumberFormat("ko-KR").format(price)} ~`;
+}
+
+export function menuDisplayName(item: Pick<MenuItem, "easy_name" | "original_name">): string {
+  return item.original_name || item.easy_name;
+}
+
+export function menuSubName(item: Pick<MenuItem, "easy_name" | "original_name">): string | null {
+  if (!item.original_name || item.original_name === item.easy_name) return null;
+  return item.easy_name;
+}
+
 export function menuById(items: MenuItem[], id: string): MenuItem | undefined {
   return items.find((m) => m.id === id);
 }

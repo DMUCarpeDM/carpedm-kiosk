@@ -1,5 +1,5 @@
-import { formatPrice, menuById } from "../api";
-import { BottomActionButton, KioskHeader, RecommendedMenuCard } from "../components";
+import { formatMenuPrice, formatPrice, menuById } from "../api";
+import { MicButton, RecommendedMenuCard } from "../components";
 import type { MenuItem, VoiceResultView } from "../types";
 
 type Props = {
@@ -7,8 +7,6 @@ type Props = {
   view: VoiceResultView;
   menu: MenuItem[];
   onRetry: () => void;
-  onConfirm: () => void;
-  onMenuSelect: () => void;
   onBack: () => void;
 };
 
@@ -17,49 +15,82 @@ export function VoiceResultScreen({
   view,
   menu,
   onRetry,
-  onConfirm,
-  onMenuSelect,
   onBack,
 }: Props) {
   const item = view.kind === "menu" ? menuById(menu, view.menuId) : undefined;
 
   return (
-    <div className="screen screen--voice-result">
-      <KioskHeader onBack={onBack} />
-      <main className="voice-result">
-        <section className="voice-result__utterance">
-          <p className="voice-result__label">고객님이 말씀하신 내용</p>
-          <blockquote className="voice-result__quote">&ldquo;{utterance}&rdquo;</blockquote>
+    <div className="screen screen--lotte-page screen--lotte-voice-result">
+      <header className="lotte-sign lotte-sign--inline" aria-label="롯데리아">
+        <div className="lotte-sign__bar">
+          <span className="lotte-sign__line" aria-hidden="true" />
+          <span className="lotte-sign__logo">LOTTERIA</span>
+          <span className="lotte-sign__line" aria-hidden="true" />
+        </div>
+      </header>
+
+      <main className="lotte-voice-result">
+        <section className="lotte-voice-result__utterance">
+          <p className="lotte-voice-result__label">고객님이 말씀하신 내용</p>
+          <blockquote className="lotte-voice-result__quote">&ldquo;{utterance}&rdquo;</blockquote>
         </section>
 
         {view.kind === "menu" && item ? (
           <>
-            <p className="voice-result__heading">이렇게 이해했어요!</p>
-            <RecommendedMenuCard item={item} price={formatPrice(item.price)} qty={view.qty} />
-            <div className="voice-result__actions">
-              <BottomActionButton variant="secondary" label="다시 말하기" onClick={onRetry} />
-              <BottomActionButton variant="primary" label="맞아요, 주문할게요" onClick={onConfirm} />
+            <div className="lotte-voice-result__center">
+              <RecommendedMenuCard
+                item={item}
+                price={formatPrice(item.price)}
+                qty={view.qty}
+                showAsk={false}
+                showBadge={false}
+              />
+            </div>
+            <div className="lotte-order-bar">
+              <span className="lotte-order-bar__label">선택 메뉴</span>
+              <span className="lotte-order-bar__count">
+                <strong>{view.qty}</strong> 개
+              </span>
+              <span className="lotte-order-bar__total">{formatMenuPrice(item.price * view.qty)}</span>
+            </div>
+            <div className="lotte-voice-result__mic-area">
+              <MicButton active={false} onClick={onRetry} />
             </div>
           </>
         ) : null}
 
         {view.kind === "clarify" ? (
-          <section className="message-panel">
-            <p className="message-panel__text">{view.text}</p>
-            <BottomActionButton variant="primary" label="다시 말하기" onClick={onRetry} />
-          </section>
+          <>
+            <div className="lotte-voice-result__center">
+              <section className="lotte-message-panel">
+                <p className="lotte-message-panel__text">{view.text}</p>
+              </section>
+            </div>
+            <div className="lotte-voice-result__mic-area">
+              <MicButton active={false} onClick={onRetry} />
+            </div>
+          </>
         ) : null}
 
         {view.kind === "reject" ? (
-          <section className="message-panel">
-            <p className="message-panel__text">{view.text}</p>
-            <div className="voice-result__actions">
-              <BottomActionButton variant="secondary" label="다시 말하기" onClick={onRetry} />
-              <BottomActionButton variant="primary" label="메뉴선택" onClick={onMenuSelect} />
+          <>
+            <div className="lotte-voice-result__center">
+              <section className="lotte-message-panel">
+                <p className="lotte-message-panel__text">{view.text}</p>
+              </section>
             </div>
-          </section>
+            <div className="lotte-voice-result__mic-area">
+              <MicButton active={false} onClick={onRetry} />
+            </div>
+          </>
         ) : null}
       </main>
+
+      <footer className="lotte-voice-result__footer">
+        <button type="button" className="lotte-menu-footer__a11y-btn" onClick={onBack} aria-label="처음으로">
+          ↩
+        </button>
+      </footer>
     </div>
   );
 }
