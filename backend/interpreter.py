@@ -191,15 +191,20 @@ class ClaudeProvider:
 
 
 # ── 규칙 폴백 프로바이더 (오프라인 최소 주문, FR-V2) ─
-NUM_WORDS = {"한": 1, "하나": 1, "두": 2, "둘": 2, "세": 3, "셋": 3, "네": 4, "넷": 4, "다섯": 5}
-COUNTER_RE = re.compile(r"(한|두|세|네|다섯)\s*(개|잔|병|봉지|캔|조각|줄)")
-STANDALONE_NUM_RE = re.compile(r"(?<![가-힣])(하나|둘|셋|넷|다섯)(?![가-힣])")
+NUM_WORDS = {
+    "한": 1, "하나": 1, "두": 2, "둘": 2, "세": 3, "셋": 3,
+    "네": 4, "넷": 4, "다섯": 5,
+    "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10,
+}
+COUNTER_RE = re.compile(r"(한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\s*(개|잔|병|봉지|캔|조각|줄|대접|그릇|팩)")
+STANDALONE_NUM_RE = re.compile(r"(?<![가-힣])(하나|둘|셋|넷|다섯|여섯|일곱|여덟|아홉|열)(?![가-힣])")
 CONFIRM_RE = re.compile(r"(네|예|응|그래|맞아|맞습니다|맞아요|확인|그걸로|주문할게|주문해)")
 NEG_RE = re.compile(r"(빼|취소|추가|더 |말고|바꿔|아니)")
 REMOVE_RE = re.compile(r"(빼|없애|취소|말고)")
 CANCEL_ALL_RE = re.compile(r"(전부|전체|다)\s*(취소|빼)|^\s*취소(해줘|해 줘|요)?\s*$")
 MORE_RE = re.compile(r"^.{0,6}(하나|한 개|한개)?\s*더\s*(줘|주세요|요)?.{0,3}$")
 RECOMMEND_RE = re.compile(r"(추천|뭐가\s*(맛있|좋|괜찮)|뭐\s*(먹|마시)|아무거나|골라|좋은\s*거|인기\s*있는|많이\s*(먹|시키|찾)|잘\s*나가)")
+FOOD_CONTEXT_RE = re.compile(r"(먹|마시|줘|주세요|있어|하나|한 개|한개|개|잔|병|줘요|주세요|주요|드릴까|할게|세트|세 개|두 개|한 잔|한 병|한 봉지|줘라|다오|주소|포장|갑)")
 TASTE_WORDS = {
     "단": "달다", "달달": "달다", "달콤": "달다", "단거": "달다", "단 거": "달다",
     "고소": "고소하다", "부드러": "부드럽다", "말랑": "말랑하다",
@@ -238,12 +243,24 @@ class RuleProvider:
                 consumed.append(np)
         return found
 
+    @staticmethod
+    def _check_temp_words(utter: str, words: list[str]) -> bool:
+        """Check if any temperature word appears in the utterance (normalized)."""
+        u_norm = _norm(utter)
+        for w in words:
+            w = w.strip()
+            if not w:
+                continue
+            if w in utter or _norm(w) in u_norm:
+                return True
+        return False
+
     def _temp_filter(self, ids: list[str], utter: str, menu: dict, expressions: dict) -> list[str]:
         tw = expressions.get("temp_words", {})
         want = None
-        if any(w.strip() and w.strip() in utter for w in tw.get("hot", [])):
+        if self._check_temp_words(utter, tw.get("hot", [])):
             want = "hot"
-        elif any(w.strip() and w.strip() in utter for w in tw.get("ice", [])):
+        elif self._check_temp_words(utter, tw.get("ice", [])):
             want = "ice"
         if want:
             kept = [i for i in ids if menu[i].get("temp") in (want, "none")]
@@ -263,14 +280,42 @@ class RuleProvider:
             return NUM_WORDS[m.group(1)]
         return 1
 
+    def _qty_near(self, utterance: str, phrase_end: int) -> int:
+        """Extract quantity near a matched phrase position, prioritizing after then before."""
+        # 1) Search after the phrase (forward window)
+        after_window = utterance[phrase_end : phrase_end + 12]
+        m = re.search(r"(\d+)\s*(개|잔|병|봉지|캔|조각|줄|대접|그릇|팩)?", after_window)
+        if m:
+            return max(1, min(99, int(m.group(1))))
+        m = COUNTER_RE.search(after_window)
+        if m:
+            return NUM_WORDS[m.group(1)]
+        m = STANDALONE_NUM_RE.search(after_window)
+        if m:
+            return NUM_WORDS[m.group(1)]
+
+        # 2) Search before the phrase (backward window)
+        start = max(0, phrase_end - 15)
+        before_window = utterance[start : phrase_end]
+        m = re.search(r"(\d+)\s*(개|잔|병|봉지|캔|조각|줄|대접|그릇|팩)?", before_window)
+        if m:
+            return max(1, min(99, int(m.group(1))))
+        m = COUNTER_RE.search(before_window)
+        if m:
+            return NUM_WORDS[m.group(1)]
+        m = STANDALONE_NUM_RE.search(before_window)
+        if m:
+            return NUM_WORDS[m.group(1)]
+
+        return 1
+
     def _recommend(self, utter: str, menu: dict, expressions: dict) -> list[str]:
         """조건(온도·맛·분류)에 맞는 메뉴를 고른다. 조건 없으면 인기 메뉴."""
         cands = list(menu.values())
         # 온도 조건
-        tw = expressions.get("temp_words", {})
-        if any(w.strip() and w.strip() in utter for w in tw.get("hot", [])):
+        if self._check_temp_words(utter, expressions.get("temp_words", {}).get("hot", [])):
             cands = [m for m in cands if m.get("temp") == "hot"]
-        elif any(w.strip() and w.strip() in utter for w in tw.get("ice", [])):
+        elif self._check_temp_words(utter, expressions.get("temp_words", {}).get("ice", [])):
             cands = [m for m in cands if m.get("temp") == "ice"]
         # 분류 조건
         if "마실" in utter or "마시" in utter or "음료" in utter or "마실거" in utter:
@@ -305,7 +350,7 @@ class RuleProvider:
             )
 
         # 1) 확정
-        if cart and len(u) <= 14 and CONFIRM_RE.search(u) and not NEG_RE.search(u):
+        if cart and len(u) <= 25 and CONFIRM_RE.search(u) and not NEG_RE.search(u):
             return finalize({"action": "confirm", "reply": "주문을 확정할게요."}, cart, menu, self.name)
 
         # 2) 전체 취소
@@ -320,8 +365,14 @@ class RuleProvider:
         if cart and REMOVE_RE.search(u):
             targets = [i for _, ids in matches for i in ids if i in cart_map]
             if targets:
+                remove_qty = self._qty(u)
                 for t in set(targets):
-                    cart_map.pop(t, None)
+                    current = cart_map.get(t, 0)
+                    new_val = current - remove_qty
+                    if new_val <= 0:
+                        cart_map.pop(t, None)
+                    else:
+                        cart_map[t] = new_val
                 new_cart = [{"id": k, "qty": v} for k, v in cart_map.items()]
                 return finalize(
                     {"action": "update", "cart": new_cart, "reply": "뺐어요."}, cart, menu, self.name
@@ -341,7 +392,7 @@ class RuleProvider:
             )
 
         # 5) 장바구니 항목 수량 변경 ("콜라 두 개로 해줘/바꿔줘")
-        if cart and re.search(r"(개로|잔으로|으로|로)\s*(해|바꿔|변경)", u):
+        if cart and re.search(r"(개로|잔으로|으로|로)\s*(해|바꿔|변경|늘려|줄여|맞춰|설정)", u):
             targets = [i for _, ids in matches for i in ids if i in cart_map]
             if len(set(targets)) == 1:
                 cart_map[targets[0]] = self._qty(u)
@@ -353,22 +404,47 @@ class RuleProvider:
 
         # 6) 추가 주문
         singles: list[str] = []
+        singles_phrases: list[str] = []  # matched phrases for per-item qty
         ambiguous: list[list[str]] = []
-        for _, ids in matches:
+        for ph, ids in matches:
             ids2 = self._temp_filter(ids, u, menu, expressions)
             if len(set(ids2)) == 1:
                 singles.append(ids2[0])
+                singles_phrases.append(ph)
             else:
                 ambiguous.append(sorted(set(ids2)))
+        # Filter out ambiguous groups that contain an item already uniquely resolved in singles
+        ambiguous = [ids for ids in ambiguous if not any(x in singles for x in ids)]
         if singles and not ambiguous:
             distinct = list(dict.fromkeys(singles))
             if len(distinct) == 1:
                 # 단일 품목: 발화의 수량 적용
                 cart_map[distinct[0]] = cart_map.get(distinct[0], 0) + self._qty(u)
             else:
-                # 복수 품목: 폴백 최소 동작으로 각 1개씩
+                # 복수 품목: 각 항목 근처의 수량을 개별 파싱
+                # Build a mapping: item_id -> phrase for position lookup
+                item_phrase: dict[str, str] = {}
+                for sid, ph in zip(singles, singles_phrases):
+                    if sid not in item_phrase:
+                        item_phrase[sid] = ph
                 for sid in distinct:
-                    cart_map[sid] = cart_map.get(sid, 0) + 1
+                    ph = item_phrase[sid]
+                    # Find the phrase position in the original utterance
+                    np = _norm(ph)
+                    u_norm = _norm(u)
+                    pos = u_norm.find(np)
+                    if pos >= 0:
+                        # Map position back to original utterance approximately
+                        # Find the phrase in original utterance for better position
+                        orig_pos = u.find(ph)
+                        if orig_pos >= 0:
+                            phrase_end = orig_pos + len(ph)
+                        else:
+                            phrase_end = pos + len(np)
+                        qty = self._qty_near(u, phrase_end)
+                    else:
+                        qty = 1
+                    cart_map[sid] = cart_map.get(sid, 0) + qty
             new_cart = [{"id": k, "qty": v} for k, v in cart_map.items()]
             return finalize(
                 {"action": "update", "cart": new_cart, "reply": "담았어요."}, cart, menu, self.name
@@ -379,6 +455,14 @@ class RuleProvider:
                 {"action": "clarify", "question": f"{names} 중에 어느 것으로 드릴까요?"},
                 cart, menu, self.name,
             )
+
+        # 7) Reject — no menu items matched but utterance looks like a food order
+        if not matches and FOOD_CONTEXT_RE.search(u):
+            return finalize(
+                {"action": "reject", "reply": "죄송해요, 저희 매장에는 해당 메뉴가 없어요. 다른 메뉴를 골라 주시겠어요?"},
+                cart, menu, self.name,
+            )
+
         return finalize(
             {"action": "clarify", "question": "다시 한 번 천천히 말씀해 주시겠어요?"},
             cart, menu, self.name,
