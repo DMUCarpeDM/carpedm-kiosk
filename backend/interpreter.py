@@ -392,7 +392,7 @@ class RuleProvider:
             )
 
         # 5) 장바구니 항목 수량 변경 ("콜라 두 개로 해줘/바꿔줘")
-        if cart and re.search(r"(개로|잔으로|으로|로)\s*(해|바꿔|변경)", u):
+        if cart and re.search(r"(개로|잔으로|으로|로)\s*(해|바꿔|변경|늘려|줄여|맞춰|설정)", u):
             targets = [i for _, ids in matches for i in ids if i in cart_map]
             if len(set(targets)) == 1:
                 cart_map[targets[0]] = self._qty(u)
@@ -413,6 +413,8 @@ class RuleProvider:
                 singles_phrases.append(ph)
             else:
                 ambiguous.append(sorted(set(ids2)))
+        # Filter out ambiguous groups that contain an item already uniquely resolved in singles
+        ambiguous = [ids for ids in ambiguous if not any(x in singles for x in ids)]
         if singles and not ambiguous:
             distinct = list(dict.fromkeys(singles))
             if len(distinct) == 1:
