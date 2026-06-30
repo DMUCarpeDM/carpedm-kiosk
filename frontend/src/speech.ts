@@ -117,3 +117,41 @@ export function voiceStateLabel(state: VoiceState): string {
       return "";
   }
 }
+/** s1========================================================================
+ * [STT] 녹음된 오디오 데이터를 백엔드 API 서버로 전송하여 텍스트를 받아오는 함수
+ * 작성자: 김나우
+ */
+export async function uploadAudioToSTT(audioBlob: Blob): Promise<string> {
+  // 1. 백엔드에서 UploadFile로 받을 수 있도록 FormData 객체 생성
+  const formData = new FormData();
+  
+  // 2. 오디오 파일 객체를 'file'이라는 이름으로 폼 데이터에 탑재 (확장자는 wav 기준)
+  formData.append("file", audioBlob, "record.wav");
+
+  try {
+    // 3. 나우님이 뚫어놓은 백엔드 /api/stt 주소로 전송 요청
+    const response = await fetch("http://127.0.0.1:8000/api/stt", {
+      method: "POST",
+      body: formData, // JSON이 아닌 멀티파트 폼 데이터 형식으로 전송
+    });
+
+    if (!response.ok) {
+      throw new Error(`서버 응답 에러: ${response.status}`);
+    }
+
+    // 4. 백엔드가 반환한 {"text": stt_result} 형태의 데이터 파싱
+    const result = await response.json();
+
+    if (result.error) {
+      throw new Error(result.error);
+    }
+
+    // 5. 성공적으로 받아온 받아쓰기 문자열 반환
+    return result.text || "";
+  } catch (error) {
+    console.error("STT 전송 실패:", error);
+    throw error;
+  }
+}
+/** s1======================================================================== 
+ */

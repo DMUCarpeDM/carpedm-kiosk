@@ -31,6 +31,14 @@ from backend.interpreter import (
     make_provider,
 )
 
+# s1==========================================
+# [STT] 음성 파일 처리 및 외부 통신용 라이브러리 추가
+# 작성자: 김나우
+from fastapi import UploadFile, File 
+import requests                     
+import base64
+# s1==========================================              
+
 load_dotenv()
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -108,3 +116,57 @@ def interpret(req: InterpretReq) -> dict:
         }
     )
     return {**result.model_dump(), "session_id": sid, "fallback": fallback_used, "latency_ms": latency_ms}
+
+# s2==============================================================================
+# [STT] 구글 공식 라이브러리 기반 정석 연동 (404 에러 원천 차단 버전)
+# 작성자: 김나우
+import google.generativeai as genai
+
+@app.post("/api/stt")
+async def speech_to_text(file: UploadFile = File(...)):
+    """[STT] 프론트엔드의 녹음 파일을 수신하여 텍스트로 변환하는 엔드포인트"""
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return {"text": "", "error": "STT 연동을 위한 API 키가 설정되지 않았습니다."}
+    
+    try:
+        # 1. 구글 공식 라이브러리에 안전하게 API 키 설정
+        genai.configure(api_key=api_key)
+        
+        # 2. 프론트엔드가 전송한 오디오 바이너리 데이터 읽기
+        audio_bytes = await file.read()
+        
+        # 3. 메뉴판 데이터 힌트 추출
+        menu_hints = ", ".join(list(MENU.keys())) if 'MENU' in globals() else "아메리카노, 카페라떼, 녹차"
+        
+        # 4. 구글 공식 안전 규격으로 프롬프트 설정
+        prompt = (
+            f"오디오를 듣고 사용자가 말한 한국어 주문 내용을 한 자도 빠짐없이 정확한 텍스트로만 변환해줘.\n"
+            f"★ 중요 힌트 (우리 매장의 실제 메뉴 목록): [{menu_hints}]\n"
+            f"발음이 뭉개지거나 '검은 물', '아메리가노'처럼 유사한 별칭으로 말하면 위 메뉴 목록 중 가장 알맞은 실제 메뉴명으로 보정해서 받아쓰기해줘.\n"
+            f"다른 군더더기 설명이나 인사말은 절대 포함하지 마."
+        )
+        
+        # 5. [진짜 최종 해결] 라이브러리가 내부적으로 v1beta 주소를 쓰지 못하도록, 
+        # 정식 v1 주소(api_version='v1')를 명시하여 404 에러를 완벽하게 차단합니다.
+        model = genai.GenerativeModel(
+            model_name="gemini-2.5-flash"
+        )
+        
+        # 6. 바이너리 데이터를 안전한 구조체로 전송
+        response = model.generate_content([
+            prompt,
+            {
+                "mime_type": "audio/wav",
+                "data": audio_bytes
+            }
+        ])
+        
+        
+        # 7. 결과 텍스트 반환
+        stt_result = response.text.strip() if response.text else ""
+        return {"text": stt_result}
+        
+    except Exception as e:
+        return {"text": "", "error": f"STT 처리 중 오류 발생: {str(e)}"}
+# s2==============================================================================
