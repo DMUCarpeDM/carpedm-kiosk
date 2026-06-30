@@ -6,3 +6,10 @@ pyyaml>=6.0
 python-dotenv>=1.0
 pytest>=8.0
 httpx>=0.27
+
+# STT / Gemini
+google-generativeai==0.8.6
+python-multipart>=0.0.9
+
+# HTTP 요청
+requests>=2.32

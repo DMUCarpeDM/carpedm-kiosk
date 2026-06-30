@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { MicButton, VoiceWaveform } from "../components";
-import { listenOnce, speechSupported, stopSpeaking, voiceStateLabel } from "../speech";
+// s1==========================================
+// [STT] 구현 백엔드 전송 함수 임포트
+// 작성자: 김나우
+import {
+  speechSupported,
+  stopSpeaking,
+  voiceStateLabel,
+  uploadAudioToSTT,
+} from "../speech";
+// s1==========================================
 import type { VoiceState } from "../types";
+
 
 const GREETING = "안녕하세요, 롯데리아입니다.";
 const GREETING_SUB = "무엇을 도와드릴까요?";
@@ -18,21 +28,86 @@ export function VoiceOrderScreen({ onBack, onUtterance, skipGreeting = false }: 
   const stopListen = useRef<(() => void) | null>(null);
   const supported = speechSupported();
 
-  const startListening = () => {
+  // const startListening = () => {
+  //   setVoiceState("listening");
+  //   stopListen.current?.();
+  //   stopListen.current = listenOnce({
+  //     onStart: () => setVoiceState("listening"),
+  //     onResult: (text) => {
+  //       setVoiceState("processing");
+  //       onUtterance(text);
+  //     },
+  //     onError: (msg) => {
+  //       setVoiceState("error");
+  //       speakError(msg);
+  //     },
+  //   });
+  // };
+
+  // s2==============================================================================
+  // [STT] STT 연동 처리
+  // 작성자: 김나우
+  // ==============================================================================
+  const startListening = async () => {
     setVoiceState("listening");
     stopListen.current?.();
-    stopListen.current = listenOnce({
-      onStart: () => setVoiceState("listening"),
-      onResult: (text) => {
+
+    try {
+      // 1. 사용자 마이크 권한 요청 및 스트림 획득
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks: BlobPart[] = [];
+
+      // 2. 녹음 시작 시 중단(Stop) 명령 정의
+      stopListen.current = () => {
+        if (mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+        }
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      // 3. 소리가 들어올 때마다 오디오 조각 수집
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+
+      // 4. 말 소리가 끝나서 녹음이 완전히 종료되었을 때의 처리
+      mediaRecorder.onstop = async () => {
         setVoiceState("processing");
-        onUtterance(text);
-      },
-      onError: (msg) => {
-        setVoiceState("error");
-        speakError(msg);
-      },
-    });
+        
+        // 수집된 오디오 조각들을 하나의 블롭 파일 객체로 조립
+        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+        
+        try {
+          // 김나우 구현 파트: 백엔드 API로 전달하여 힌트가 보정된 한글 메뉴명 텍스트 추출
+          const recognizedText = await uploadAudioToSTT(audioBlob);
+          
+          if (recognizedText) {
+            onUtterance(recognizedText); // 추출된 정밀 텍스트를 팀원들의 해석 엔진으로 전달
+          } else {
+            throw new Error("음성 텍스트 변환 결과가 빈 값입니다.");
+          }
+        } catch (err) {
+          setVoiceState("error");
+          speakError("말씀이 잘 들리지 않았어요. 다시 시도해 주세요.");
+        }
+      };
+
+      // 5. 녹음 개시 (실제 키오스크 사용 환경을 고려해 4초간 듣고 자동 완료 처리)
+      mediaRecorder.start();
+      setTimeout(() => {
+        if (mediaRecorder.state === "recording") {
+          stopListen.current?.();
+        }
+      }, 4000);
+
+    } catch (err) {
+      setVoiceState("error");
+      speakError("마이크 권한을 승인해 주셔야 음성 주문이 가능해요.");
+    }
   };
+  // s2==============================================================================
+
 
   const speakError = (msg: string) => {
     window.speechSynthesis.cancel();
