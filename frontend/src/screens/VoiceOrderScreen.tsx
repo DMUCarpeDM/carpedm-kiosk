@@ -1,31 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { KioskHeader, MicButton, VoiceWaveform, SubtitleBar, ProgressBar } from "../components";
+import { MicButton, VoiceWaveform } from "../components";
 import { listenOnce, speechSupported, stopSpeaking, voiceStateLabel } from "../speech";
 import type { VoiceState } from "../types";
 
-const GREETING = "말씀하세요, 천천히 듣고 있어요.";
+const GREETING = "안녕하세요, 롯데리아입니다.";
+const GREETING_SUB = "무엇을 도와드릴까요?";
 
 type Props = {
   onBack: () => void;
   onUtterance: (text: string) => void;
   skipGreeting?: boolean;
-  largeText: boolean;
-  onToggleFontSize: () => void;
-  speakWithSubtitle: (text: string, onEnd?: () => void) => void;
-  setSubtitleText: (text: string) => void;
-  subtitleText: string;
 };
 
-export function VoiceOrderScreen({
-  onBack,
-  onUtterance,
-  skipGreeting = false,
-  largeText,
-  onToggleFontSize,
-  speakWithSubtitle,
-  setSubtitleText,
-  subtitleText,
-}: Props) {
+export function VoiceOrderScreen({ onBack, onUtterance, skipGreeting = false }: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>("speaking");
   const [testInput, setTestInput] = useState("");
   const stopListen = useRef<(() => void) | null>(null);
@@ -37,19 +24,21 @@ export function VoiceOrderScreen({
     stopListen.current = listenOnce({
       onStart: () => setVoiceState("listening"),
       onResult: (text) => {
-        setSubtitleText("");
         setVoiceState("processing");
         onUtterance(text);
       },
-      onInterimResult: (text) => {
-        // Show real-time interim STT results so user knows what is being heard
-        setSubtitleText(`듣고 있는 중: "${text}"`);
-      },
       onError: (msg) => {
         setVoiceState("error");
-        speakWithSubtitle(msg);
+        speakError(msg);
       },
     });
+  };
+
+  const speakError = (msg: string) => {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(msg);
+    u.lang = "ko-KR";
+    window.speechSynthesis.speak(u);
   };
 
   useEffect(() => {
@@ -65,13 +54,19 @@ export function VoiceOrderScreen({
       };
     }
 
-    setVoiceState("speaking");
-    speakWithSubtitle(GREETING, () => {
+    const full = `${GREETING} ${GREETING_SUB}`;
+    const u = new SpeechSynthesisUtterance(full);
+    u.lang = "ko-KR";
+    u.rate = 0.95;
+    u.onend = () => {
       if (!cancelled) {
         if (supported) startListening();
         else setVoiceState("error");
       }
-    });
+    };
+    setVoiceState("speaking");
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
 
     return () => {
       cancelled = true;
@@ -90,61 +85,69 @@ export function VoiceOrderScreen({
   const listening = voiceState === "listening" || voiceState === "speaking";
 
   return (
-    <div className="screen screen--voice">
-      <KioskHeader
-        largeText={largeText}
-        onToggleFontSize={onToggleFontSize}
-        onBack={onBack}
-        onReplay={supported ? startListening : undefined}
-      />
-      <main className="voice-center">
-        <div className="voice-center__greeting">
-          <p className="voice-center__line" style={{ fontSize: "var(--fz-heading)", fontWeight: "800" }}>
-            {GREETING}
-          </p>
+    <div className="screen screen--lotte-page screen--lotte-voice">
+      <header className="lotte-sign lotte-sign--inline" aria-label="롯데리아">
+        <div className="lotte-sign__bar">
+          <span className="lotte-sign__line" aria-hidden="true" />
+          <span className="lotte-sign__logo">LOTTERIA</span>
+          <span className="lotte-sign__line" aria-hidden="true" />
         </div>
+      </header>
+
+      <main className="lotte-voice-main">
+        <div className="lotte-voice-greeting">
+          <p className="lotte-voice-greeting__line">{GREETING}</p>
+          <p className="lotte-voice-greeting__line lotte-voice-greeting__line--sub">{GREETING_SUB}</p>
+        </div>
+
         <VoiceWaveform active={listening} />
-        <MicButton
-          active={voiceState === "listening"}
-          onClick={supported ? startListening : undefined}
-        />
-        <p className="voice-center__status" aria-live="polite">
+        <MicButton active={voiceState === "listening"} onClick={supported ? startListening : undefined} />
+
+        <p className="lotte-voice-status" aria-live="polite">
           {voiceStateLabel(voiceState)}
         </p>
 
-        {/* Manual Keyboard/Submit Fallback for Hearing/Speech Impaired or Error state */}
-        {!supported || voiceState === "error" || voiceState === "listening" ? (
-          <div className="voice-fallback">
-            <p className="voice-fallback__hint">
-              글자로 입력하시려면 아래 적고 [확인]을 눌러 주세요.
+        {!supported || voiceState === "error" ? (
+          <div className="lotte-voice-fallback">
+            <p className="lotte-voice-fallback__hint">
+              음성 인식을 쓸 수 없을 때는 아래에 말씀하신 내용을 적어 주세요.
             </p>
-            <div className="voice-fallback__row">
+            <div className="lotte-voice-fallback__row">
               <input
-                className="voice-fallback__input"
+                className="lotte-voice-fallback__input"
                 value={testInput}
                 onChange={(e) => setTestInput(e.target.value)}
-                placeholder="예: 따뜻한 커피 한 잔이랑 단팥빵 하나 주세요"
+                placeholder="예: 불고기버거 한 개 주세요"
                 onKeyDown={(e) => e.key === "Enter" && submitTest()}
-                aria-label="직접 주문 글자 입력"
               />
-              <button
-                type="button"
-                className="action-btn action-btn--primary"
-                onClick={submitTest}
-                style={{ width: "120px", minHeight: "80px" }}
-              >
+              <button type="button" className="lotte-voice-fallback__submit" onClick={submitTest}>
                 확인
               </button>
             </div>
+            {supported ? (
+              <button type="button" className="lotte-voice-fallback__retry" onClick={startListening}>
+                다시 듣기
+              </button>
+            ) : null}
           </div>
         ) : null}
       </main>
 
-      {/* Real-time Subtitles Overlay */}
-      <SubtitleBar text={subtitleText} />
-
-      {/* Progress tracker */}
-      <ProgressBar currentStep="order" />
+      <footer className="lotte-menu-footer">
+        <div className="lotte-menu-footer__a11y">
+          <button type="button" className="lotte-menu-footer__a11y-btn" onClick={onBack} aria-label="처음으로">
+            ↩
+          </button>
+          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">♿</span>
+          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔍</span>
+          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔊</span>
+        </div>
+        <div className="lotte-menu-footer__actions">
+          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--cancel" onClick={onBack}>
+            취소하기
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }
