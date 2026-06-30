@@ -59,7 +59,7 @@ def test_expressions_reference_valid_ids():
 def test_testset_schema_and_count():
     lines = (ROOT / "data" / "testset.jsonl").read_text(encoding="utf-8").splitlines()
     cases = [json.loads(l) for l in lines if l.strip()]
-    assert len(cases) == 106  # 단일 70 + 멀티턴 30 + 추천 6
+    assert len(cases) == 156  # 단일 105 + 멀티턴 42 + 추천 9
     for c in cases:
         assert c["type"] in {"single", "multi"}
         assert c["expected"]["action"] in {"update", "confirm", "clarify", "reject", "recommend"}

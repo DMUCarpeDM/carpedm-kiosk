@@ -1,7 +1,7 @@
 import type { MenuItem } from "./types";
 
 const BY_ID: Record<string, string> = {
-  "hot-americano": "/menu/iced-americano.svg",
+  "hot-americano": "/menu/cappuccino.svg",
   "ice-americano": "/menu/iced-americano.svg",
   "hot-latte": "/menu/cafe-latte.svg",
   "ice-latte": "/menu/cafe-latte.svg",
