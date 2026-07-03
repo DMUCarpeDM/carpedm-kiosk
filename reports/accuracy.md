@@ -1,32 +1,38 @@
 # 매핑 정확도 리포트
 
-- provider: **rule**  ⚠ rule은 오프라인 폴백 기준선입니다. SRS 목표는 claude 기준.
-- 케이스: 246건 / 소요: 0.1s
-- **전체 정확도: 98.8%** (목표 ≥90%)
-- 멀티턴 정확도: 93.6% (목표 ≥85%)
+- provider: **claude**
+- 케이스: 246건 / 소요: 450.2s
+- **전체 정확도: 96.3%** (목표 ≥90%)
+- 멀티턴 정확도: 95.7% (목표 ≥85%)
 
 ## 유형별
-- multi: 93.6% (44/47)
-- single: 100.0% (199/199)
+- multi: 95.7% (45/47)
+- single: 96.5% (192/199)
 
 ## 태그별
 - add: 100.0% (12/12)
 - attr: 100.0% (10/10)
 - attr_ask: 100.0% (6/6)
 - cancel: 100.0% (5/5)
-- clarify: 100.0% (13/13)
+- clarify: 92.3% (12/13)
 - confirm: 100.0% (8/8)
-- dict: 100.0% (63/63)
-- hard: 100.0% (7/7)
+- dict: 95.2% (60/63)
+- hard: 85.7% (6/7)
 - multi_item: 100.0% (10/10)
-- name: 100.0% (50/50)
+- name: 96.0% (48/50)
 - qty: 100.0% (27/27)
 - recommend: 100.0% (12/12)
 - reject: 100.0% (10/10)
-- remove: 100.0% (10/10)
-- set_convert: 0.0% (0/3)
+- remove: 80.0% (8/10)
+- set_convert: 100.0% (3/3)
 
-## 실패 케이스 (3건, 최대 30건 표시)
-- `T237` "세트로 바꿔줘" → 기대 {"action": "update", "cart": [{"id": "bulgogi-burger-set", "qty": 1}]} / 실제 {"action": "clarify", "cart": [["bulgogi-burger", 1]]}
-- `T238` "그거 세트로 해주세요" → 기대 {"action": "update", "cart": [{"id": "shrimp-burger-set", "qty": 1}]} / 실제 {"action": "clarify", "cart": [["shrimp-burger", 1]]}
-- `T239` "둘 다 세트로 바꿔줘요" → 기대 {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 2}]} / 실제 {"action": "clarify", "cart": [["t-rex-burger", 2]]}
+## 실패 케이스 (9건, 최대 30건 표시)
+- `T009` "핫크리스피 버거 하나 주세요" → 기대 {"action": "update", "cart": [{"id": "hot-crispy-burger", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
+- `T021` "핫크리스피 버거 세트 하나 주세요" → 기대 {"action": "update", "cart": [{"id": "hot-crispy-burger-set", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
+- `T060` "매콤한 버거 하나 줘" → 기대 {"action": "update", "cart": [{"id": "hot-crispy-burger", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
+- `T064` "매운 날개 튀김 주세요" → 기대 {"action": "update", "cart": [{"id": "hot-wings", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
+- `T096` "매운 불고기 버거 하나 줘요" → 기대 {"action": "update", "cart": [{"id": "bulsae-burger", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
+- `T128` "새우 든 거 하나 줘" → 기대 {"action": "clarify"} / 실제 {"action": "update", "cart": [["shrimp-burger", 1]]}
+- `T189` "아이스크림 콘은 빼주세요" → 기대 {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 1}]} / 실제 {"action": "update", "cart": [["soft-cone", 1], ["t-rex-burger-set", 1]]}
+- `T193` "감자 튀김 하나 빼줘" → 기대 {"action": "update", "cart": [{"id": "fries", "qty": 1}]} / 실제 {"action": "update", "cart": []}
+- `T241` "손주 줄 아이스께끼 두 개 주쇼" → 기대 {"action": "clarify"} / 실제 {"action": "update", "cart": [["soft-cone", 2]]}
