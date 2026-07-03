@@ -294,7 +294,8 @@ class RuleProvider:
             out.append((m.start(), NUM_WORDS[m.group(1)]))
         for m in STANDALONE_NUM_RE.finditer(window):
             out.append((m.start(), NUM_WORDS[m.group(1)]))
-        for m in re.finditer(r"(하나|둘|셋|넷|다섯|여섯|일곱|여덟|아홉|열)(?=만)", window):
+        # 조사가 붙은 수사: "하나랑", "하나하고", "하나만", "둘이요"
+        for m in re.finditer(r"(하나|둘|셋|넷|다섯|여섯|일곱|여덟|아홉|열)(?=랑|이랑|하고|만|요|씩)", window):
             out.append((m.start(), NUM_WORDS[m.group(1)]))
         return out
 
