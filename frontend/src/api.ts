@@ -1,4 +1,4 @@
-import type { CartItem, InterpretResult, MenuItem } from "./types";
+import type { CartItem, InterpretResult, MenuItem, OrderResponse } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 
@@ -25,6 +25,38 @@ export async function interpretUtterance(
   });
   if (!res.ok) throw new Error(`interpret ${res.status}`);
   return res.json() as Promise<InterpretResult>;
+}
+
+/** 음성 주문 한 사이클: 녹음 WAV → /order (STT→해석→TTS) */
+export async function orderVoice(
+  audio: Blob,
+  cart: CartItem[],
+  sessionId?: string | null,
+): Promise<OrderResponse> {
+  const form = new FormData();
+  form.append("file", audio, "record.wav");
+  form.append("cart", JSON.stringify(cart));
+  if (sessionId) form.append("session_id", sessionId);
+  const res = await fetch(`${API_BASE}/order`, { method: "POST", body: form });
+  if (!res.ok) throw new Error(`order ${res.status}`);
+  return res.json() as Promise<OrderResponse>;
+}
+
+/** 고정 안내문(인사말 등) 음성 합성 — 서버 캐시됨. 실패 시 null(브라우저 TTS 폴백). */
+export async function fetchTtsAudio(text: string): Promise<{ b64: string; mime: string } | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/tts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { audio_b64: string | null; mime?: string };
+    if (!data.audio_b64) return null;
+    return { b64: data.audio_b64, mime: data.mime ?? "audio/mpeg" };
+  } catch {
+    return null;
+  }
 }
 
 export function formatPrice(price: number): string {

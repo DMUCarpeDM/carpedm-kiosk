@@ -1640,11 +1640,81 @@ button.lotte-menu-footer__a11y-btn {
 .lotte-voice-result__mic-area {
   flex-shrink: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   padding: 24px 16px 28px;
   background: var(--lotte-beige-light);
   border-top: 1px solid #d4c9b8;
+}
+
+.lotte-voice-result__mic-hint {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #5c554c;
+}
+
+/* TTS 자막 — 안내 음성과 같은 문장을 화면에도 보여준다 (청각 보조) */
+.lotte-voice-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 720px;
+  padding: 14px 22px;
+  background: #fff8e6;
+  border: 2px solid var(--lotte-yellow);
+  border-radius: 16px;
+}
+
+.lotte-voice-subtitle__icon {
+  font-size: 26px;
+}
+
+.lotte-voice-subtitle__text {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--lotte-maroon);
+  line-height: 1.4;
+}
+
+/* 추천 후보 — 큰 터치 카드 (48dp 이상, 음성·터치 병행) */
+.lotte-voice-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.lotte-voice-suggestion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 3px solid transparent;
+  border-radius: 24px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.lotte-voice-suggestion:active,
+.lotte-voice-suggestion:focus-visible {
+  border-color: var(--lotte-maroon);
+}
+
+.lotte-voice-suggestion__cta {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 26px;
+  border-radius: 999px;
+  background: var(--lotte-maroon);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
 }
 
 .screen--lotte-voice-result .mic-btn {

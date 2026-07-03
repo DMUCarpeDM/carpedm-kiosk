@@ -1,154 +1,131 @@
 import { useEffect, useRef, useState } from "react";
+import { fetchTtsAudio, orderVoice } from "../api";
 import { MicButton, VoiceWaveform } from "../components";
-// s1==========================================
-// [STT] 구현 백엔드 전송 함수 임포트
-// 작성자: 김나우
+import { startRecording, type Recorder } from "../recorder";
 import {
+  listenOnce,
+  playSpeech,
+  speak,
   speechSupported,
-  stopSpeaking,
+  stopAllAudio,
   voiceStateLabel,
-  uploadAudioToSTT,
 } from "../speech";
-// s1==========================================
-import type { VoiceState } from "../types";
-
+import type { CartItem, OrderResponse, VoiceState } from "../types";
 
 const GREETING = "안녕하세요, 롯데리아입니다.";
-const GREETING_SUB = "무엇을 도와드릴까요?";
+const GREETING_SUB = "마이크 버튼을 누르고 천천히 말씀해 주세요.";
+const MAX_RECORD_MS = 7000; // 최대 녹음 길이 — 누르는 걸 잊어도 자동 완료
 
 type Props = {
+  cart: CartItem[];
+  sessionId: string | null;
   onBack: () => void;
+  /** 서버 /order 성공 (STT+해석+TTS 완료) */
+  onOrderResult: (res: OrderResponse) => void;
+  /** 브라우저 STT 폴백 등 텍스트만 얻었을 때 */
   onUtterance: (text: string) => void;
   skipGreeting?: boolean;
 };
 
-export function VoiceOrderScreen({ onBack, onUtterance, skipGreeting = false }: Props) {
-  const [voiceState, setVoiceState] = useState<VoiceState>("speaking");
+export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtterance, skipGreeting = false }: Props) {
+  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
+  const [statusText, setStatusText] = useState<string | null>(null);
   const [testInput, setTestInput] = useState("");
-  const stopListen = useRef<(() => void) | null>(null);
-  const supported = speechSupported();
+  const recorderRef = useRef<Recorder | null>(null);
+  const timerRef = useRef<number | null>(null);
+  const mountedRef = useRef(true);
 
-  // const startListening = () => {
-  //   setVoiceState("listening");
-  //   stopListen.current?.();
-  //   stopListen.current = listenOnce({
-  //     onStart: () => setVoiceState("listening"),
-  //     onResult: (text) => {
-  //       setVoiceState("processing");
-  //       onUtterance(text);
-  //     },
-  //     onError: (msg) => {
-  //       setVoiceState("error");
-  //       speakError(msg);
-  //     },
-  //   });
-  // };
+  const clearTimer = () => {
+    if (timerRef.current !== null) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
 
-  // s2==============================================================================
-  // [STT] STT 연동 처리
-  // 작성자: 김나우
-  // ==============================================================================
+  // ── 녹음 시작/종료 (push-to-talk: 누르면 시작, 다시 누르면 완료) ──
   const startListening = async () => {
-    setVoiceState("listening");
-    stopListen.current?.();
-
+    stopAllAudio();
+    setStatusText(null);
     try {
-      // 1. 사용자 마이크 권한 요청 및 스트림 획득
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const audioChunks: BlobPart[] = [];
-
-      // 2. 녹음 시작 시 중단(Stop) 명령 정의
-      stopListen.current = () => {
-        if (mediaRecorder.state !== "inactive") {
-          mediaRecorder.stop();
-        }
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      // 3. 소리가 들어올 때마다 오디오 조각 수집
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
-      };
-
-      // 4. 말 소리가 끝나서 녹음이 완전히 종료되었을 때의 처리
-      mediaRecorder.onstop = async () => {
-        setVoiceState("processing");
-        
-        // 수집된 오디오 조각들을 하나의 블롭 파일 객체로 조립
-        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-        
-        try {
-          // 김나우 구현 파트: 백엔드 API로 전달하여 힌트가 보정된 한글 메뉴명 텍스트 추출
-          const recognizedText = await uploadAudioToSTT(audioBlob);
-          
-          if (recognizedText) {
-            onUtterance(recognizedText); // 추출된 정밀 텍스트를 팀원들의 해석 엔진으로 전달
-          } else {
-            throw new Error("음성 텍스트 변환 결과가 빈 값입니다.");
-          }
-        } catch (err) {
-          setVoiceState("error");
-          speakError("말씀이 잘 들리지 않았어요. 다시 시도해 주세요.");
-        }
-      };
-
-      // 5. 녹음 개시 (실제 키오스크 사용 환경을 고려해 4초간 듣고 자동 완료 처리)
-      mediaRecorder.start();
-      setTimeout(() => {
-        if (mediaRecorder.state === "recording") {
-          stopListen.current?.();
-        }
-      }, 4000);
-
-    } catch (err) {
+      const rec = await startRecording();
+      recorderRef.current = rec;
+      setVoiceState("listening");
+      clearTimer();
+      timerRef.current = window.setTimeout(() => void finishListening(), MAX_RECORD_MS);
+    } catch {
       setVoiceState("error");
-      speakError("마이크 권한을 승인해 주셔야 음성 주문이 가능해요.");
+      setStatusText("마이크를 사용할 수 없어요. 아래에 적어 주시거나 메뉴에서 골라 주세요.");
     }
   };
-  // s2==============================================================================
 
-
-  const speakError = (msg: string) => {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(msg);
-    u.lang = "ko-KR";
-    window.speechSynthesis.speak(u);
-  };
-
-  useEffect(() => {
-    let cancelled = false;
-
-    if (skipGreeting) {
-      if (supported) startListening();
-      else setVoiceState("error");
-      return () => {
-        cancelled = true;
-        stopListen.current?.();
-        stopSpeaking();
-      };
-    }
-
-    const full = `${GREETING} ${GREETING_SUB}`;
-    const u = new SpeechSynthesisUtterance(full);
-    u.lang = "ko-KR";
-    u.rate = 0.95;
-    u.onend = () => {
-      if (!cancelled) {
-        if (supported) startListening();
-        else setVoiceState("error");
+  const finishListening = async () => {
+    const rec = recorderRef.current;
+    if (!rec) return;
+    recorderRef.current = null;
+    clearTimer();
+    setVoiceState("processing");
+    try {
+      const wav = await rec.stop();
+      const res = await orderVoice(wav, cart, sessionId);
+      if (!mountedRef.current) return;
+      if (res.ok) {
+        onOrderResult(res);
+        return;
       }
+      // 서버 STT 실패 → 브라우저 STT로 한 번 더 시도, 그것도 안 되면 안내
+      if (speechSupported()) {
+        setVoiceState("listening");
+        setStatusText("다시 한 번 말씀해 주세요.");
+        listenOnce({
+          onResult: (text) => mountedRef.current && onUtterance(text),
+          onError: () => {
+            if (!mountedRef.current) return;
+            setVoiceState("error");
+            setStatusText(res.message);
+          },
+        });
+      } else {
+        setVoiceState("error");
+        setStatusText(res.message);
+      }
+    } catch {
+      if (!mountedRef.current) return;
+      setVoiceState("error");
+      setStatusText("서버에 연결할 수 없어요. 아래에 적어 주시거나 메뉴에서 골라 주세요.");
+    }
+  };
+
+  const onMicClick = () => {
+    if (voiceState === "listening") void finishListening();
+    else if (voiceState !== "processing") void startListening();
+  };
+
+  // ── 인사말 (Google TTS 캐시 → 브라우저 폴백) 후 자동 듣기 ──
+  useEffect(() => {
+    mountedRef.current = true;
+
+    const begin = async () => {
+      if (!skipGreeting) {
+        setVoiceState("speaking");
+        const audio = await fetchTtsAudio(`${GREETING} ${GREETING_SUB}`);
+        if (!mountedRef.current) return;
+        if (audio) await playSpeech("", audio.b64, audio.mime);
+        else await new Promise<void>((r) => speak(`${GREETING} ${GREETING_SUB}`, undefined, () => r()));
+        if (!mountedRef.current) return;
+      }
+      await startListening();
     };
-    setVoiceState("speaking");
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    void begin();
 
     return () => {
-      cancelled = true;
-      stopListen.current?.();
-      stopSpeaking();
+      mountedRef.current = false;
+      clearTimer();
+      recorderRef.current?.cancel();
+      recorderRef.current = null;
+      stopAllAudio();
     };
-  }, [supported, skipGreeting]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skipGreeting]);
 
   const submitTest = () => {
     const t = testInput.trim();
@@ -157,7 +134,7 @@ export function VoiceOrderScreen({ onBack, onUtterance, skipGreeting = false }: 
     onUtterance(t);
   };
 
-  const listening = voiceState === "listening" || voiceState === "speaking";
+  const showFallback = voiceState === "error";
 
   return (
     <div className="screen screen--lotte-page screen--lotte-voice">
@@ -175,17 +152,18 @@ export function VoiceOrderScreen({ onBack, onUtterance, skipGreeting = false }: 
           <p className="lotte-voice-greeting__line lotte-voice-greeting__line--sub">{GREETING_SUB}</p>
         </div>
 
-        <VoiceWaveform active={listening} />
-        <MicButton active={voiceState === "listening"} onClick={supported ? startListening : undefined} />
+        <VoiceWaveform active={voiceState === "listening" || voiceState === "speaking"} />
+        <MicButton active={voiceState === "listening"} onClick={onMicClick} />
 
         <p className="lotte-voice-status" aria-live="polite">
-          {voiceStateLabel(voiceState)}
+          {statusText ?? voiceStateLabel(voiceState)}
+          {voiceState === "listening" ? " (다 말씀하셨으면 버튼을 한 번 더 누르세요)" : ""}
         </p>
 
-        {!supported || voiceState === "error" ? (
+        {showFallback ? (
           <div className="lotte-voice-fallback">
             <p className="lotte-voice-fallback__hint">
-              음성 인식을 쓸 수 없을 때는 아래에 말씀하신 내용을 적어 주세요.
+              음성이 어려우면 아래에 적어 주시거나, 왼쪽 아래 ↩ 버튼으로 돌아가 메뉴에서 골라 주세요.
             </p>
             <div className="lotte-voice-fallback__row">
               <input
@@ -199,11 +177,9 @@ export function VoiceOrderScreen({ onBack, onUtterance, skipGreeting = false }: 
                 확인
               </button>
             </div>
-            {supported ? (
-              <button type="button" className="lotte-voice-fallback__retry" onClick={startListening}>
-                다시 듣기
-              </button>
-            ) : null}
+            <button type="button" className="lotte-voice-fallback__retry" onClick={() => void startListening()}>
+              다시 말하기
+            </button>
           </div>
         ) : null}
       </main>

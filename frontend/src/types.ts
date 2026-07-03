@@ -52,7 +52,28 @@ export type InterpretResult = {
   latency_ms?: number;
 };
 
+/** POST /order 응답 — STT→해석→TTS 한 사이클 */
+export type OrderResponse =
+  | {
+      ok: true;
+      action: InterpretAction;
+      cart: CartItem[];
+      reply: string;
+      question?: string | null;
+      suggestions: string[];
+      provider: string;
+      utterance: string;
+      say: string;
+      audio_b64: string | null;
+      audio_mime: string;
+      session_id: string;
+      fallback: boolean;
+      latency: { stt_ms: number; interpret_ms: number; tts_ms: number; total_ms: number };
+    }
+  | { ok: false; stage: "stt"; session_id: string; message: string };
+
 export type VoiceResultView =
-  | { kind: "menu"; menuId: string; qty: number }
+  | { kind: "menu"; menuId: string; qty: number; say?: string }
+  | { kind: "recommend"; menuIds: string[]; say?: string }
   | { kind: "clarify"; text: string }
   | { kind: "reject"; text: string };

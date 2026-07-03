@@ -15,7 +15,7 @@ export function qtyFromResult(result: InterpretResult, menuId: string): number {
   return item?.qty ?? 1;
 }
 
-export function viewFromInterpret(result: InterpretResult): VoiceResultView | "confirm" {
+export function viewFromInterpret(result: InterpretResult, say?: string): VoiceResultView | "confirm" {
   if (result.action === "confirm") return "confirm";
   if (result.action === "clarify") {
     return { kind: "clarify", text: result.question || result.reply || "다시 말씀해 주세요." };
@@ -23,8 +23,11 @@ export function viewFromInterpret(result: InterpretResult): VoiceResultView | "c
   if (result.action === "reject") {
     return { kind: "reject", text: result.reply || "죄송해요, 다시 말씀해 주시거나 메뉴를 골라 주세요." };
   }
+  if (result.action === "recommend" && result.suggestions.length > 0) {
+    return { kind: "recommend", menuIds: result.suggestions.slice(0, 3), say: say ?? result.reply };
+  }
   const menuId = menuIdFromResult(result);
-  if (menuId) return { kind: "menu", menuId, qty: qtyFromResult(result, menuId) };
+  if (menuId) return { kind: "menu", menuId, qty: qtyFromResult(result, menuId), say: say ?? result.reply };
   return { kind: "clarify", text: result.reply || "다시 말씀해 주세요." };
 }
 
@@ -46,5 +49,5 @@ if (import.meta.env.DEV) {
     provider: "rule",
   };
   const v = viewFromInterpret(sample);
-  console.assert(v !== "confirm" && v.kind === "menu" && v.menuId === "hot-latte");
+  console.assert(v !== "confirm" && v.kind === "recommend" && v.menuIds[0] === "hot-latte");
 }

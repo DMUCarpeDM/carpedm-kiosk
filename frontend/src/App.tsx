@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchMenu, interpretUtterance } from "./api";
+import { fetchMenu, fetchTtsAudio, interpretUtterance } from "./api";
 import { isLocalConfirmFallback, viewFromInterpret } from "./interpretFlow";
+import { playSpeech } from "./speech";
 import { MainScreen } from "./screens/MainScreen";
 import { MenuDetailScreen } from "./screens/MenuDetailScreen";
 import { MenuListScreen } from "./screens/MenuListScreen";
 import { OrderCompleteScreen } from "./screens/OrderCompleteScreen";
 import { VoiceOrderScreen } from "./screens/VoiceOrderScreen";
 import { VoiceResultScreen } from "./screens/VoiceResultScreen";
-import type { CartItem, MenuItem, Screen, VoiceResultView } from "./types";
+import type { CartItem, InterpretResult, MenuItem, OrderResponse, Screen, VoiceResultView } from "./types";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("main");
@@ -19,6 +20,8 @@ export default function App() {
   const [detailQty, setDetailQty] = useState(1);
   const [utterance, setUtterance] = useState("");
   const [voiceView, setVoiceView] = useState<VoiceResultView | null>(null);
+  const [voiceSay, setVoiceSay] = useState<string | undefined>(undefined);
+  const [voiceAudio, setVoiceAudio] = useState<{ b64: string; mime: string } | null>(null);
   const [apiDown, setApiDown] = useState(false);
   const [voiceRetry, setVoiceRetry] = useState(false);
 
@@ -46,10 +49,48 @@ export default function App() {
     setDetailQty(1);
     setUtterance("");
     setVoiceView(null);
+    setVoiceSay(undefined);
+    setVoiceAudio(null);
   };
 
   const goComplete = () => setScreen("order-complete");
 
+  const showResultView = (view: VoiceResultView | "confirm") => {
+    if (view === "confirm") {
+      goComplete();
+      return;
+    }
+    setVoiceView(view);
+    setScreen("voice-result");
+  };
+
+  /** 서버 /order 응답 (STT+해석+TTS 완료) */
+  const handleOrderResult = (res: OrderResponse) => {
+    if (!res.ok) return; // VoiceOrderScreen에서 처리됨
+    setSessionId(res.session_id);
+    setCart(res.cart);
+    setUtterance(res.utterance);
+    setApiDown(false);
+
+    if (res.action === "confirm") {
+      void playSpeech(res.say, res.audio_b64, res.audio_mime); // 완료 안내를 끊지 않는다
+      goComplete();
+      return;
+    }
+    const result: InterpretResult = {
+      action: res.action,
+      cart: res.cart,
+      reply: res.reply,
+      question: res.question,
+      suggestions: res.suggestions,
+      provider: res.provider,
+    };
+    setVoiceSay(res.say);
+    setVoiceAudio(res.audio_b64 ? { b64: res.audio_b64, mime: res.audio_mime } : null);
+    showResultView(viewFromInterpret(result, res.say));
+  };
+
+  /** 텍스트 발화 경로 (브라우저 STT 폴백·직접 입력) — /api/interpret + TTS 별도 합성 */
   const handleInterpret = async (text: string, currentCart: CartItem[]) => {
     setUtterance(text);
     try {
@@ -58,13 +99,18 @@ export default function App() {
       setCart(result.cart);
       setApiDown(false);
 
-      const view = viewFromInterpret(result);
-      if (view === "confirm") {
+      const say = (result.question || result.reply || "").trim();
+      if (result.action === "confirm") {
+        if (say) {
+          const audio = await fetchTtsAudio(say);
+          void playSpeech(say, audio?.b64, audio?.mime);
+        }
         goComplete();
         return;
       }
-      setVoiceView(view);
-      setScreen("voice-result");
+      setVoiceSay(say || undefined);
+      setVoiceAudio(say ? await fetchTtsAudio(say) : null);
+      showResultView(viewFromInterpret(result, say));
     } catch {
       setApiDown(true);
       // ponytail: API 미연동 시에만 로컬 확정 키워드 판단
@@ -72,6 +118,8 @@ export default function App() {
         goComplete();
         return;
       }
+      setVoiceSay(undefined);
+      setVoiceAudio(null);
       setVoiceView({
         kind: "reject",
         text: "서버에 연결할 수 없어요. 메뉴를 직접 골라 주시거나, 서버를 켠 뒤 다시 시도해 주세요.",
@@ -153,8 +201,11 @@ export default function App() {
 
       {screen === "voice-order" ? (
         <VoiceOrderScreen
+          cart={cart}
+          sessionId={sessionId}
           skipGreeting={voiceRetry}
           onBack={goMain}
+          onOrderResult={handleOrderResult}
           onUtterance={onVoiceUtterance}
         />
       ) : null}
@@ -164,7 +215,14 @@ export default function App() {
           utterance={utterance}
           view={voiceView}
           menu={menu}
+          cart={cart}
+          say={voiceSay}
+          audioB64={voiceAudio?.b64 ?? null}
+          audioMime={voiceAudio?.mime}
           onRetry={onVoiceRetry}
+          onConfirm={goComplete}
+          onOpenMenu={() => setScreen("menu-list")}
+          onPickSuggestion={(id) => addToCart(id, 1)}
           onBack={goMain}
         />
       ) : null}
