@@ -1,14 +1,18 @@
 """FastAPI 백엔드 — API 키는 서버 환경변수에만 존재 (FR-B1).
 
 엔드포인트:
-- POST /api/interpret  : 발화 → 해석 (멀티턴: 현재 장바구니 동봉)
+- POST /order          : 음성 파일 → STT → 해석 → TTS 오케스트레이션 (한 번에)
+- POST /api/interpret  : 텍스트 발화 → 해석 (멀티턴: 현재 장바구니 동봉)
+- POST /api/stt        : 음성 파일 → 텍스트 (프론트 개별 호출용, 하위 호환)
+- POST /api/tts        : 텍스트 → 음성 (인사말 등 개별 합성)
 - GET  /api/menu       : menu.json 그대로 (단일 소스, FR-B2)
 - GET  /healthz
 로깅 (FR-D1): data/logs/utterances.jsonl — 개인 식별정보 없음 (P-6).
-폴백 (FR-V2): Claude 실패 시 RuleProvider로 자동 전환.
+폴백 (FR-V2): Claude 실패 시 RuleProvider, STT/TTS 실패 시 단계적 폴백.
 """
 from __future__ import annotations
 
+import base64
 import json
 import os
 import time
@@ -17,7 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -25,26 +29,19 @@ from backend.interpreter import (
     CartItem,
     InterpretResult,
     RuleProvider,
-    ValidationErr,
     load_expressions,
     load_menu,
     make_provider,
 )
-
-# s1==========================================
-# [STT] 음성 파일 처리 및 외부 통신용 라이브러리 추가
-# 작성자: 김나우
-from fastapi import UploadFile, File 
-import requests                     
-import base64
-# s1==========================================              
+from backend.providers.stt import SttError, make_stt_provider
+from backend.providers.tts import TtsError, make_tts_provider
 
 load_dotenv()
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG_DIR = Path(os.getenv("KIOSK_LOG_DIR", ROOT / "data" / "logs"))
 
-app = FastAPI(title="CarpeDM Kiosk Backend", version="0.1")
+app = FastAPI(title="CarpeDM Kiosk Backend", version="0.2")
 app.add_middleware(  # 키오스크 로컬 환경: 동일 기기 프론트 허용
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
 )
@@ -53,6 +50,8 @@ MENU = load_menu()
 EXPRESSIONS = load_expressions()
 PROVIDER = make_provider()
 FALLBACK = RuleProvider()
+STT = make_stt_provider(MENU)
+TTS = make_tts_provider()
 
 
 class InterpretReq(BaseModel):
@@ -61,15 +60,51 @@ class InterpretReq(BaseModel):
     session_id: str | None = None
 
 
+class TtsReq(BaseModel):
+    text: str
+
+
 def log_event(rec: dict) -> None:
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     with open(LOG_DIR / "utterances.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
+def run_interpret(utterance: str, cart: list[CartItem]) -> tuple[InterpretResult, bool, str | None]:
+    """해석 실행 — 실패 시 규칙 폴백 (FR-V2, P-4). (결과, 폴백 여부, 오류) 반환."""
+    try:
+        return PROVIDER.interpret(utterance, cart, MENU, EXPRESSIONS), False, None
+    except Exception as e:
+        error = f"{type(e).__name__}: {e}"
+        fallback_used = PROVIDER.name != FALLBACK.name
+        try:
+            return FALLBACK.interpret(utterance, cart, MENU, EXPRESSIONS), fallback_used, error
+        except Exception:
+            return (
+                InterpretResult(
+                    action="clarify",
+                    cart=cart,
+                    question="죄송해요, 잘 알아듣지 못했어요. 화면의 큰 버튼으로 골라 주셔도 돼요.",
+                    provider="error",
+                ),
+                fallback_used,
+                error,
+            )
+
+
+def spoken_text(result: InterpretResult) -> str:
+    """TTS로 읽어줄 문장 — 되물음이 있으면 되물음을, 아니면 응답을."""
+    return (result.question or result.reply or "").strip()
+
+
 @app.get("/healthz")
 def healthz():
-    return {"ok": True, "provider": PROVIDER.name}
+    return {
+        "ok": True,
+        "provider": PROVIDER.name,
+        "stt": STT.name if STT else None,
+        "tts": TTS.name if TTS else None,
+    }
 
 
 @app.get("/api/menu")
@@ -81,24 +116,7 @@ def get_menu():
 def interpret(req: InterpretReq) -> dict:
     sid = req.session_id or uuid.uuid4().hex[:12]
     t0 = time.perf_counter()
-    fallback_used = False
-    error: str | None = None
-
-    try:
-        result: InterpretResult = PROVIDER.interpret(req.utterance, req.cart, MENU, EXPRESSIONS)
-    except Exception as e:  # 네트워크/LLM/검증 실패 → 규칙 폴백 (FR-V2, P-4)
-        error = f"{type(e).__name__}: {e}"
-        fallback_used = PROVIDER.name != FALLBACK.name
-        try:
-            result = FALLBACK.interpret(req.utterance, req.cart, MENU, EXPRESSIONS)
-        except Exception:
-            result = InterpretResult(
-                action="clarify",
-                cart=req.cart,
-                question="죄송해요, 잘 알아듣지 못했어요. 화면의 큰 버튼으로 골라 주셔도 돼요.",
-                provider="error",
-            )
-
+    result, fallback_used, error = run_interpret(req.utterance, req.cart)
     latency_ms = round((time.perf_counter() - t0) * 1000)
     log_event(
         {
@@ -117,56 +135,130 @@ def interpret(req: InterpretReq) -> dict:
     )
     return {**result.model_dump(), "session_id": sid, "fallback": fallback_used, "latency_ms": latency_ms}
 
-# s2==============================================================================
-# [STT] 구글 공식 라이브러리 기반 정석 연동 (404 에러 원천 차단 버전)
-# 작성자: 김나우
-import google.generativeai as genai
+
+@app.post("/order")
+async def order(
+    file: UploadFile = File(...),
+    cart: str = Form("[]"),
+    session_id: str | None = Form(None),
+) -> dict:
+    """음성 주문 한 사이클: 오디오 → STT → 해석 → TTS. 단계별 지연을 로깅한다."""
+    sid = session_id or uuid.uuid4().hex[:12]
+    t_start = time.perf_counter()
+
+    try:
+        cart_items = [CartItem(**c) for c in json.loads(cart or "[]")]
+    except (json.JSONDecodeError, TypeError, ValueError):
+        cart_items = []
+
+    # 1) STT
+    stt_ms = 0
+    stt_error: str | None = None
+    text = ""
+    if STT is not None:
+        audio = await file.read()
+        t0 = time.perf_counter()
+        try:
+            text = STT.transcribe(audio, file.content_type or "audio/wav").text
+        except SttError as e:
+            stt_error = str(e)
+        stt_ms = round((time.perf_counter() - t0) * 1000)
+    else:
+        stt_error = "STT 프로바이더 미설정"
+
+    if not text:
+        # STT 실패 — 프론트가 브라우저 STT 또는 터치로 폴백하도록 알린다
+        log_event(
+            {
+                "ts": datetime.now(timezone.utc).isoformat(),
+                "session": sid,
+                "stage": "stt_failed",
+                "stt_provider": STT.name if STT else None,
+                "stt_ms": stt_ms,
+                "error": stt_error,
+            }
+        )
+        return {
+            "ok": False,
+            "stage": "stt",
+            "session_id": sid,
+            "message": "말씀이 잘 들리지 않았어요. 다시 한 번 천천히 말씀해 주세요.",
+        }
+
+    # 2) 해석
+    t0 = time.perf_counter()
+    result, fallback_used, interp_error = run_interpret(text, cart_items)
+    interpret_ms = round((time.perf_counter() - t0) * 1000)
+
+    # 3) TTS (실패해도 주문 흐름은 계속 — 프론트 브라우저 TTS 폴백)
+    tts_ms = 0
+    tts_b64: str | None = None
+    tts_mime = "audio/mpeg"
+    say = spoken_text(result)
+    if TTS is not None and say:
+        t0 = time.perf_counter()
+        try:
+            tts = TTS.synthesize(say)
+            tts_b64 = base64.b64encode(tts.audio).decode("ascii")
+            tts_mime = tts.mime
+        except TtsError:
+            tts_b64 = None
+        tts_ms = round((time.perf_counter() - t0) * 1000)
+
+    total_ms = round((time.perf_counter() - t_start) * 1000)
+    log_event(
+        {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "session": sid,
+            "utterance": text,
+            "cart_before": [c.model_dump() for c in cart_items],
+            "action": result.action,
+            "cart_after": [c.model_dump() for c in result.cart],
+            "suggestions": result.suggestions,
+            "provider": result.provider,
+            "stt_provider": STT.name if STT else None,
+            "tts_provider": TTS.name if TTS else None,
+            "fallback": fallback_used,
+            "stt_ms": stt_ms,
+            "interpret_ms": interpret_ms,
+            "tts_ms": tts_ms,
+            "latency_ms": total_ms,
+            "error": interp_error,
+        }
+    )
+    return {
+        "ok": True,
+        **result.model_dump(),
+        "utterance": text,
+        "say": say,
+        "audio_b64": tts_b64,
+        "audio_mime": tts_mime,
+        "session_id": sid,
+        "fallback": fallback_used,
+        "latency": {"stt_ms": stt_ms, "interpret_ms": interpret_ms, "tts_ms": tts_ms, "total_ms": total_ms},
+    }
+
 
 @app.post("/api/stt")
 async def speech_to_text(file: UploadFile = File(...)):
-    """[STT] 프론트엔드의 녹음 파일을 수신하여 텍스트로 변환하는 엔드포인트"""
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        return {"text": "", "error": "STT 연동을 위한 API 키가 설정되지 않았습니다."}
-    
+    """음성 파일 → 텍스트 (하위 호환). 실패 시 text는 빈 값."""
+    if STT is None:
+        return {"text": "", "error": "STT 프로바이더 미설정 (.env의 CLOVA/GEMINI 키 확인)"}
+    audio = await file.read()
     try:
-        # 1. 구글 공식 라이브러리에 안전하게 API 키 설정
-        genai.configure(api_key=api_key)
-        
-        # 2. 프론트엔드가 전송한 오디오 바이너리 데이터 읽기
-        audio_bytes = await file.read()
-        
-        # 3. 메뉴판 데이터 힌트 추출
-        menu_hints = ", ".join(list(MENU.keys())) if 'MENU' in globals() else "아메리카노, 카페라떼, 녹차"
-        
-        # 4. 구글 공식 안전 규격으로 프롬프트 설정
-        prompt = (
-            f"오디오를 듣고 사용자가 말한 한국어 주문 내용을 한 자도 빠짐없이 정확한 텍스트로만 변환해줘.\n"
-            f"★ 중요 힌트 (우리 매장의 실제 메뉴 목록): [{menu_hints}]\n"
-            f"발음이 뭉개지거나 '검은 물', '아메리가노'처럼 유사한 별칭으로 말하면 위 메뉴 목록 중 가장 알맞은 실제 메뉴명으로 보정해서 받아쓰기해줘.\n"
-            f"다른 군더더기 설명이나 인사말은 절대 포함하지 마."
-        )
-        
-        # 5. [진짜 최종 해결] 라이브러리가 내부적으로 v1beta 주소를 쓰지 못하도록, 
-        # 정식 v1 주소(api_version='v1')를 명시하여 404 에러를 완벽하게 차단합니다.
-        model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash"
-        )
-        
-        # 6. 바이너리 데이터를 안전한 구조체로 전송
-        response = model.generate_content([
-            prompt,
-            {
-                "mime_type": "audio/wav",
-                "data": audio_bytes
-            }
-        ])
-        
-        
-        # 7. 결과 텍스트 반환
-        stt_result = response.text.strip() if response.text else ""
-        return {"text": stt_result}
-        
-    except Exception as e:
-        return {"text": "", "error": f"STT 처리 중 오류 발생: {str(e)}"}
-# s2==============================================================================
+        r = STT.transcribe(audio, file.content_type or "audio/wav")
+        return {"text": r.text, "provider": r.provider}
+    except SttError as e:
+        return {"text": "", "error": str(e)}
+
+
+@app.post("/api/tts")
+def text_to_speech(req: TtsReq):
+    """텍스트 → 음성 (base64). 인사말 등 고정 안내문 합성에 사용, 캐시됨."""
+    if TTS is None:
+        return {"audio_b64": None, "error": "TTS 프로바이더 미설정"}
+    try:
+        r = TTS.synthesize(req.text)
+        return {"audio_b64": base64.b64encode(r.audio).decode("ascii"), "mime": r.mime, "cached": r.cached}
+    except TtsError as e:
+        return {"audio_b64": None, "error": str(e)}
