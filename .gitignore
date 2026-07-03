@@ -6,11 +6,14 @@ __pycache__/
 .venv/
 venv/
 
-# 환경변수 (API 키 — 절대 커밋 금지)
+# 환경변수·키 파일 (API 키 — 절대 커밋 금지)
 .env
+secrets/
+*service-account*.json
 
 # 로그·생성물 (개인정보 보호: 발화 로그는 올리지 않음)
 data/logs/
+data/tts_cache/
 reports/expression_candidates.csv
 data/testset_augmented.jsonl
 

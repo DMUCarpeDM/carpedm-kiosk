@@ -22,6 +22,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from dotenv import load_dotenv  # noqa: E402
+
+load_dotenv(ROOT / ".env")
+
 from backend.interpreter import (  # noqa: E402
     CartItem,
     load_expressions,
@@ -64,8 +68,10 @@ def main() -> int:
         exp = case["expected"]
         try:
             got = provider.interpret(case["utterance"], cart_before, menu, expressions)
-            ok = got.action == exp["action"]
-            if ok and exp["action"] == "update":
+            # expected.action은 문자열 또는 허용 목록(list) — 예: 성질 표현은 clarify/recommend 모두 정답
+            exp_actions = exp["action"] if isinstance(exp["action"], list) else [exp["action"]]
+            ok = got.action in exp_actions
+            if ok and got.action == "update" and "cart" in exp:
                 ok = norm_cart(got.cart) == norm_cart(exp["cart"])
             got_desc = {"action": got.action, "cart": norm_cart(got.cart)}
         except Exception as e:

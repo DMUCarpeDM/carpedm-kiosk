@@ -1,10 +1,14 @@
 export type Screen =
   | "main"
+  | "order-mode"
   | "voice-order"
   | "voice-result"
   | "menu-list"
   | "menu-detail"
   | "order-complete";
+
+/** 식사 장소 (실기기 첫 질문) */
+export type DiningOption = "store" | "togo";
 
 export type VoiceState =
   | "idle"
@@ -23,6 +27,12 @@ export type MenuItem = {
   temp: "hot" | "ice" | "none" | string;
   tags?: string[];
   popular?: boolean;
+  allergens?: string[];
+  set_of?: string;
+  set_includes?: string[];
+  desc?: string;
+  kcal?: number;
+  origin?: string[];
 };
 
 export type CartItem = {
@@ -49,7 +59,28 @@ export type InterpretResult = {
   latency_ms?: number;
 };
 
+/** POST /order 응답 — STT→해석→TTS 한 사이클 */
+export type OrderResponse =
+  | {
+      ok: true;
+      action: InterpretAction;
+      cart: CartItem[];
+      reply: string;
+      question?: string | null;
+      suggestions: string[];
+      provider: string;
+      utterance: string;
+      say: string;
+      audio_b64: string | null;
+      audio_mime: string;
+      session_id: string;
+      fallback: boolean;
+      latency: { stt_ms: number; interpret_ms: number; tts_ms: number; total_ms: number };
+    }
+  | { ok: false; stage: "stt"; session_id: string; message: string };
+
 export type VoiceResultView =
-  | { kind: "menu"; menuId: string; qty: number }
+  | { kind: "menu"; menuId: string; qty: number; say?: string }
+  | { kind: "recommend"; menuIds: string[]; say?: string }
   | { kind: "clarify"; text: string }
   | { kind: "reject"; text: string };

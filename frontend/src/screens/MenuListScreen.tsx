@@ -1,17 +1,19 @@
-import { useMemo, useRef, useState } from "react";
-import { formatMenuPrice, menuDisplayName } from "../api";
-import { menuImageSrc } from "../menuImages";
+import { useMemo, useState } from "react";
+import { menuDisplayName } from "../api";
+import { IconMic, ProductCard } from "../components";
 import type { CartItem, MenuItem } from "../types";
 
 const CATEGORIES = [
   { id: "recommend", label: "추천메뉴" },
+  { id: "set", label: "세트" },
   { id: "burger", label: "햄버거" },
-  { id: "dessert", label: "디저트/치킨" },
-  { id: "drink", label: "음료/커피" },
+  { id: "chicken", label: "치킨" },
+  { id: "side", label: "사이드" },
+  { id: "dessert-drink", label: "디저트·음료" },
 ] as const;
 
 type CategoryId = (typeof CATEGORIES)[number]["id"];
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 6;
 
 type Props = {
   items: MenuItem[];
@@ -19,26 +21,22 @@ type Props = {
   onSelect: (id: string) => void;
   onUpdateQty: (id: string, qty: number) => void;
   onRemoveItem: (id: string) => void;
-  onBack: () => void;
-  onCancel: () => void;
+  onClearCart: () => void;
+  onVoice: () => void;
   onPay: () => void;
 };
 
 function itemCategory(item: MenuItem): CategoryId {
+  if (item.category === "세트") return "set";
   if (item.category === "햄버거") return "burger";
-  if (item.category === "치킨" || item.category === "먹을 것") return "dessert";
-  return "drink";
+  if (item.category === "치킨") return "chicken";
+  if (item.category === "사이드") return "side";
+  return "dessert-drink";
 }
 
 function filterByCategory(items: MenuItem[], catId: CategoryId): MenuItem[] {
   if (catId === "recommend") return items.filter((i) => i.popular);
   return items.filter((i) => itemCategory(i) === catId);
-}
-
-function getBadge(item: MenuItem): "NEW" | "BEST" | null {
-  if (item.tags?.includes("신메뉴")) return "NEW";
-  if (item.popular) return "BEST";
-  return null;
 }
 
 function cartSummary(cart: CartItem[], items: MenuItem[]) {
@@ -54,10 +52,18 @@ function cartSummary(cart: CartItem[], items: MenuItem[]) {
   return { count, total };
 }
 
-export function MenuListScreen({ items, cart, onSelect, onUpdateQty, onRemoveItem, onBack, onCancel, onPay }: Props) {
-  const [catIdx, setCatIdx] = useState(1);
+export function MenuListScreen({
+  items,
+  cart,
+  onSelect,
+  onUpdateQty,
+  onRemoveItem,
+  onClearCart,
+  onVoice,
+  onPay,
+}: Props) {
+  const [catIdx, setCatIdx] = useState(0);
   const [page, setPage] = useState(0);
-  const catScrollRef = useRef<HTMLDivElement>(null);
 
   const catId = CATEGORIES[catIdx].id;
   const filtered = useMemo(() => filterByCategory(items, catId), [items, catId]);
@@ -70,172 +76,125 @@ export function MenuListScreen({ items, cart, onSelect, onUpdateQty, onRemoveIte
     setPage(0);
   };
 
-  const scrollCats = (dir: -1 | 1) => {
-    const next = Math.max(0, Math.min(CATEGORIES.length - 1, catIdx + dir));
-    goCategory(next);
-    catScrollRef.current?.children[next]?.scrollIntoView({ inline: "center", block: "nearest" });
-  };
-
   return (
-    <div className="screen screen--lotte-menu">
-      <div className="lotte-menu-banner">
-        <img src="/rsc/lotteria_header2.png" alt="롯데리아 프로모션" className="lotte-menu-banner__img" />
+    <div className="lk-menu">
+      <div className="lk-banner" aria-hidden="true">
+        <img src="/rsc/lotteria_header2.png" alt="" />
       </div>
 
-      <nav className="lotte-cat-nav" aria-label="메뉴 카테고리">
-        <button type="button" className="lotte-cat-nav__arrow" onClick={() => scrollCats(-1)} aria-label="이전 카테고리">
-          ‹
-        </button>
-        <div className="lotte-cat-nav__tabs" ref={catScrollRef}>
-          {CATEGORIES.map((cat, i) => (
-            <button
-              key={cat.id}
-              type="button"
-              className={`lotte-cat-nav__tab ${i === catIdx ? "lotte-cat-nav__tab--active" : ""}`}
-              onClick={() => goCategory(i)}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-        <button type="button" className="lotte-cat-nav__arrow" onClick={() => scrollCats(1)} aria-label="다음 카테고리">
-          ›
-        </button>
+      <nav className="lk-cats" aria-label="메뉴 분류">
+        {CATEGORIES.map((cat, i) => (
+          <button
+            key={cat.id}
+            type="button"
+            className={`lk-cat ${i === catIdx ? "lk-cat--on" : ""}`}
+            onClick={() => goCategory(i)}
+            aria-pressed={i === catIdx}
+          >
+            {cat.label}
+          </button>
+        ))}
       </nav>
 
-      <main className="lotte-menu-body">
-        <button
-          type="button"
-          className="lotte-menu-page-btn lotte-menu-page-btn--prev"
-          onClick={() => setPage((p) => Math.max(0, p - 1))}
-          disabled={page === 0}
-          aria-label="이전 페이지"
-        >
-          이전
-        </button>
+      <div className="lk-menu__body">
+        <div className="lk-grid">
+          {pageItems.map((item) => (
+            <ProductCard key={item.id} item={item} onClick={() => onSelect(item.id)} />
+          ))}
+        </div>
 
-        <div className="lotte-menu-grid-wrap">
-          <div className="lotte-menu-grid">
-            {pageItems.map((item) => {
-              const badge = getBadge(item);
-              return (
-                <button key={item.id} type="button" className="lotte-menu-item" onClick={() => onSelect(item.id)}>
-                  <div className="lotte-menu-item__img-wrap">
-                    {badge ? (
-                      <span className={`lotte-menu-item__badge lotte-menu-item__badge--${badge.toLowerCase()}`}>
-                        {badge}
-                      </span>
-                    ) : null}
-                    <img
-                      src={menuImageSrc(item)}
-                      alt=""
-                      className="lotte-menu-item__img"
-                    />
-                  </div>
-                  <div className="lotte-menu-item__info">
-                    <span className="lotte-menu-item__name">{menuDisplayName(item)}</span>
-                    <span className="lotte-menu-item__price">{formatMenuPrice(item.price)}</span>
-                  </div>
-                </button>
-              );
-            })}
+        <div className="lk-pager">
+          <button
+            type="button"
+            className="lk-pager__btn"
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+          >
+            ← 이전
+          </button>
+          <div className="lk-pager__dots" aria-label={`${pageCount}쪽 중 ${page + 1}쪽`}>
+            {Array.from({ length: pageCount }, (_, i) => (
+              <span key={i} className={`lk-pager__dot ${i === page ? "lk-pager__dot--on" : ""}`} />
+            ))}
           </div>
-
-          {pageCount > 1 ? (
-            <div className="lotte-menu-dots" aria-label="페이지">
-              {Array.from({ length: pageCount }, (_, i) => (
-                <span key={i} className={`lotte-menu-dots__dot ${i === page ? "lotte-menu-dots__dot--active" : ""}`} />
-              ))}
-            </div>
-          ) : null}
+          <button
+            type="button"
+            className="lk-pager__btn"
+            onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
+            disabled={page >= pageCount - 1}
+          >
+            다음 →
+          </button>
         </div>
+      </div>
 
-        <button
-          type="button"
-          className="lotte-menu-page-btn lotte-menu-page-btn--next"
-          onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-          disabled={page >= pageCount - 1}
-          aria-label="다음 페이지"
-        >
-          다음
-        </button>
-      </main>
-
-      <section className="lotte-order-section" aria-label="총주문내역">
-        <div className="lotte-order-bar">
-          <span className="lotte-order-bar__label">총주문내역</span>
-          <span className="lotte-order-bar__count">
-            <strong>{count}</strong> 개
+      <section className="lk-cart" aria-label="주문 내역">
+        <div className="lk-cart__head">
+          <span className="lk-cart__title">주문 내역</span>
+          <span className="lk-cart__total">
+            {count}개 · <strong>{total.toLocaleString("ko-KR")}원</strong>
           </span>
-          <span className="lotte-order-bar__total">{new Intl.NumberFormat("ko-KR").format(total)}</span>
         </div>
-
-        <div className="lotte-order-list" aria-live="polite">
+        <div className="lk-cart__rows" aria-live="polite">
           {cart.length === 0 ? (
-            <p className="lotte-order-list__empty">선택한 메뉴가 없습니다</p>
+            <p className="lk-cart__empty">아직 담은 메뉴가 없어요. 사진을 눌러 골라 주세요.</p>
           ) : (
-            <ul className="lotte-order-list__rows">
-              {cart.map((c) => {
-                const m = items.find((i) => i.id === c.id);
-                if (!m) return null;
-                const lineTotal = m.price * c.qty;
-                return (
-                  <li key={c.id} className="lotte-order-row">
-                    <span className="lotte-order-row__name">{menuDisplayName(m)}</span>
-                    <div className="lotte-order-row__qty">
-                      <button
-                        type="button"
-                        className="lotte-order-row__qty-btn"
-                        onClick={() => onUpdateQty(c.id, c.qty - 1)}
-                        aria-label={`${menuDisplayName(m)} 수량 줄이기`}
-                      >
-                        ▼
-                      </button>
-                      <span className="lotte-order-row__qty-num">{c.qty}</span>
-                      <button
-                        type="button"
-                        className="lotte-order-row__qty-btn"
-                        onClick={() => onUpdateQty(c.id, c.qty + 1)}
-                        aria-label={`${menuDisplayName(m)} 수량 늘리기`}
-                      >
-                        ▲
-                      </button>
-                    </div>
-                    <span className="lotte-order-row__price">{formatMenuPrice(lineTotal)}</span>
+            cart.map((c) => {
+              const m = items.find((i) => i.id === c.id);
+              if (!m) return null;
+              return (
+                <div key={c.id} className="lk-cart-row">
+                  <span className="lk-cart-row__name">{menuDisplayName(m)}</span>
+                  <div className="lk-qty lk-qty--small">
                     <button
                       type="button"
-                      className="lotte-order-row__remove"
-                      onClick={() => onRemoveItem(c.id)}
-                      aria-label={`${menuDisplayName(m)} 삭제`}
+                      className="lk-qty__btn"
+                      onClick={() => onUpdateQty(c.id, c.qty - 1)}
+                      aria-label={`${menuDisplayName(m)} 수량 줄이기`}
                     >
-                      ×
+                      −
                     </button>
-                  </li>
-                );
-              })}
-            </ul>
+                    <span className="lk-qty__val">{c.qty}</span>
+                    <button
+                      type="button"
+                      className="lk-qty__btn"
+                      onClick={() => onUpdateQty(c.id, c.qty + 1)}
+                      aria-label={`${menuDisplayName(m)} 수량 늘리기`}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="lk-cart-row__price">{(m.price * c.qty).toLocaleString("ko-KR")}원</span>
+                  <button
+                    type="button"
+                    className="lk-cart-row__del"
+                    onClick={() => onRemoveItem(c.id)}
+                    aria-label={`${menuDisplayName(m)} 빼기`}
+                  >
+                    ✕
+                  </button>
+                </div>
+              );
+            })
           )}
         </div>
       </section>
 
-      <footer className="lotte-menu-footer">
-        <div className="lotte-menu-footer__a11y">
-          <button type="button" className="lotte-menu-footer__a11y-btn" onClick={onBack} aria-label="처음으로">
-            ↩
-          </button>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">♿</span>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔍</span>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔊</span>
-        </div>
-        <div className="lotte-menu-footer__actions">
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--cancel" onClick={onCancel}>
-            취소하기
-          </button>
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--pay" onClick={onPay}>
-            결제하기
-          </button>
-        </div>
-      </footer>
+      <div className="lk-paybar">
+        <button type="button" className="lk-paybar__btn lk-paybar__btn--ghost" onClick={onClearCart} disabled={cart.length === 0}>
+          전체 삭제
+        </button>
+        <button type="button" className="lk-paybar__btn lk-paybar__btn--pay" onClick={onPay} disabled={cart.length === 0}>
+          {cart.length === 0 ? "메뉴를 골라 주세요" : `${total.toLocaleString("ko-KR")}원 결제하기`}
+        </button>
+      </div>
+
+      <button type="button" className="lk-mic-fab" onClick={onVoice}>
+        <span className="lk-mic-fab__icon">
+          <IconMic size={28} />
+        </span>
+        말로 주문
+      </button>
     </div>
   );
 }
