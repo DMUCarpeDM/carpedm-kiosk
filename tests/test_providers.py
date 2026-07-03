@@ -66,6 +66,33 @@ def test_clova_request_format(monkeypatch):
     assert "불고기 버거" in params["boostings"][0]["words"]  # 메뉴명 부스팅 (콤마 구분 문자열)
 
 
+def test_clova_short_mode_request_format(monkeypatch):
+    """단문 인식(/recog/v1): octet-stream + 탭 구분 boostings + lang=Kor."""
+    monkeypatch.setenv("CLOVA_SPEECH_INVOKE_URL", "https://clovaspeech-gw.ncloud.com/recog/v1")
+    monkeypatch.setenv("CLOVA_SPEECH_SECRET_KEY", "test-secret")
+    monkeypatch.delenv("CLOVA_CLIENT_ID", raising=False)
+    captured = {}
+
+    def fake_post(url, headers=None, params=None, data=None, timeout=None):
+        captured.update(url=url, headers=headers, params=params, data=data)
+        return FakeResponse(200, {"text": "콜라 두 개 주세요"})
+
+    monkeypatch.setattr(stt_mod.requests, "post", fake_post)
+    provider = stt_mod.ClovaSttProvider(MENU)
+    assert provider.long_mode is False
+    r = provider.transcribe(b"pcm-audio")
+
+    assert r.text == "콜라 두 개 주세요"
+    assert captured["url"].endswith("/recog/v1/stt")
+    assert captured["headers"]["X-CLOVASPEECH-API-KEY"] == "test-secret"
+    assert captured["headers"]["Content-Type"] == "application/octet-stream"
+    assert captured["params"]["lang"] == "Kor"
+    boost = captured["params"]["boostings"]
+    assert "\t" in boost and len(boost) <= 512  # 탭 구분, 512자 제한
+    assert all(len(w) >= 3 for w in boost.split("\t"))  # 3자 미만 키워드 제외
+    assert captured["data"] == b"pcm-audio"
+
+
 def test_clova_http_error_raises(monkeypatch):
     monkeypatch.setenv("CLOVA_SPEECH_INVOKE_URL", "https://example.com/v1/x")
     monkeypatch.setenv("CLOVA_SPEECH_SECRET_KEY", "k")

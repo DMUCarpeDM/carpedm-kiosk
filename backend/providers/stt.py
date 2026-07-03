@@ -50,41 +50,86 @@ def build_boost_words(menu: dict[str, dict]) -> list[str]:
 
 
 class ClovaSttProvider(SttProvider):
-    """CLOVA Speech NEST — 로컬 파일 인식(단문), completion=sync."""
+    """CLOVA Speech — 단문/장문 자동 판별.
+
+    - 장문(로컬 파일): InvokeURL이 .../external/v1/{...} 형태 → POST {url}/recognizer/upload (multipart)
+    - 단문: 그 외 (기본 https://clovaspeech-gw.ncloud.com/recog/v1)
+      → POST {url}/stt?lang=Kor (application/octet-stream), boostings는 탭 구분·512자 이내
+    - (구형 CSR 겸용) CLOVA_CLIENT_ID가 있으면 X-NCP-APIGW 헤더 쌍을 사용
+    """
 
     name = "clova"
+    SHORT_DEFAULT_URL = "https://clovaspeech-gw.ncloud.com/recog/v1"
 
     def __init__(self, menu: dict[str, dict] | None = None):
-        self.invoke_url = (os.getenv("CLOVA_SPEECH_INVOKE_URL") or "").rstrip("/")
+        self.invoke_url = (os.getenv("CLOVA_SPEECH_INVOKE_URL") or self.SHORT_DEFAULT_URL).rstrip("/")
         self.secret = os.getenv("CLOVA_SPEECH_SECRET_KEY") or ""
-        if not self.invoke_url or not self.secret:
-            raise SttError("CLOVA_SPEECH_INVOKE_URL/CLOVA_SPEECH_SECRET_KEY 미설정")
+        self.client_id = os.getenv("CLOVA_CLIENT_ID") or ""  # 구형 CSR일 때만
+        if not self.secret:
+            raise SttError("CLOVA_SPEECH_SECRET_KEY 미설정")
+        self.long_mode = "/external/" in self.invoke_url
         self.boost_words = build_boost_words(menu or {})
         self.timeout = float(os.getenv("KIOSK_STT_TIMEOUT", "15"))
+
+    def _headers(self, content_type: str | None = None) -> dict[str, str]:
+        h: dict[str, str] = {}
+        if self.client_id:  # 구형 CSR: Client ID + Secret 쌍
+            h["X-NCP-APIGW-API-KEY-ID"] = self.client_id
+            h["X-NCP-APIGW-API-KEY"] = self.secret
+        else:  # 신형 CLOVA Speech: 도메인 Secret Key 하나
+            h["X-CLOVASPEECH-API-KEY"] = self.secret
+        if content_type:
+            h["Content-Type"] = content_type
+        return h
+
+    def _short_boostings(self) -> str:
+        """단문 인식 boostings: 탭 구분, 키워드 3자 이상, 전체 512자 이하."""
+        out: list[str] = []
+        total = 0
+        for w in self.boost_words:
+            if len(w) < 3:
+                continue
+            if total + len(w) + 1 > 512:
+                break
+            out.append(w)
+            total += len(w) + 1
+        return "\t".join(out)
 
     def transcribe(self, audio: bytes, content_type: str = "audio/wav") -> SttResult:
         import json
 
-        params: dict = {
-            "language": "ko-KR",
-            "completion": "sync",
-            "fullText": True,
-            "wordAlignment": False,
-            "diarization": {"enable": False},  # 1인 발화 — 화자 분리 생략으로 지연 단축
-        }
-        if self.boost_words:
-            params["boostings"] = [{"words": ",".join(self.boost_words), "weight": 1}]
-
         try:
-            res = requests.post(
-                f"{self.invoke_url}/recognizer/upload",
-                headers={"X-CLOVASPEECH-API-KEY": self.secret},
-                files={
-                    "media": ("record.wav", audio, content_type),
-                    "params": (None, json.dumps(params, ensure_ascii=False), "application/json"),
-                },
-                timeout=self.timeout,
-            )
+            if self.long_mode:
+                params: dict = {
+                    "language": "ko-KR",
+                    "completion": "sync",
+                    "fullText": True,
+                    "wordAlignment": False,
+                    "diarization": {"enable": False},  # 1인 발화 — 화자 분리 생략으로 지연 단축
+                }
+                if self.boost_words:
+                    params["boostings"] = [{"words": ",".join(self.boost_words), "weight": 1}]
+                res = requests.post(
+                    f"{self.invoke_url}/recognizer/upload",
+                    headers=self._headers(),
+                    files={
+                        "media": ("record.wav", audio, content_type),
+                        "params": (None, json.dumps(params, ensure_ascii=False), "application/json"),
+                    },
+                    timeout=self.timeout,
+                )
+            else:
+                query: dict[str, str] = {"lang": "Kor"}
+                boost = self._short_boostings()
+                if boost:
+                    query["boostings"] = boost
+                res = requests.post(
+                    f"{self.invoke_url}/stt",
+                    headers=self._headers("application/octet-stream"),
+                    params=query,
+                    data=audio,
+                    timeout=self.timeout,
+                )
         except requests.RequestException as e:
             raise SttError(f"CLOVA 요청 실패: {type(e).__name__}") from e
         if res.status_code != 200:
