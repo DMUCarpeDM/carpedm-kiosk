@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { menuById, menuDisplayName } from "../api";
+import { fetchTtsAudio, menuById, menuDisplayName } from "../api";
+import { IconCheck } from "../icons";
+import { playSpeech, stopAllAudio } from "../speech";
 import type { CartItem, DiningOption, MenuItem } from "../types";
 
 const AUTO_HOME_SEC = 12; // 고령 사용자 — 여유 있게
@@ -20,6 +22,21 @@ export function OrderCompleteScreen({ orderNo, dining, cart, menu, onHome }: Pro
     return () => clearInterval(tick);
   }, []);
 
+  // 주문 완료 음성 안내 (자막은 화면 전체가 대신한다)
+  useEffect(() => {
+    const say = `주문이 완료되었습니다. 주문 번호는 ${orderNo}번이에요. 번호가 뜨면 카운터에서 받아 가세요. 감사합니다.`;
+    let cancelled = false;
+    void (async () => {
+      const audio = await fetchTtsAudio(say);
+      if (!cancelled) void playSpeech(say, audio?.b64, audio?.mime);
+    })();
+    return () => {
+      cancelled = true;
+      stopAllAudio();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (left <= 0) onHome();
   }, [left, onHome]);
@@ -28,7 +45,9 @@ export function OrderCompleteScreen({ orderNo, dining, cart, menu, onHome }: Pro
 
   return (
     <div className="lk-complete">
-      <span className="lk-complete__check" aria-hidden="true">✓</span>
+      <span className="lk-complete__check" aria-hidden="true">
+        <IconCheck size={56} />
+      </span>
       <h1 className="lk-complete__title">주문이 완료되었습니다</h1>
       <p className="lk-complete__dine">
         {dining === "togo" ? "포장 주문이에요. 카운터에서 받아 가세요." : "매장 식사예요. 자리에 앉아 계세요."}

@@ -1,4 +1,4 @@
-import { IconMic } from "../components";
+import { IconMic, IconTouch } from "../icons";
 
 type Props = {
   onVoice: () => void;
@@ -26,7 +26,9 @@ export function OrderModeScreen({ onVoice, onTouch, onBack }: Props) {
         </button>
 
         <button type="button" className="lk-mode-card lk-mode-card--touch" onClick={onTouch}>
-          <span className="lk-mode-card__icon" aria-hidden="true">👆</span>
+          <span className="lk-mode-card__icon">
+            <IconTouch size={60} />
+          </span>
           <span>
             <span className="lk-mode-card__label">화면 보고 주문하기</span>
             <span className="lk-mode-card__sub">사진을 보면서 하나씩 골라요</span>

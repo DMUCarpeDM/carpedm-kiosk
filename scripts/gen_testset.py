@@ -74,7 +74,6 @@ DICT_SINGLE = [
     ("고깔 아이스크림 하나", "soft-cone"),
     ("초코 아이스크림 줘", "choco-sundae"),
     ("츄러스 하나 주세요", "churros"),
-    ("꽈배기 같은 거 줘", "churros"),
     ("사과 파이 하나요", "apple-pie"),
     ("검은 탄산 물 하나 줘", "cola"),
     ("까만 사이다 한 병 줘", "cola"),
@@ -87,9 +86,36 @@ DICT_SINGLE = [
     ("딸기 간 거 하나 줘", "strawberry-shake"),
     ("맹물 하나 주세요", "water"),
     ("생수 한 병 줘요", "water"),
+    # ── v2 확장 표현 (발음 변이·별칭·구어체) ──
+    ("데리야끼 버거 하나 줘", "teriyaki-burger"),
+    ("티라노 버거 하나 주세요", "t-rex-burger"),
+    ("닭다리살 버거 하나요", "t-rex-burger"),
+    ("매운 치킨 버거 하나 줘", "hot-crispy-burger"),
+    ("곱빼기 버거 하나 주세요", "double-cheese-burger"),
+    ("매운 불고기 버거 하나 줘요", "bulsae-burger"),
+    ("감튀 하나 주세요", "fries"),
+    ("어니언링 두 개 줘", ("onion-rings", 2)),
+    ("스퀴드링 하나요", "squid-rings"),
+    ("옛날 통닭 하나 줘", "crispy-chicken"),
+    ("클래식 치킨 하나 주세요", "crispy-chicken"),
+    ("윙 네 개 줘요", ("hot-wings", 4)),
+    ("나겟 하나 주세요", "chicken-nugget"),
+    ("가슴살 튀김 하나 줘", "chicken-tender"),
+    ("소프트 아이스크림 하나요", "soft-cone"),
+    ("선데이 하나 줘", "choco-sundae"),
+    ("설탕 꽈배기 두 개 주세요", ("churros", 2)),
+    ("코크 하나 줘", "cola"),
+    ("다이어트 콜라 하나 주세요", "zero-cola"),
+    ("복숭아티 한 잔 줘요", "ice-tea"),
+    ("밀크셰이크 하나 주세요", "milk-shake"),
+    ("우유 쉐이크 한 잔 줘", "milk-shake"),
+    ("딸기 우유 하나 주세요", "strawberry-shake"),
 ]
-for utt, mid in DICT_SINGLE:
-    add("single", "dict", utt, upd((mid, 1)))
+for utt, spec in DICT_SINGLE:
+    if isinstance(spec, tuple):
+        add("single", "dict", utt, upd(spec))
+    else:
+        add("single", "dict", utt, upd((spec, 1)))
 
 # ── C. 온도 속성 (attr) — hot/ice 쌍 좁히기 ──────────
 ATTR = [
@@ -119,16 +145,24 @@ CLARIFY = [
     "치킨 하나 줘",
     "버거 하나 주세요",
     "함버거 하나만",
-    "매운 거 하나 줘",
-    "부드러운 거 하나 줘",
-    "달달한 거 주세요",
-    "바삭한 거 하나",
     "튀김 하나 줘요",
     "세트 하나 주세요",
     "우유 하나 줘",
 ]
 for utt in CLARIFY:
     add("single", "clarify", utt, {"action": "clarify"})
+
+# 성질 표현 — 임의 확정만 아니면 됨: 되묻기(clarify)와 추천(recommend) 모두 정답
+ATTRIBUTE_ASK = [
+    "매운 거 하나 줘",
+    "부드러운 거 하나 줘",
+    "달달한 거 주세요",
+    "바삭한 거 하나",
+    "꽈배기 같은 거 줘",
+    "속 편한 거 뭐 있어요",
+]
+for utt in ATTRIBUTE_ASK:
+    add("single", "attr_ask", utt, {"action": ["clarify", "recommend", "update"]})
 
 # ── E. 수량 (qty) ────────────────────────────────────
 QTY = [

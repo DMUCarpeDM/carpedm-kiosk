@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { menuById, menuDisplayName } from "../api";
-import { MicButton } from "../components";
+import { MicButton, recommendReason } from "../components";
+import { IconSpeaker } from "../icons";
 import { menuImageSrc } from "../menuImages";
 import { playSpeech, stopAllAudio } from "../speech";
 import type { CartItem, MenuItem, VoiceResultView } from "../types";
@@ -65,7 +66,9 @@ export function VoiceResultScreen({
 
       {spoken ? (
         <section className="lk-subtitle" aria-live="polite">
-          <span className="lk-subtitle__icon" aria-hidden="true">🔊</span>
+          <span className="lk-subtitle__icon">
+            <IconSpeaker size={30} />
+          </span>
           <p className="lk-subtitle__text">{spoken}</p>
         </section>
       ) : null}
@@ -92,10 +95,12 @@ export function VoiceResultScreen({
               if (!m) return null;
               return (
                 <button key={id} type="button" className="lk-suggest" onClick={() => onPickSuggestion(id)}>
+                  <span className="lk-suggest__reason">{recommendReason(m)}</span>
                   <span className="lk-suggest__img">
                     <img src={menuImageSrc(m)} alt="" />
                   </span>
                   <span className="lk-suggest__name">{menuDisplayName(m)}</span>
+                  {m.desc ? <span className="lk-suggest__desc">{m.desc}</span> : null}
                   <span className="lk-suggest__price">{m.price.toLocaleString("ko-KR")}원</span>
                   <span className="lk-suggest__cta">이걸로 담기</span>
                 </button>

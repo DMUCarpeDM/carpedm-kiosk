@@ -56,13 +56,25 @@ def test_expressions_reference_valid_ids():
             assert i in MENU, f"표현 사전이 없는 id 참조: {i}"
 
 
+def test_expressions_no_collisions():
+    """표현 사전 충돌 검사 — 같은 표현이 서로 다른 메뉴로 매핑되면 실패."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from check_expressions import check
+
+    errors = check(MENU, EXPR)
+    assert not errors, "\n".join(errors)
+
+
 def test_testset_schema_and_count():
     lines = (ROOT / "data" / "testset.jsonl").read_text(encoding="utf-8").splitlines()
     cases = [json.loads(l) for l in lines if l.strip()]
     assert len(cases) >= 200  # scripts/gen_testset.py로 생성 (롯데리아 v1: 222건)
+    valid = {"update", "confirm", "clarify", "reject", "recommend"}
     for c in cases:
         assert c["type"] in {"single", "multi"}
-        assert c["expected"]["action"] in {"update", "confirm", "clarify", "reject", "recommend"}
+        acts = c["expected"]["action"]
+        acts = acts if isinstance(acts, list) else [acts]
+        assert all(a in valid for a in acts)
         for it in c.get("cart_before", []) + c["expected"].get("cart", []):
             assert it["id"] in MENU, f"{c['id']}: 없는 id {it['id']}"
 

@@ -1,3 +1,4 @@
+import { IconDineIn, IconTakeout } from "../icons";
 import type { DiningOption } from "../types";
 
 type Props = {
@@ -15,18 +16,24 @@ export function MainScreen({ onSelect }: Props) {
 
       <div className="lk-start__choices">
         <button type="button" className="lk-choice" onClick={() => onSelect("store")}>
-          <span className="lk-choice__icon" aria-hidden="true">🍽️</span>
-          <span className="lk-choice__label">매장에서 먹고 가요</span>
+          <span className="lk-choice__icon lk-choice__icon--store">
+            <IconDineIn size={84} />
+          </span>
+          <span className="lk-choice__label">매장에서
+먹고 가요</span>
           <span className="lk-choice__sub">자리에서 드시고 가세요</span>
         </button>
         <button type="button" className="lk-choice" onClick={() => onSelect("togo")}>
-          <span className="lk-choice__icon" aria-hidden="true">🛍️</span>
-          <span className="lk-choice__label">포장해서 가져가요</span>
+          <span className="lk-choice__icon lk-choice__icon--togo">
+            <IconTakeout size={84} />
+          </span>
+          <span className="lk-choice__label">포장해서
+가져가요</span>
           <span className="lk-choice__sub">봉투에 담아 드려요</span>
         </button>
       </div>
 
-      <p className="lk-start__hint">원하시는 것을 눌러 주세요</p>
+      <p className="lk-start__hint">원하시는 쪽을 눌러 주세요</p>
     </div>
   );
 }

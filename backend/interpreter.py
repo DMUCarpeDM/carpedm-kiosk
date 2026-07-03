@@ -116,9 +116,12 @@ SYSTEM_TMPL = """너는 고령 어르신을 돕는 롯데리아(햄버거 가게
 7) action=recommend: 사용자가 추천을 청하거나("뭐가 맛있어?", "따뜻한 거 추천해줘", "아무거나 좋은 거") 무엇을 고를지 망설일 때. suggestions에 추천 메뉴 id를 1~3개 담고(반드시 아래 [메뉴]의 id), reply에 왜 추천하는지 쉬운 말로 1~2문장. cart는 현재 그대로. 사용자가 조건을 말하면(따뜻한/시원한/달달한/부드러운 등) 거기 맞춰 고른다.
 8) cart와 suggestions의 id는 위 [메뉴]의 id만 쓴다. 메뉴 이름·가격을 창작하지 않는다.
 9) 추가/수량 변경/항목 제거/전체 취소/확인/추천 외의 요청(환불, 배달, 잡담 등)은 clarify로 공손히 되묻는다.
-10) reply와 question은 쉬운 우리말 존댓말 1~2문장. 외래어 최소화. 재촉하지 않는다.
+10) reply와 question은 쉬운 우리말 존댓말 1~2문장. 외래어 최소화. 재촉하지 않는다. 어르신이 겁먹지 않도록 부드럽고 따뜻하게 말한다.
 11) 온도(뜨거운/시원한)가 필요한 메뉴인데 온도를 말하지 않았으면 clarify로 묻는다. 단 추천(recommend) 상황에서는 적절히 골라 제안해도 된다.
-12) '세트'는 버거에 감자 튀김과 콜라가 함께 나오는 메뉴다. "~세트", "세트로 줘"라고 하면 분류가 '세트'인 id를 담는다. 장바구니의 버거를 "세트로 바꿔줘"라고 하면 그 버거를 빼고 같은 버거의 세트 id로 바꾼 최종 장바구니를 반환한다."""
+12) '세트'는 버거에 감자 튀김과 콜라가 함께 나오는 메뉴다. "~세트", "세트로 줘"라고 하면 분류가 '세트'인 id를 담는다. 장바구니의 버거를 "세트로 바꿔줘"라고 하면 그 버거를 빼고 같은 버거의 세트 id로 바꾼 최종 장바구니를 반환한다.
+13) 메뉴 이름(쉬운 이름·원래 이름)과 정확히 일치하게 말하면 되묻지 말고 바로 그 메뉴로 update한다. 위 [표현 사전]에 있는 표현은 그 매핑을 그대로 따른다 (후보가 1개면 확정, 2개 이상이면 clarify).
+14) "하나 더", "한 개 더"처럼 대상 없이 더 달라고 하면 장바구니에서 가장 마지막에 담긴 메뉴의 수량을 1 늘린다. 되묻지 않는다.
+15) 빼기: 수량을 말하면 그만큼만 줄인다 ("콜라 하나 빼줘" = 콜라 1개 감소). 수량 없이 "~는 빼줘"라고 하면 그 메뉴를 전부 뺀다."""
 
 
 def build_system_prompt(menu: dict[str, dict], expressions: dict, cart: list[CartItem]) -> str:
@@ -137,14 +140,18 @@ def build_system_prompt(menu: dict[str, dict], expressions: dict, cart: list[Car
 
 
 def parse_llm_json(text: str) -> dict:
+    """LLM 출력에서 첫 번째 JSON 객체만 안전하게 꺼낸다 (뒤에 딸린 설명·중복 객체 무시)."""
     cleaned = re.sub(r"```(?:json)?", "", text).strip()
-    start, end = cleaned.find("{"), cleaned.rfind("}")
-    if start == -1 or end == -1:
+    start = cleaned.find("{")
+    if start == -1:
         raise ValidationErr("no JSON object in LLM output")
     try:
-        return json.loads(cleaned[start : end + 1])
+        obj, _ = json.JSONDecoder().raw_decode(cleaned[start:])
     except json.JSONDecodeError as e:
         raise ValidationErr(f"bad JSON from LLM: {e}") from e
+    if not isinstance(obj, dict):
+        raise ValidationErr("LLM output is not a JSON object")
+    return obj
 
 
 # ── 공통 후처리 ──────────────────────────────────────
@@ -371,7 +378,11 @@ class RuleProvider:
             sugg = self._recommend(u, menu, expressions)
             names = ", ".join(menu[i]["easy_name"] for i in sugg)
             return finalize(
-                {"action": "recommend", "suggestions": sugg, "reply": f"{names} 어떠세요?"},
+                {
+                    "action": "recommend",
+                    "suggestions": sugg,
+                    "reply": f"손님들이 많이 찾으시는 걸로 골라 봤어요. {names} 어떠세요? 화면에서 눌러 담으셔도 돼요.",
+                },
                 cart, menu, self.name,
             )
 

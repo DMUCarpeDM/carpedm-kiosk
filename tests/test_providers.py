@@ -47,6 +47,7 @@ class FakeResponse:
 def test_clova_request_format(monkeypatch):
     monkeypatch.setenv("CLOVA_SPEECH_INVOKE_URL", "https://clovaspeech-gw.ncloud.com/external/v1/1234/abcd")
     monkeypatch.setenv("CLOVA_SPEECH_SECRET_KEY", "test-secret")
+    monkeypatch.delenv("CLOVA_CLIENT_ID", raising=False)  # 로컬 .env 격리
     captured = {}
 
     def fake_post(url, headers=None, files=None, timeout=None):

@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchMenu, fetchTtsAudio, interpretUtterance } from "./api";
-import { A11yBar, TopBar } from "./components";
+import { fetchMenu, fetchTtsAudio, interpretUtterance, menuById } from "./api";
+import { A11yBar, StepBar, TopBar } from "./components";
+import { IconBell } from "./icons";
 import { isLocalConfirmFallback, viewFromInterpret } from "./interpretFlow";
 import { playSpeech } from "./speech";
+import { AllergyGate } from "./screens/AllergyGate";
 import { MainScreen } from "./screens/MainScreen";
 import { MenuDetailScreen } from "./screens/MenuDetailScreen";
 import { MenuListScreen } from "./screens/MenuListScreen";
@@ -40,6 +42,8 @@ export default function App() {
   const [orderNo, setOrderNo] = useState(1);
   const [lowScreen, setLowScreen] = useState(false);
   const [bigText, setBigText] = useState(false);
+  const [gateOpen, setGateOpen] = useState(false); // 결제 전 알레르기 확인
+  const [helpOpen, setHelpOpen] = useState(false); // 직원 호출
 
   const loadMenu = useCallback(async () => {
     try {
@@ -71,8 +75,16 @@ export default function App() {
   }, []);
 
   const goComplete = () => {
+    setGateOpen(false);
     setOrderNo(Math.floor(Math.random() * 90) + 10); // 실증용 임의 주문번호
     setScreen("order-complete");
+  };
+
+  /** 결제 요청 — 알레르기 성분이 있으면 확인 게이트를 먼저 연다 (보고서 4.4) */
+  const requestComplete = () => {
+    const hasAllergens = cart.some((c) => (menuById(menu, c.id)?.allergens?.length ?? 0) > 0);
+    if (hasAllergens) setGateOpen(true);
+    else goComplete();
   };
 
   const showResultView = (view: VoiceResultView | "confirm") => {
@@ -93,8 +105,14 @@ export default function App() {
     setApiDown(false);
 
     if (res.action === "confirm") {
-      void playSpeech(res.say, res.audio_b64, res.audio_mime); // 완료 안내를 끊지 않는다
-      goComplete();
+      // 알레르기 성분이 있으면 게이트가 대신 안내한다
+      const hasAllergens = res.cart.some((c) => (menuById(menu, c.id)?.allergens?.length ?? 0) > 0);
+      if (hasAllergens) {
+        setGateOpen(true);
+      } else {
+        void playSpeech(res.say, res.audio_b64, res.audio_mime);
+        goComplete();
+      }
       return;
     }
     const result: InterpretResult = {
@@ -121,6 +139,11 @@ export default function App() {
 
       const say = (result.question || result.reply || "").trim();
       if (result.action === "confirm") {
+        const hasAllergens = result.cart.some((c) => (menuById(menu, c.id)?.allergens?.length ?? 0) > 0);
+        if (hasAllergens) {
+          setGateOpen(true);
+          return;
+        }
         if (say) {
           const audio = await fetchTtsAudio(say);
           void playSpeech(say, audio?.b64, audio?.mime);
@@ -210,6 +233,19 @@ export default function App() {
       <div className="lk-low-notice">아래쪽 화면으로 편하게 이용하세요</div>
       <div className="lk-viewport">
         <TopBar dining={dining} onHome={goMain} showHome={screen !== "main"} />
+        <StepBar
+          current={
+            screen === "main"
+              ? 1
+              : screen === "order-mode"
+                ? 2
+                : screen === "order-complete"
+                  ? 4
+                  : gateOpen
+                    ? 4
+                    : 3
+          }
+        />
 
         {screen === "main" ? (
           <MainScreen
@@ -252,7 +288,7 @@ export default function App() {
             audioB64={voiceAudio?.b64 ?? null}
             audioMime={voiceAudio?.mime}
             onRetry={onVoiceRetry}
-            onConfirm={goComplete}
+            onConfirm={requestComplete}
             onOpenMenu={() => setScreen("menu-list")}
             onPickSuggestion={(id) => addToCart(id, 1)}
           />
@@ -271,7 +307,7 @@ export default function App() {
               setScreen("voice-order");
             }}
             onPay={() => {
-              if (cart.length > 0) goComplete();
+              if (cart.length > 0) requestComplete();
             }}
           />
         ) : null}
@@ -297,8 +333,44 @@ export default function App() {
           bigText={bigText}
           onToggleLow={() => setLowScreen((v) => !v)}
           onToggleBig={() => setBigText((v) => !v)}
+          onHelp={() => setHelpOpen(true)}
         />
       </div>
+
+      {gateOpen ? (
+        <AllergyGate
+          cart={cart}
+          menu={menu}
+          onProceed={goComplete}
+          onRemoveItem={removeFromCart}
+          onOpenMenu={() => {
+            setGateOpen(false);
+            setScreen("menu-list");
+          }}
+          onCancel={() => setGateOpen(false)}
+        />
+      ) : null}
+
+      {helpOpen ? (
+        <div className="lk-modal-wrap" role="dialog" aria-modal="true" aria-label="직원 호출">
+          <div className="lk-modal">
+            <span className="lk-modal__badge lk-modal__badge--help">
+              <IconBell size={34} />
+            </span>
+            <h2 className="lk-modal__title">직원을 불렀어요</h2>
+            <p className="lk-modal__sub">
+              잠시만 기다려 주세요. 직원이 곧 도와드리러 갑니다.
+              <br />
+              그동안 화면은 그대로 두셔도 돼요.
+            </p>
+            <div className="lk-modal__actions">
+              <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={() => setHelpOpen(false)}>
+                알겠어요
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {apiDown && screen !== "main" ? (
         <p className="lk-api-banner" role="status">

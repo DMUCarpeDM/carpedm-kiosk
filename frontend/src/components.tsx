@@ -1,16 +1,9 @@
 import { menuDisplayName } from "./api";
+import { IconBell, IconHome, IconMic, IconTextSize, IconWheelchair } from "./icons";
 import { menuImageSrc } from "./menuImages";
 import type { DiningOption, MenuItem } from "./types";
 
-/* ── 아이콘 ─────────────────────────────────────────── */
-export function IconMic({ size = 44 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor" />
-      <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
+export { IconMic };
 
 /* ── 상단 바 ────────────────────────────────────────── */
 export function TopBar({
@@ -33,11 +26,32 @@ export function TopBar({
       <div className="lk-topbar__side lk-topbar__side--right">
         {showHome ? (
           <button type="button" className="lk-topbar__home" onClick={onHome}>
-            ⌂ 처음으로
+            <IconHome size={20} /> 처음으로
           </button>
         ) : null}
       </div>
     </header>
+  );
+}
+
+/* ── 진행 단계 표시 (유니버설 디자인: 내가 어디쯤인지 항상 보인다) ── */
+const STEPS = ["식사 장소", "주문 방법", "메뉴 고르기", "확인·결제"] as const;
+
+export function StepBar({ current }: { current: 1 | 2 | 3 | 4 }) {
+  return (
+    <nav className="lk-steps" aria-label={`4단계 중 ${current}단계`}>
+      {STEPS.map((label, i) => {
+        const n = i + 1;
+        const state = n < current ? "done" : n === current ? "now" : "todo";
+        return (
+          <span key={label} className={`lk-steps__item lk-steps__item--${state}`}>
+            <span className="lk-steps__num">{n}</span>
+            <span className="lk-steps__label">{label}</span>
+            {n < STEPS.length ? <span className="lk-steps__arrow" aria-hidden="true" /> : null}
+          </span>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -47,11 +61,13 @@ export function A11yBar({
   bigText,
   onToggleLow,
   onToggleBig,
+  onHelp,
 }: {
   lowScreen: boolean;
   bigText: boolean;
   onToggleLow: () => void;
   onToggleBig: () => void;
+  onHelp: () => void;
 }) {
   return (
     <footer className="lk-a11y" aria-label="접근성 설정">
@@ -62,7 +78,7 @@ export function A11yBar({
           onClick={onToggleLow}
           aria-pressed={lowScreen}
         >
-          ♿ 낮은 화면
+          <IconWheelchair /> 낮은 화면
         </button>
         <button
           type="button"
@@ -70,7 +86,10 @@ export function A11yBar({
           onClick={onToggleBig}
           aria-pressed={bigText}
         >
-          가<small>A</small> 큰 글씨
+          <IconTextSize /> 큰 글씨
+        </button>
+        <button type="button" className="lk-a11y__btn lk-a11y__btn--help" onClick={onHelp}>
+          <IconBell /> 직원 호출
         </button>
       </div>
       <div className="lk-a11y__lang" aria-label="언어">
@@ -131,13 +150,7 @@ export function MenuBadge({ item }: { item: MenuItem }) {
 }
 
 /* ── 상품 카드 (메뉴판 그리드) ──────────────────────── */
-export function ProductCard({
-  item,
-  onClick,
-}: {
-  item: MenuItem;
-  onClick: () => void;
-}) {
+export function ProductCard({ item, onClick }: { item: MenuItem; onClick: () => void }) {
   return (
     <button type="button" className="lk-card" onClick={onClick}>
       <MenuBadge item={item} />
@@ -146,9 +159,21 @@ export function ProductCard({
       </span>
       <span className="lk-card__name">{menuDisplayName(item)}</span>
       <span className="lk-card__meta">
-        {typeof item.kcal === "number" ? `${item.kcal.toLocaleString("ko-KR")}kcal` : " "}
+        {typeof item.kcal === "number" ? `${item.kcal.toLocaleString("ko-KR")}kcal` : " "}
       </span>
       <span className="lk-card__price">{item.price.toLocaleString("ko-KR")}원</span>
     </button>
   );
+}
+
+/* ── 추천 이유 라벨 ─────────────────────────────────── */
+export function recommendReason(item: MenuItem): string {
+  if (item.popular) return "많이 찾는 메뉴";
+  const tags = item.tags ?? [];
+  if (tags.includes("맵다")) return "매콤한 맛";
+  if (tags.includes("달다")) return "달콤한 맛";
+  if (tags.includes("부드럽다")) return "부드러워요";
+  if (tags.includes("바삭하다")) return "바삭해요";
+  if (tags.includes("신메뉴")) return "새로 나왔어요";
+  return "추천 메뉴";
 }

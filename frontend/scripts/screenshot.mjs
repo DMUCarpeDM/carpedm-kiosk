@@ -49,8 +49,16 @@ await shot("06-upsell-modal");
 await page.getByText("좋아요, 세트로 주세요").click();
 await shot("07-menu-with-cart");
 
-// 결제 → 주문 완료
+// 결제 → 알레르기 확인 게이트
 await page.getByText("결제하기").click();
+await shot("08a-allergy-gate");
+
+// "있어요" → 메뉴별 검토 화면
+await page.getByText("있어요, 확인할래요").click();
+await shot("08b-allergy-review");
+
+// 계속 결제 → 주문 완료
+await page.getByText("확인했어요, 결제할게요").click();
 await shot("08-complete");
 
 // 처음으로 → 음성 주문 화면
@@ -85,6 +93,11 @@ await page.getByText("낮은 화면").click();
 // 큰 글씨 모드
 await page.getByText("큰 글씨").click();
 await shot("13-big-text");
+await page.getByText("큰 글씨").click();
+
+// 직원 호출
+await page.getByText("직원 호출").click();
+await shot("14-help-call");
 
 await browser.close();
 console.log(`저장 위치: ${OUT}`);

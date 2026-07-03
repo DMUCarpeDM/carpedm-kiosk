@@ -2,6 +2,7 @@ import { useState } from "react";
 import { menuById, menuDisplayName, menuSubName } from "../api";
 import { menuImageSrc } from "../menuImages";
 import { QuantitySelector } from "../components";
+import { IconCheck, IconWarning } from "../icons";
 import { findSetVariant, findSingleVariant } from "../menuDetailConfig";
 import type { MenuItem } from "../types";
 
@@ -149,17 +150,24 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
           </section>
         ) : null}
 
-        {setIncludes.length > 0 ? (
+        {setIncludes.length > 0 && singleVariant ? (
           <section className="lk-section" aria-label="세트 구성">
             <h3 className="lk-section__title">세트 구성</h3>
             <div className="lk-includes">
-              <span className="lk-includes__chip">🍔 버거</span>
-              <span>+</span>
-              {setIncludes.map((inc) => (
-                <span key={inc} className="lk-includes__chip">
-                  {inc === "감자 튀김" ? "🍟" : "🥤"} {inc}
-                </span>
-              ))}
+              <span className="lk-includes__item">
+                <img src={menuImageSrc(singleVariant)} alt="" />
+                <span>버거</span>
+              </span>
+              <span className="lk-includes__plus" aria-hidden="true">+</span>
+              <span className="lk-includes__item">
+                <img src="/menu/products/fries.png" alt="" />
+                <span>감자 튀김</span>
+              </span>
+              <span className="lk-includes__plus" aria-hidden="true">+</span>
+              <span className="lk-includes__item">
+                <img src="/menu/products/cola.png" alt="" />
+                <span>콜라</span>
+              </span>
             </div>
           </section>
         ) : null}
@@ -168,19 +176,21 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
           <h3 className="lk-section__title">드시기 전에 확인해 주세요</h3>
           {allergens.length > 0 ? (
             <div className="lk-allergy">
-              <span className="lk-allergy__icon" aria-hidden="true">⚠️</span>
+              <span className="lk-allergy__icon">
+                <IconWarning size={28} />
+              </span>
               <p className="lk-allergy__text">
                 알레르기 주의: {allergens.join(", ")}이(가) 들어 있어요.
                 <br />
-                해당 알레르기가 있으시면 직원에게 말씀해 주세요.
+                결제 전에 한 번 더 확인해 드릴게요.
               </p>
             </div>
           ) : (
-            <div className="lk-allergy" style={{ borderColor: "#cfe3d2", background: "#f2f9f3" }}>
-              <span className="lk-allergy__icon" aria-hidden="true">✅</span>
-              <p className="lk-allergy__text" style={{ color: "#1e6b31" }}>
-                주요 알레르기 유발 성분이 없어요.
-              </p>
+            <div className="lk-allergy lk-allergy--safe">
+              <span className="lk-allergy__icon">
+                <IconCheck size={28} />
+              </span>
+              <p className="lk-allergy__text">주요 알레르기 유발 성분이 없어요.</p>
             </div>
           )}
           {origin.length > 0 ? <p className="lk-origin">원산지: {origin.join(" · ")}</p> : null}
