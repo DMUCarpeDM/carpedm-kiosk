@@ -1,14 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchMenu, fetchTtsAudio, interpretUtterance } from "./api";
+import { A11yBar, TopBar } from "./components";
 import { isLocalConfirmFallback, viewFromInterpret } from "./interpretFlow";
 import { playSpeech } from "./speech";
 import { MainScreen } from "./screens/MainScreen";
 import { MenuDetailScreen } from "./screens/MenuDetailScreen";
 import { MenuListScreen } from "./screens/MenuListScreen";
 import { OrderCompleteScreen } from "./screens/OrderCompleteScreen";
+import { OrderModeScreen } from "./screens/OrderModeScreen";
 import { VoiceOrderScreen } from "./screens/VoiceOrderScreen";
 import { VoiceResultScreen } from "./screens/VoiceResultScreen";
-import type { CartItem, InterpretResult, MenuItem, OrderResponse, Screen, VoiceResultView } from "./types";
+import type {
+  CartItem,
+  DiningOption,
+  InterpretResult,
+  MenuItem,
+  OrderResponse,
+  Screen,
+  VoiceResultView,
+} from "./types";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("main");
@@ -24,6 +34,12 @@ export default function App() {
   const [voiceAudio, setVoiceAudio] = useState<{ b64: string; mime: string } | null>(null);
   const [apiDown, setApiDown] = useState(false);
   const [voiceRetry, setVoiceRetry] = useState(false);
+
+  // 실기기 요소: 식사 장소·주문 번호·접근성 모드
+  const [dining, setDining] = useState<DiningOption | null>(null);
+  const [orderNo, setOrderNo] = useState(1);
+  const [lowScreen, setLowScreen] = useState(false);
+  const [bigText, setBigText] = useState(false);
 
   const loadMenu = useCallback(async () => {
     try {
@@ -41,7 +57,7 @@ export default function App() {
     void loadMenu();
   }, [loadMenu]);
 
-  const goMain = () => {
+  const goMain = useCallback(() => {
     setScreen("main");
     setCart([]);
     setSessionId(null);
@@ -51,9 +67,13 @@ export default function App() {
     setVoiceView(null);
     setVoiceSay(undefined);
     setVoiceAudio(null);
-  };
+    setDining(null);
+  }, []);
 
-  const goComplete = () => setScreen("order-complete");
+  const goComplete = () => {
+    setOrderNo(Math.floor(Math.random() * 90) + 10); // 실증용 임의 주문번호
+    setScreen("order-complete");
+  };
 
   const showResultView = (view: VoiceResultView | "confirm") => {
     if (view === "confirm") {
@@ -167,98 +187,122 @@ export default function App() {
     setCart((prev) => prev.filter((c) => c.id !== id));
   };
 
+  const appClass = `lk-app ${lowScreen ? "lk-app--low" : ""} ${bigText ? "lk-app--big" : ""}`;
+
   if (menuError && screen === "main") {
     return (
-      <div className="app">
-        <div className="screen screen--lotte-page screen--lotte-error">
-          <header className="lotte-sign lotte-sign--inline" aria-label="롯데리아">
-            <div className="lotte-sign__bar">
-              <span className="lotte-sign__line" aria-hidden="true" />
-              <span className="lotte-sign__logo">LOTTERIA</span>
-              <span className="lotte-sign__line" aria-hidden="true" />
-            </div>
-          </header>
-          <p className="lotte-error-text">{menuError}</p>
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--pay" onClick={() => void loadMenu()}>
-            다시 시도
-          </button>
+      <div className={appClass}>
+        <div className="lk-viewport">
+          <TopBar dining={null} onHome={goMain} showHome={false} />
+          <div className="lk-error">
+            <p className="lk-error__text">{menuError}</p>
+            <button type="button" className="lk-error__retry" onClick={() => void loadMenu()}>
+              다시 시도
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="app">
-      {screen === "main" ? (
-        <MainScreen
-          onVoiceOrder={() => {
-            setVoiceRetry(false);
-            setScreen("voice-order");
-          }}
-          onMenuSelect={() => setScreen("menu-list")}
-        />
-      ) : null}
+    <div className={appClass}>
+      <div className="lk-low-notice">아래쪽 화면으로 편하게 이용하세요</div>
+      <div className="lk-viewport">
+        <TopBar dining={dining} onHome={goMain} showHome={screen !== "main"} />
 
-      {screen === "voice-order" ? (
-        <VoiceOrderScreen
-          cart={cart}
-          sessionId={sessionId}
-          skipGreeting={voiceRetry}
-          onBack={goMain}
-          onOrderResult={handleOrderResult}
-          onUtterance={onVoiceUtterance}
-        />
-      ) : null}
+        {screen === "main" ? (
+          <MainScreen
+            onSelect={(d) => {
+              setDining(d);
+              setScreen("order-mode");
+            }}
+          />
+        ) : null}
 
-      {screen === "voice-result" && voiceView ? (
-        <VoiceResultScreen
-          utterance={utterance}
-          view={voiceView}
-          menu={menu}
-          cart={cart}
-          say={voiceSay}
-          audioB64={voiceAudio?.b64 ?? null}
-          audioMime={voiceAudio?.mime}
-          onRetry={onVoiceRetry}
-          onConfirm={goComplete}
-          onOpenMenu={() => setScreen("menu-list")}
-          onPickSuggestion={(id) => addToCart(id, 1)}
-          onBack={goMain}
-        />
-      ) : null}
+        {screen === "order-mode" ? (
+          <OrderModeScreen
+            onVoice={() => {
+              setVoiceRetry(false);
+              setScreen("voice-order");
+            }}
+            onTouch={() => setScreen("menu-list")}
+            onBack={goMain}
+          />
+        ) : null}
 
-      {screen === "menu-list" ? (
-        <MenuListScreen
-          items={menu}
-          cart={cart}
-          onSelect={(id) => openMenuDetail(id)}
-          onUpdateQty={updateCartQty}
-          onRemoveItem={removeFromCart}
-          onBack={goMain}
-          onCancel={goMain}
-          onPay={() => {
-            if (cart.length > 0) goComplete();
-          }}
-        />
-      ) : null}
+        {screen === "voice-order" ? (
+          <VoiceOrderScreen
+            cart={cart}
+            sessionId={sessionId}
+            skipGreeting={voiceRetry}
+            onBack={() => setScreen("order-mode")}
+            onOrderResult={handleOrderResult}
+            onUtterance={onVoiceUtterance}
+          />
+        ) : null}
 
-      {screen === "menu-detail" && selectedMenuId ? (
-        <MenuDetailScreen
-          key={selectedMenuId}
-          menuId={selectedMenuId}
-          menu={menu}
-          qty={detailQty}
-          onQtyChange={setDetailQty}
-          onOrder={(id) => addToCart(id, detailQty)}
-          onBack={() => setScreen("menu-list")}
-        />
-      ) : null}
+        {screen === "voice-result" && voiceView ? (
+          <VoiceResultScreen
+            utterance={utterance}
+            view={voiceView}
+            menu={menu}
+            cart={cart}
+            say={voiceSay}
+            audioB64={voiceAudio?.b64 ?? null}
+            audioMime={voiceAudio?.mime}
+            onRetry={onVoiceRetry}
+            onConfirm={goComplete}
+            onOpenMenu={() => setScreen("menu-list")}
+            onPickSuggestion={(id) => addToCart(id, 1)}
+          />
+        ) : null}
 
-      {screen === "order-complete" ? <OrderCompleteScreen onHome={goMain} /> : null}
+        {screen === "menu-list" ? (
+          <MenuListScreen
+            items={menu}
+            cart={cart}
+            onSelect={(id) => openMenuDetail(id)}
+            onUpdateQty={updateCartQty}
+            onRemoveItem={removeFromCart}
+            onClearCart={() => setCart([])}
+            onVoice={() => {
+              setVoiceRetry(false);
+              setScreen("voice-order");
+            }}
+            onPay={() => {
+              if (cart.length > 0) goComplete();
+            }}
+          />
+        ) : null}
+
+        {screen === "menu-detail" && selectedMenuId ? (
+          <MenuDetailScreen
+            key={selectedMenuId}
+            menuId={selectedMenuId}
+            menu={menu}
+            qty={detailQty}
+            onQtyChange={setDetailQty}
+            onOrder={(id) => addToCart(id, detailQty)}
+            onBack={() => setScreen("menu-list")}
+          />
+        ) : null}
+
+        {screen === "order-complete" ? (
+          <OrderCompleteScreen orderNo={orderNo} dining={dining} cart={cart} menu={menu} onHome={goMain} />
+        ) : null}
+
+        <A11yBar
+          lowScreen={lowScreen}
+          bigText={bigText}
+          onToggleLow={() => setLowScreen((v) => !v)}
+          onToggleBig={() => setBigText((v) => !v)}
+        />
+      </div>
 
       {apiDown && screen !== "main" ? (
-        <p className="api-banner" role="status">
-          백엔드 연결 끊김 — 일부 음성 해석이 제한될 수 있어요.
+        <p className="lk-api-banner" role="status">
+          서버 연결 끊김 — 음성 해석이 제한될 수 있어요
         </p>
       ) : null}
     </div>

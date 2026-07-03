@@ -1,10 +1,14 @@
 export type Screen =
   | "main"
+  | "order-mode"
   | "voice-order"
   | "voice-result"
   | "menu-list"
   | "menu-detail"
   | "order-complete";
+
+/** 식사 장소 (실기기 첫 질문) */
+export type DiningOption = "store" | "togo";
 
 export type VoiceState =
   | "idle"
@@ -26,6 +30,9 @@ export type MenuItem = {
   allergens?: string[];
   set_of?: string;
   set_includes?: string[];
+  desc?: string;
+  kcal?: number;
+  origin?: string[];
 };
 
 export type CartItem = {

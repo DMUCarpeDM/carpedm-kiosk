@@ -347,7 +347,18 @@ class RuleProvider:
             cands = list(menu.values())
         # 인기 우선, 그다음 입력 순서
         cands.sort(key=lambda m: (not m.get("popular", False)))
-        return [m["id"] for m in cands[:3]]
+        # 같은 버거 계열(단품·세트)은 한 번만 추천한다
+        out: list[str] = []
+        seen_base: set[str] = set()
+        for m in cands:
+            base = m.get("set_of") or m["id"]
+            if base in seen_base:
+                continue
+            seen_base.add(base)
+            out.append(m["id"])
+            if len(out) == 3:
+                break
+        return out
 
     def interpret(
         self, utterance: str, cart: list[CartItem], menu: dict[str, dict], expressions: dict

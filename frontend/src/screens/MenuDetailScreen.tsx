@@ -1,13 +1,8 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { formatMenuPrice, formatPrice, menuById, menuDisplayName, menuSubName } from "../api";
+import { useState } from "react";
+import { menuById, menuDisplayName, menuSubName } from "../api";
 import { menuImageSrc } from "../menuImages";
-import { OptionChip, QuantitySelector } from "../components";
-import {
-  classifyMenuItem,
-  findSetVariant,
-  findSingleVariant,
-  kindLabel,
-} from "../menuDetailConfig";
+import { QuantitySelector } from "../components";
+import { findSetVariant, findSingleVariant } from "../menuDetailConfig";
 import type { MenuItem } from "../types";
 
 type Props = {
@@ -20,135 +15,206 @@ type Props = {
   onBack: () => void;
 };
 
-function DetailSection({ title, children }: { title: string; children: ReactNode }) {
+/** 단품을 담을 때 세트 권유 (실기기의 '세트 업그레이드' 안내) */
+function UpsellModal({
+  single,
+  set,
+  onSet,
+  onSingle,
+}: {
+  single: MenuItem;
+  set: MenuItem;
+  onSet: () => void;
+  onSingle: () => void;
+}) {
+  const diff = set.price - single.price;
   return (
-    <section className="lotte-detail-section" aria-label={title}>
-      <h3 className="lotte-detail-section__title">{title}</h3>
-      {children}
-    </section>
+    <div className="lk-modal-wrap" role="dialog" aria-modal="true" aria-label="세트 안내">
+      <div className="lk-modal">
+        <h2 className="lk-modal__title">세트로 드시면 어떠세요?</h2>
+        <p className="lk-modal__sub">
+          {diff.toLocaleString("ko-KR")}원만 더 내시면
+          <br />
+          감자 튀김과 콜라가 함께 나와요.
+        </p>
+        <div className="lk-modal__imgs" aria-hidden="true">
+          <img src={menuImageSrc(single)} alt="" />
+          <span className="lk-modal__plus">+</span>
+          <img src="/menu/products/fries.png" alt="" />
+          <span className="lk-modal__plus">+</span>
+          <img src="/menu/products/cola.png" alt="" />
+        </div>
+        <div className="lk-modal__actions">
+          <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={onSet}>
+            좋아요, 세트로 주세요 ({set.price.toLocaleString("ko-KR")}원)
+          </button>
+          <button type="button" className="lk-modal__btn lk-modal__btn--no" onClick={onSingle}>
+            아니요, 단품만 주세요 ({single.price.toLocaleString("ko-KR")}원)
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBack }: Props) {
   const item = menuById(menu, menuId);
-  const classification = item ? classifyMenuItem(item) : null;
-
-  // 단품 ↔ 세트 전환: 화면에 열린 항목과 상관없이 "지금 선택된 실제 메뉴"를 추적한다
   const [chosenId, setChosenId] = useState(menuId);
+  const [showUpsell, setShowUpsell] = useState(false);
 
   const chosen = menuById(menu, chosenId) ?? item;
-  const setVariant = item ? (findSetVariant(menu, item) ?? (findSingleVariant(menu, item) ? item : null)) : null;
-  const singleVariant = item ? (findSingleVariant(menu, item) ?? (findSetVariant(menu, item) ? item : null)) : null;
 
-  const unitPrice = chosen?.price ?? 0;
-  const total = useMemo(() => unitPrice * qty, [unitPrice, qty]);
-
-  if (!item || !classification || !chosen) {
+  if (!item || !chosen) {
     return (
-      <div className="screen screen--lotte-page">
-        <div className="lotte-page-top">
-          <button type="button" className="lotte-page-top__back" onClick={onBack} aria-label="뒤로">
-            ‹
+      <div className="lk-detail">
+        <div className="lk-pagehead">
+          <button type="button" className="lk-pagehead__back" onClick={onBack} aria-label="뒤로">
+            ←
           </button>
-          <h1 className="lotte-page-top__title">메뉴 상세</h1>
+          <h1 className="lk-pagehead__title">메뉴 상세</h1>
         </div>
-        <p className="lotte-error-text">메뉴를 찾을 수 없어요.</p>
+        <div className="lk-error">
+          <p className="lk-error__text">메뉴를 찾을 수 없어요.</p>
+        </div>
       </div>
     );
   }
 
-  const { kind } = classifyMenuItem(chosen);
+  const setVariant = findSetVariant(menu, item) ?? (findSingleVariant(menu, item) ? item : null);
+  const singleVariant = findSingleVariant(menu, item) ?? (findSetVariant(menu, item) ? item : null);
   const canChooseSet = Boolean(setVariant && singleVariant);
+
   const allergens = chosen.allergens ?? [];
   const setIncludes = chosen.set_includes ?? [];
+  const origin = chosen.origin ?? [];
+  const total = chosen.price * qty;
+
+  const handleOrder = () => {
+    // 단품 버거를 담을 때 세트가 있으면 한 번만 권유한다
+    if (canChooseSet && singleVariant && setVariant && chosen.id === singleVariant.id && chosen.category === "햄버거") {
+      setShowUpsell(true);
+      return;
+    }
+    onOrder(chosen.id);
+  };
 
   return (
-    <div className="screen screen--lotte-page screen--lotte-detail">
-      <div className="lotte-menu-banner lotte-menu-banner--compact">
-        <img src="/rsc/lotteria_header2.png" alt="" className="lotte-menu-banner__img" />
+    <div className="lk-detail">
+      <div className="lk-pagehead">
+        <button type="button" className="lk-pagehead__back" onClick={onBack} aria-label="메뉴판으로">
+          ←
+        </button>
+        <h1 className="lk-pagehead__title">{menuDisplayName(chosen)}</h1>
       </div>
 
-      <header className="lotte-page-top">
-        <button type="button" className="lotte-page-top__back" onClick={onBack} aria-label="메뉴 목록으로">
-          ‹
-        </button>
-        <h1 className="lotte-page-top__title">{menuDisplayName(chosen)}</h1>
-      </header>
-
-      <main className="lotte-detail-body">
-        <div className="lotte-detail-hero">
-          <div className="lotte-detail-hero__img-wrap">
-            <img src={menuImageSrc(chosen)} alt="" className="lotte-detail-hero__img" />
+      <div className="lk-detail__body">
+        <div className="lk-detail__hero">
+          <div className="lk-detail__photo">
+            <img src={menuImageSrc(chosen)} alt="" />
           </div>
-          <div className="lotte-detail-hero__info">
-            <h2 className="lotte-detail-hero__name">{menuDisplayName(chosen)}</h2>
-            {menuSubName(chosen) ? <p className="lotte-detail-hero__sub">{menuSubName(chosen)}</p> : null}
-            <p className="lotte-detail-hero__price">{formatMenuPrice(chosen.price)}</p>
-            <p className="lotte-detail-hero__kind">{kindLabel(kind)}</p>
+          <div>
+            <h2 className="lk-detail__name">{menuDisplayName(chosen)}</h2>
+            {menuSubName(chosen) ? <p className="lk-detail__sub">{menuSubName(chosen)}</p> : null}
+            {chosen.desc ? <p className="lk-detail__desc">{chosen.desc}</p> : null}
+            {typeof chosen.kcal === "number" ? (
+              <p className="lk-detail__kcal">열량 {chosen.kcal.toLocaleString("ko-KR")}kcal</p>
+            ) : null}
+            <p className="lk-detail__price">{chosen.price.toLocaleString("ko-KR")}원</p>
           </div>
         </div>
 
-        {canChooseSet && setVariant && singleVariant ? (
-          <DetailSection title="주문 유형">
-            <div className="lotte-detail-section__chips">
-              <OptionChip
-                label={`단품 ${formatMenuPrice(singleVariant.price)}`}
-                selected={chosenId === singleVariant.id}
+        {canChooseSet && singleVariant && setVariant ? (
+          <section className="lk-section" aria-label="주문 유형">
+            <h3 className="lk-section__title">단품과 세트 중 골라 주세요</h3>
+            <div className="lk-seg">
+              <button
+                type="button"
+                className={`lk-seg__btn ${chosenId === singleVariant.id ? "lk-seg__btn--on" : ""}`}
                 onClick={() => setChosenId(singleVariant.id)}
-              />
-              <OptionChip
-                label={`세트 ${formatMenuPrice(setVariant.price)}`}
-                selected={chosenId === setVariant.id}
+                aria-pressed={chosenId === singleVariant.id}
+              >
+                <span className="lk-seg__label">단품</span>
+                <span className="lk-seg__price">{singleVariant.price.toLocaleString("ko-KR")}원</span>
+              </button>
+              <button
+                type="button"
+                className={`lk-seg__btn ${chosenId === setVariant.id ? "lk-seg__btn--on" : ""}`}
                 onClick={() => setChosenId(setVariant.id)}
-              />
+                aria-pressed={chosenId === setVariant.id}
+              >
+                <span className="lk-seg__label">세트 (감자+콜라)</span>
+                <span className="lk-seg__price">{setVariant.price.toLocaleString("ko-KR")}원</span>
+              </button>
             </div>
-          </DetailSection>
+          </section>
         ) : null}
 
         {setIncludes.length > 0 ? (
-          <DetailSection title="세트 구성">
-            <p className="lotte-detail-note">버거 + {setIncludes.join(" + ")}</p>
-          </DetailSection>
+          <section className="lk-section" aria-label="세트 구성">
+            <h3 className="lk-section__title">세트 구성</h3>
+            <div className="lk-includes">
+              <span className="lk-includes__chip">🍔 버거</span>
+              <span>+</span>
+              {setIncludes.map((inc) => (
+                <span key={inc} className="lk-includes__chip">
+                  {inc === "감자 튀김" ? "🍟" : "🥤"} {inc}
+                </span>
+              ))}
+            </div>
+          </section>
         ) : null}
 
-        {allergens.length > 0 ? (
-          <DetailSection title="알레르기 주의">
-            <p className="lotte-detail-note lotte-detail-note--allergy">{allergens.join(", ")} 이(가) 들어 있어요.</p>
-          </DetailSection>
-        ) : null}
+        <section className="lk-section" aria-label="알레르기 및 원산지">
+          <h3 className="lk-section__title">드시기 전에 확인해 주세요</h3>
+          {allergens.length > 0 ? (
+            <div className="lk-allergy">
+              <span className="lk-allergy__icon" aria-hidden="true">⚠️</span>
+              <p className="lk-allergy__text">
+                알레르기 주의: {allergens.join(", ")}이(가) 들어 있어요.
+                <br />
+                해당 알레르기가 있으시면 직원에게 말씀해 주세요.
+              </p>
+            </div>
+          ) : (
+            <div className="lk-allergy" style={{ borderColor: "#cfe3d2", background: "#f2f9f3" }}>
+              <span className="lk-allergy__icon" aria-hidden="true">✅</span>
+              <p className="lk-allergy__text" style={{ color: "#1e6b31" }}>
+                주요 알레르기 유발 성분이 없어요.
+              </p>
+            </div>
+          )}
+          {origin.length > 0 ? <p className="lk-origin">원산지: {origin.join(" · ")}</p> : null}
+        </section>
 
-        <div className="lotte-detail-qty">
-          <span className="lotte-detail-qty__label">수량</span>
+        <section className="lk-section lk-qty-row" aria-label="수량">
+          <h3 className="lk-section__title" style={{ margin: 0 }}>수량</h3>
           <QuantitySelector qty={qty} onChange={onQtyChange} />
-        </div>
-      </main>
-
-      <div className="lotte-order-bar">
-        <span className="lotte-order-bar__label">합계</span>
-        <span className="lotte-order-bar__count">
-          <strong>{qty}</strong> 개
-        </span>
-        <span className="lotte-order-bar__total">{formatPrice(total)}</span>
+        </section>
       </div>
 
-      <footer className="lotte-menu-footer">
-        <div className="lotte-menu-footer__a11y">
-          <button type="button" className="lotte-menu-footer__a11y-btn" onClick={onBack} aria-label="목록으로">
-            ↩
-          </button>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">♿</span>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔍</span>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔊</span>
-        </div>
-        <div className="lotte-menu-footer__actions">
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--cancel" onClick={onBack}>
-            취소하기
-          </button>
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--pay" onClick={() => onOrder(chosen.id)}>
-            담기
-          </button>
-        </div>
-      </footer>
+      <div className="lk-paybar">
+        <button type="button" className="lk-paybar__btn lk-paybar__btn--ghost" onClick={onBack}>
+          이전으로
+        </button>
+        <button type="button" className="lk-paybar__btn lk-paybar__btn--pay" onClick={handleOrder}>
+          {total.toLocaleString("ko-KR")}원 · 담기
+        </button>
+      </div>
+
+      {showUpsell && singleVariant && setVariant ? (
+        <UpsellModal
+          single={singleVariant}
+          set={setVariant}
+          onSet={() => {
+            setShowUpsell(false);
+            onOrder(setVariant.id);
+          }}
+          onSingle={() => {
+            setShowUpsell(false);
+            onOrder(singleVariant.id);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

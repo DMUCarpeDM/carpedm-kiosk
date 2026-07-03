@@ -13,8 +13,15 @@ import {
 import type { CartItem, OrderResponse, VoiceState } from "../types";
 
 const GREETING = "안녕하세요, 롯데리아입니다.";
-const GREETING_SUB = "마이크 버튼을 누르고 천천히 말씀해 주세요.";
+const GREETING_SUB = "가운데 빨간 단추를 누르고 천천히 말씀해 주세요.";
 const MAX_RECORD_MS = 7000; // 최대 녹음 길이 — 누르는 걸 잊어도 자동 완료
+
+const EXAMPLES = [
+  "불고기버거 세트 하나 주세요",
+  "새우버거 두 개랑 콜라 하나",
+  "매운 거 추천해 줘요",
+  "감자 튀김은 빼 주세요",
+];
 
 type Props = {
   cart: CartItem[];
@@ -137,68 +144,50 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
   const showFallback = voiceState === "error";
 
   return (
-    <div className="screen screen--lotte-page screen--lotte-voice">
-      <header className="lotte-sign lotte-sign--inline" aria-label="롯데리아">
-        <div className="lotte-sign__bar">
-          <span className="lotte-sign__line" aria-hidden="true" />
-          <span className="lotte-sign__logo">LOTTERIA</span>
-          <span className="lotte-sign__line" aria-hidden="true" />
+    <div className="lk-voice">
+      <h1 className="lk-voice__title">{GREETING}</h1>
+      <p className="lk-voice__sub">{GREETING_SUB}</p>
+
+      <VoiceWaveform active={voiceState === "listening" || voiceState === "speaking"} />
+      <MicButton active={voiceState === "listening"} onClick={onMicClick} />
+
+      <p className="lk-voice__status" aria-live="polite">
+        {statusText ?? voiceStateLabel(voiceState)}
+        {voiceState === "listening" ? " — 다 말씀하셨으면 단추를 한 번 더 누르세요" : ""}
+      </p>
+
+      <section className="lk-examples" aria-label="말하기 예시">
+        <p className="lk-examples__title">이렇게 말씀해 보세요</p>
+        <div className="lk-examples__list">
+          {EXAMPLES.map((e) => (
+            <span key={e} className="lk-examples__chip">“{e}”</span>
+          ))}
         </div>
-      </header>
+      </section>
 
-      <main className="lotte-voice-main">
-        <div className="lotte-voice-greeting">
-          <p className="lotte-voice-greeting__line">{GREETING}</p>
-          <p className="lotte-voice-greeting__line lotte-voice-greeting__line--sub">{GREETING_SUB}</p>
-        </div>
-
-        <VoiceWaveform active={voiceState === "listening" || voiceState === "speaking"} />
-        <MicButton active={voiceState === "listening"} onClick={onMicClick} />
-
-        <p className="lotte-voice-status" aria-live="polite">
-          {statusText ?? voiceStateLabel(voiceState)}
-          {voiceState === "listening" ? " (다 말씀하셨으면 버튼을 한 번 더 누르세요)" : ""}
-        </p>
-
-        {showFallback ? (
-          <div className="lotte-voice-fallback">
-            <p className="lotte-voice-fallback__hint">
-              음성이 어려우면 아래에 적어 주시거나, 왼쪽 아래 ↩ 버튼으로 돌아가 메뉴에서 골라 주세요.
-            </p>
-            <div className="lotte-voice-fallback__row">
-              <input
-                className="lotte-voice-fallback__input"
-                value={testInput}
-                onChange={(e) => setTestInput(e.target.value)}
-                placeholder="예: 불고기버거 한 개 주세요"
-                onKeyDown={(e) => e.key === "Enter" && submitTest()}
-              />
-              <button type="button" className="lotte-voice-fallback__submit" onClick={submitTest}>
-                확인
-              </button>
-            </div>
-            <button type="button" className="lotte-voice-fallback__retry" onClick={() => void startListening()}>
-              다시 말하기
+      {showFallback ? (
+        <div className="lk-voice-fallback">
+          <div className="lk-voice-fallback__row">
+            <input
+              className="lk-voice-fallback__input"
+              value={testInput}
+              onChange={(e) => setTestInput(e.target.value)}
+              placeholder="예: 불고기버거 한 개 주세요"
+              onKeyDown={(e) => e.key === "Enter" && submitTest()}
+            />
+            <button type="button" className="lk-voice-fallback__submit" onClick={submitTest}>
+              확인
             </button>
           </div>
-        ) : null}
-      </main>
+          <button type="button" className="lk-mode__back" onClick={() => void startListening()}>
+            🎤 다시 말하기
+          </button>
+        </div>
+      ) : null}
 
-      <footer className="lotte-menu-footer">
-        <div className="lotte-menu-footer__a11y">
-          <button type="button" className="lotte-menu-footer__a11y-btn" onClick={onBack} aria-label="처음으로">
-            ↩
-          </button>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">♿</span>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔍</span>
-          <span className="lotte-menu-footer__a11y-btn" aria-hidden="true">🔊</span>
-        </div>
-        <div className="lotte-menu-footer__actions">
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--cancel" onClick={onBack}>
-            취소하기
-          </button>
-        </div>
-      </footer>
+      <button type="button" className="lk-mode__back" onClick={onBack}>
+        ← 이전으로
+      </button>
     </div>
   );
 }

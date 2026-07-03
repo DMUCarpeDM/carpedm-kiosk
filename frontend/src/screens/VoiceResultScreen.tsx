@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { formatPrice, menuById } from "../api";
-import { MicButton, RecommendedMenuCard } from "../components";
+import { menuById, menuDisplayName } from "../api";
+import { MicButton } from "../components";
+import { menuImageSrc } from "../menuImages";
 import { playSpeech, stopAllAudio } from "../speech";
 import type { CartItem, MenuItem, VoiceResultView } from "../types";
 
@@ -17,7 +18,6 @@ type Props = {
   onConfirm: () => void;
   onOpenMenu: () => void;
   onPickSuggestion: (id: string) => void;
-  onBack: () => void;
 };
 
 function cartTotal(cart: CartItem[], menu: MenuItem[]): { count: number; total: number } {
@@ -45,7 +45,6 @@ export function VoiceResultScreen({
   onConfirm,
   onOpenMenu,
   onPickSuggestion,
-  onBack,
 }: Props) {
   const item = view.kind === "menu" ? menuById(menu, view.menuId) : undefined;
   const spoken = say ?? (view.kind === "clarify" || view.kind === "reject" ? view.text : view.say);
@@ -58,103 +57,85 @@ export function VoiceResultScreen({
   }, [spoken, audioB64, audioMime]);
 
   return (
-    <div className="screen screen--lotte-page screen--lotte-voice-result">
-      <header className="lotte-sign lotte-sign--inline" aria-label="롯데리아">
-        <div className="lotte-sign__bar">
-          <span className="lotte-sign__line" aria-hidden="true" />
-          <span className="lotte-sign__logo">LOTTERIA</span>
-          <span className="lotte-sign__line" aria-hidden="true" />
-        </div>
-      </header>
+    <div className="lk-result">
+      <section className="lk-quote">
+        <p className="lk-quote__label">고객님이 말씀하신 내용</p>
+        <p className="lk-quote__text">“{utterance}”</p>
+      </section>
 
-      <main className="lotte-voice-result">
-        <section className="lotte-voice-result__utterance">
-          <p className="lotte-voice-result__label">고객님이 말씀하신 내용</p>
-          <blockquote className="lotte-voice-result__quote">&ldquo;{utterance}&rdquo;</blockquote>
+      {spoken ? (
+        <section className="lk-subtitle" aria-live="polite">
+          <span className="lk-subtitle__icon" aria-hidden="true">🔊</span>
+          <p className="lk-subtitle__text">{spoken}</p>
         </section>
+      ) : null}
 
-        {spoken ? (
-          <section className="lotte-voice-subtitle" aria-live="polite">
-            <span className="lotte-voice-subtitle__icon" aria-hidden="true">🔊</span>
-            <p className="lotte-voice-subtitle__text">{spoken}</p>
-          </section>
-        ) : null}
-
+      <div className="lk-result__center">
         {view.kind === "menu" && item ? (
-          <div className="lotte-voice-result__center">
-            <RecommendedMenuCard
-              item={item}
-              price={formatPrice(item.price)}
-              qty={view.qty}
-              showAsk={false}
-              showBadge={false}
-            />
-          </div>
-        ) : null}
-
-        {view.kind === "recommend" ? (
-          <div className="lotte-voice-result__center">
-            <div className="lotte-voice-suggestions">
-              {view.menuIds.map((id) => {
-                const m = menuById(menu, id);
-                if (!m) return null;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    className="lotte-voice-suggestion"
-                    onClick={() => onPickSuggestion(id)}
-                  >
-                    <RecommendedMenuCard item={m} price={formatPrice(m.price)} qty={1} showAsk={false} showBadge={false} />
-                    <span className="lotte-voice-suggestion__cta">이걸로 담기</span>
-                  </button>
-                );
-              })}
+          <div className="lk-result-card">
+            <span className="lk-result-card__img">
+              <img src={menuImageSrc(item)} alt="" />
+            </span>
+            <div>
+              <h2 className="lk-result-card__name">{menuDisplayName(item)}</h2>
+              {item.desc ? <p className="lk-result-card__meta">{item.desc}</p> : null}
+              <p className="lk-result-card__price">{item.price.toLocaleString("ko-KR")}원</p>
+              <p className="lk-result-card__qty">수량 {view.qty}개</p>
             </div>
           </div>
         ) : null}
 
+        {view.kind === "recommend" ? (
+          <div className="lk-suggests">
+            {view.menuIds.map((id) => {
+              const m = menuById(menu, id);
+              if (!m) return null;
+              return (
+                <button key={id} type="button" className="lk-suggest" onClick={() => onPickSuggestion(id)}>
+                  <span className="lk-suggest__img">
+                    <img src={menuImageSrc(m)} alt="" />
+                  </span>
+                  <span className="lk-suggest__name">{menuDisplayName(m)}</span>
+                  <span className="lk-suggest__price">{m.price.toLocaleString("ko-KR")}원</span>
+                  <span className="lk-suggest__cta">이걸로 담기</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
         {view.kind === "clarify" || view.kind === "reject" ? (
-          <div className="lotte-voice-result__center">
-            <section className="lotte-message-panel">
-              <p className="lotte-message-panel__text">{view.text}</p>
-            </section>
+          <div className="lk-message">
+            <p className="lk-message__text">{view.text}</p>
           </div>
         ) : null}
+      </div>
 
-        {cart.length > 0 ? (
-          <div className="lotte-order-bar">
-            <span className="lotte-order-bar__label">지금까지 담은 것</span>
-            <span className="lotte-order-bar__count">
-              <strong>{count}</strong> 개
-            </span>
-            <span className="lotte-order-bar__total">{formatPrice(total)}</span>
-          </div>
-        ) : null}
+      {cart.length > 0 ? (
+        <div className="lk-result__cartline">
+          <span>지금까지 담은 것 {count}개</span>
+          <strong>{total.toLocaleString("ko-KR")}원</strong>
+        </div>
+      ) : null}
 
-        <div className="lotte-voice-result__mic-area">
-          <MicButton active={false} onClick={onRetry} />
-          <p className="lotte-voice-result__mic-hint">버튼을 누르고 이어서 말씀하세요</p>
-        </div>
-      </main>
+      <div className="lk-result__microw">
+        <MicButton active={false} onClick={onRetry} />
+        <p className="lk-result__michint">단추를 누르고 이어서 말씀하세요</p>
+      </div>
 
-      <footer className="lotte-menu-footer">
-        <div className="lotte-menu-footer__a11y">
-          <button type="button" className="lotte-menu-footer__a11y-btn" onClick={onBack} aria-label="처음으로">
-            ↩
-          </button>
-        </div>
-        <div className="lotte-menu-footer__actions">
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--cancel" onClick={onOpenMenu}>
-            메뉴판에서 고르기
-          </button>
-          {cart.length > 0 ? (
-            <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--pay" onClick={onConfirm}>
-              주문 확정
-            </button>
-          ) : null}
-        </div>
-      </footer>
+      <div className="lk-paybar">
+        <button type="button" className="lk-paybar__btn lk-paybar__btn--ghost" onClick={onOpenMenu}>
+          메뉴판 보기
+        </button>
+        <button
+          type="button"
+          className="lk-paybar__btn lk-paybar__btn--pay"
+          onClick={onConfirm}
+          disabled={cart.length === 0}
+        >
+          {cart.length === 0 ? "메뉴를 담아 주세요" : `${total.toLocaleString("ko-KR")}원 결제하기`}
+        </button>
+      </div>
     </div>
   );
 }
