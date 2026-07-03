@@ -1,200 +1,222 @@
-{"id":"S001","type":"single","tag":"dict","cart_before":[],"utterance":"검은 탄산 물 하나 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1}]}}
-{"id":"S002","type":"single","tag":"dict","cart_before":[],"utterance":"까만 사이다 한 병 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1}]}}
-{"id":"S003","type":"single","tag":"dict","cart_before":[],"utterance":"쏘는 물 줘","expected":{"action":"update","cart":[{"id":"cider","qty":1}]}}
-{"id":"S004","type":"single","tag":"dict","cart_before":[],"utterance":"뜨거운 진한 커피 한 잔 줘","expected":{"action":"update","cart":[{"id":"hot-americano","qty":1}]}}
-{"id":"S005","type":"single","tag":"dict","cart_before":[],"utterance":"시원한 쓴 커피 하나","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1}]}}
-{"id":"S006","type":"single","tag":"dict","cart_before":[],"utterance":"따뜻한 우유 든 커피 줘","expected":{"action":"update","cart":[{"id":"hot-latte","qty":1}]}}
-{"id":"S007","type":"single","tag":"dict","cart_before":[],"utterance":"부드러운 커피 차가운 걸로","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1}]}}
-{"id":"S008","type":"single","tag":"dict","cart_before":[],"utterance":"검은깨 들어간 거 하나 줘","expected":{"action":"update","cart":[{"id":"black-sesame-latte","qty":1}]}}
-{"id":"S009","type":"single","tag":"dict","cart_before":[],"utterance":"고구마 들어간 음료 하나","expected":{"action":"update","cart":[{"id":"sweet-potato-latte","qty":1}]}}
-{"id":"S010","type":"single","tag":"dict","cart_before":[],"utterance":"미숫가루 한 잔 타 줘","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1}]}}
-{"id":"S011","type":"single","tag":"dict","cart_before":[],"utterance":"유자차 한 잔 주세요","expected":{"action":"update","cart":[{"id":"yuja-tea","qty":1}]}}
-{"id":"S012","type":"single","tag":"dict","cart_before":[],"utterance":"쌍화차 하나","expected":{"action":"update","cart":[{"id":"ssanghwa-tea","qty":1}]}}
-{"id":"S013","type":"single","tag":"dict","cart_before":[],"utterance":"식혜 두 잔 줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":2}]}}
-{"id":"S014","type":"single","tag":"dict","cart_before":[],"utterance":"감주 있으면 하나 줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":1}]}}
-{"id":"S015","type":"single","tag":"dict","cart_before":[],"utterance":"딸기 들어간 거 줘","expected":{"action":"update","cart":[{"id":"strawberry-juice","qty":1}]}}
-{"id":"S016","type":"single","tag":"dict","cart_before":[],"utterance":"단팥 든 빵 하나","expected":{"action":"update","cart":[{"id":"red-bean-bread","qty":1}]}}
-{"id":"S017","type":"single","tag":"dict","cart_before":[],"utterance":"약과 세 개 줘","expected":{"action":"update","cart":[{"id":"yakgwa","qty":3}]}}
-{"id":"S018","type":"single","tag":"dict","cart_before":[],"utterance":"꿀떡 하나 주세요","expected":{"action":"update","cart":[{"id":"honey-rice-cake","qty":1}]}}
-{"id":"S019","type":"single","tag":"dict","cart_before":[],"utterance":"호두 들어간 과자 줘","expected":{"action":"update","cart":[{"id":"walnut-cookie","qty":1}]}}
-{"id":"S020","type":"single","tag":"dict","cart_before":[],"utterance":"와플 빵 하나 줘","expected":{"action":"update","cart":[{"id":"croffle","qty":1}]}}
-{"id":"S021","type":"single","tag":"dict","cart_before":[],"utterance":"담백한 빵 있어? 하나 줘","expected":{"action":"update","cart":[{"id":"scone","qty":1}]}}
-{"id":"S022","type":"single","tag":"dict","cart_before":[],"utterance":"카스테라 한 개","expected":{"action":"update","cart":[{"id":"castella","qty":1}]}}
-{"id":"S023","type":"single","tag":"dict","cart_before":[],"utterance":"푸딩 둘 줘","expected":{"action":"update","cart":[{"id":"pudding","qty":2}]}}
-{"id":"S024","type":"single","tag":"dict","cart_before":[],"utterance":"콜라 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1}]}}
-{"id":"S025","type":"single","tag":"dict","cart_before":[],"utterance":"뜨신 거 커피로 하나","expected":{"action":"update","cart":[{"id":"hot-americano","qty":1}]}}
-{"id":"S026","type":"single","tag":"dict","cart_before":[],"utterance":"얼음 띄운 커피 한 잔","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1}]}}
-{"id":"S027","type":"single","tag":"dict","cart_before":[],"utterance":"흰 우유 커피 시원하게 줘","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1}]}}
-{"id":"S028","type":"single","tag":"dict","cart_before":[],"utterance":"팥빵 두 개","expected":{"action":"update","cart":[{"id":"red-bean-bread","qty":2}]}}
-{"id":"S029","type":"single","tag":"dict","cart_before":[],"utterance":"떡 종류 하나 줘","expected":{"action":"update","cart":[{"id":"honey-rice-cake","qty":1}]}}
-{"id":"S030","type":"single","tag":"attr","cart_before":[],"utterance":"카라멜 들어간 달달한 커피 하나","expected":{"action":"update","cart":[{"id":"dolce-caramel-macchiato","qty":1}]}}
-{"id":"S031","type":"single","tag":"attr","cart_before":[],"utterance":"그 마키아토인가 뭔가 하는 거 줘","expected":{"action":"update","cart":[{"id":"dolce-caramel-macchiato","qty":1}]}}
-{"id":"S032","type":"single","tag":"attr","cart_before":[],"utterance":"아이스 돌체 카라멜 마키아토 하나","expected":{"action":"update","cart":[{"id":"dolce-caramel-macchiato","qty":1}]}}
-{"id":"S033","type":"single","tag":"attr","cart_before":[],"utterance":"흑임자 라떼 한 잔","expected":{"action":"update","cart":[{"id":"black-sesame-latte","qty":1}]}}
-{"id":"S034","type":"single","tag":"attr","cart_before":[],"utterance":"달고 부드러운 빵 줘","expected":{"action":"update","cart":[{"id":"castella","qty":1}]}}
-{"id":"S035","type":"single","tag":"attr","cart_before":[],"utterance":"몸에 좋은 차 한 잔","expected":{"action":"update","cart":[{"id":"ssanghwa-tea","qty":1}]}}
-{"id":"S036","type":"single","tag":"attr","cart_before":[],"utterance":"얼음 든 곡물 음료 줘","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1}]}}
-{"id":"S037","type":"single","tag":"attr","cart_before":[],"utterance":"새콤한 거 시원한 걸로","expected":{"action":"update","cart":[{"id":"strawberry-juice","qty":1}]}}
-{"id":"S038","type":"single","tag":"qty","cart_before":[],"utterance":"콜라 두 개랑 단팥빵 하나 줘","expected":{"action":"update","cart":[{"id":"cola","qty":2},{"id":"red-bean-bread","qty":1}]}}
-{"id":"S039","type":"single","tag":"qty","cart_before":[],"utterance":"따뜻한 커피 둘이랑 꿀떡 두 개","expected":{"action":"update","cart":[{"id":"hot-americano","qty":2},{"id":"honey-rice-cake","qty":2}]}}
-{"id":"S040","type":"single","tag":"qty","cart_before":[],"utterance":"약과 5개 포장해줘","expected":{"action":"update","cart":[{"id":"yakgwa","qty":5}]}}
-{"id":"S041","type":"single","tag":"qty","cart_before":[],"utterance":"식혜 3잔","expected":{"action":"update","cart":[{"id":"sikhye","qty":3}]}}
-{"id":"S042","type":"single","tag":"qty","cart_before":[],"utterance":"시원한 커피 하나랑 치즈 케이크 하나","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1},{"id":"cheesecake","qty":1}]}}
-{"id":"S043","type":"single","tag":"qty","cart_before":[],"utterance":"유자차 두 잔 주세요","expected":{"action":"update","cart":[{"id":"yuja-tea","qty":2}]}}
-{"id":"S044","type":"single","tag":"qty","cart_before":[],"utterance":"푸딩 하나 카스텔라 하나","expected":{"action":"update","cart":[{"id":"pudding","qty":1},{"id":"castella","qty":1}]}}
-{"id":"S045","type":"single","tag":"qty","cart_before":[],"utterance":"사이다 네 병","expected":{"action":"update","cart":[{"id":"cider","qty":4}]}}
-{"id":"S046","type":"single","tag":"qty","cart_before":[],"utterance":"호두 과자 두 봉지 줘","expected":{"action":"update","cart":[{"id":"walnut-cookie","qty":2}]}}
-{"id":"S047","type":"single","tag":"qty","cart_before":[],"utterance":"콜라 사이다 하나씩","expected":{"action":"update","cart":[{"id":"cola","qty":1},{"id":"cider","qty":1}]}}
-{"id":"S048","type":"single","tag":"name","cart_before":[],"utterance":"아메리카노 차가운 걸로 한 잔","expected":{"action":"update","cart":[{"id":"ice-americano","qty":1}]}}
-{"id":"S049","type":"single","tag":"name","cart_before":[],"utterance":"카페라떼 뜨거운 거","expected":{"action":"update","cart":[{"id":"hot-latte","qty":1}]}}
-{"id":"S050","type":"single","tag":"name","cart_before":[],"utterance":"스프라이트 하나","expected":{"action":"update","cart":[{"id":"cider","qty":1}]}}
-{"id":"S051","type":"single","tag":"name","cart_before":[],"utterance":"뉴욕 치즈케이크 한 조각","expected":{"action":"update","cart":[{"id":"cheesecake","qty":1}]}}
-{"id":"S052","type":"single","tag":"name","cart_before":[],"utterance":"크로플 하나 줘","expected":{"action":"update","cart":[{"id":"croffle","qty":1}]}}
-{"id":"S053","type":"single","tag":"name","cart_before":[],"utterance":"곡물 라떼 한 잔","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1}]}}
-{"id":"S054","type":"single","tag":"name","cart_before":[],"utterance":"생딸기 주스 줘","expected":{"action":"update","cart":[{"id":"strawberry-juice","qty":1}]}}
-{"id":"S055","type":"single","tag":"name","cart_before":[],"utterance":"코카콜라 두 캔","expected":{"action":"update","cart":[{"id":"cola","qty":2}]}}
-{"id":"S056","type":"single","tag":"clarify","cart_before":[],"utterance":"부드러운 거 하나 줘","expected":{"action":"clarify"}}
-{"id":"S057","type":"single","tag":"clarify","cart_before":[],"utterance":"달달한 빵 줘","expected":{"action":"clarify"}}
-{"id":"S058","type":"single","tag":"clarify","cart_before":[],"utterance":"커피 한 잔 줘","expected":{"action":"clarify"}}
-{"id":"S059","type":"single","tag":"clarify","cart_before":[],"utterance":"케이크 주세요","expected":{"action":"clarify"}}
-{"id":"S060","type":"single","tag":"clarify","cart_before":[],"utterance":"시원한 거 아무거나","expected":{"action":"clarify"}}
-{"id":"S061","type":"single","tag":"clarify","cart_before":[],"utterance":"말랑말랑한 거 있어?","expected":{"action":"clarify"}}
-{"id":"S062","type":"single","tag":"clarify","cart_before":[],"utterance":"고소한 우유 음료 따뜻한 거","expected":{"action":"clarify"}}
-{"id":"S063","type":"single","tag":"clarify","cart_before":[],"utterance":"톡 쏘는 거 하나","expected":{"action":"clarify"}}
-{"id":"S064","type":"single","tag":"clarify","cart_before":[],"utterance":"라떼 주세요","expected":{"action":"clarify"}}
-{"id":"S065","type":"single","tag":"clarify","cart_before":[],"utterance":"빵 하나 줘","expected":{"action":"clarify"}}
-{"id":"S066","type":"single","tag":"reject","cart_before":[],"utterance":"김치찌개 하나 줘","expected":{"action":"reject"}}
-{"id":"S067","type":"single","tag":"reject","cart_before":[],"utterance":"햄버거 세트 있어요?","expected":{"action":"reject"}}
-{"id":"S068","type":"single","tag":"reject","cart_before":[],"utterance":"아이스크림 콘 하나","expected":{"action":"reject"}}
-{"id":"S069","type":"single","tag":"reject","cart_before":[],"utterance":"소주 한 병 줘","expected":{"action":"reject"}}
-{"id":"S070","type":"single","tag":"reject","cart_before":[],"utterance":"담배 한 갑 주세요","expected":{"action":"reject"}}
-{"id":"M001","type":"multi","tag":"add","cart_before":[{"id":"cola","qty":1}],"utterance":"단팥빵도 하나 줘","expected":{"action":"update","cart":[{"id":"cola","qty":1},{"id":"red-bean-bread","qty":1}]}}
-{"id":"M002","type":"multi","tag":"add","cart_before":[{"id":"hot-americano","qty":1}],"utterance":"꿀떡 두 개 추가해줘","expected":{"action":"update","cart":[{"id":"hot-americano","qty":1},{"id":"honey-rice-cake","qty":2}]}}
-{"id":"M003","type":"multi","tag":"add","cart_before":[{"id":"sikhye","qty":1}],"utterance":"약과도 같이 줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":1},{"id":"yakgwa","qty":1}]}}
-{"id":"M004","type":"multi","tag":"add","cart_before":[{"id":"ice-latte","qty":1}],"utterance":"케이크는 초코로 하나 추가","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1},{"id":"choco-cake","qty":1}]}}
-{"id":"M005","type":"multi","tag":"add","cart_before":[{"id":"cola","qty":2}],"utterance":"사이다도 하나","expected":{"action":"update","cart":[{"id":"cola","qty":2},{"id":"cider","qty":1}]}}
-{"id":"M006","type":"multi","tag":"add","cart_before":[{"id":"castella","qty":1}],"utterance":"따뜻한 커피 한 잔 추가요","expected":{"action":"update","cart":[{"id":"castella","qty":1},{"id":"hot-americano","qty":1}]}}
-{"id":"M007","type":"multi","tag":"add","cart_before":[{"id":"yuja-tea","qty":1}],"utterance":"호두 과자도 둘 줘","expected":{"action":"update","cart":[{"id":"yuja-tea","qty":1},{"id":"walnut-cookie","qty":2}]}}
-{"id":"M008","type":"multi","tag":"add","cart_before":[{"id":"grain-latte","qty":1}],"utterance":"딸기 주스 하나 더해줘","expected":{"action":"update","cart":[{"id":"grain-latte","qty":1},{"id":"strawberry-juice","qty":1}]}}
-{"id":"M009","type":"multi","tag":"remove","cart_before":[{"id":"cola","qty":1},{"id":"castella","qty":1}],"utterance":"콜라는 빼줘","expected":{"action":"update","cart":[{"id":"castella","qty":1}]}}
-{"id":"M010","type":"multi","tag":"remove","cart_before":[{"id":"hot-americano","qty":2},{"id":"yakgwa","qty":3}],"utterance":"약과 취소해줘","expected":{"action":"update","cart":[{"id":"hot-americano","qty":2}]}}
-{"id":"M011","type":"multi","tag":"remove","cart_before":[{"id":"ice-latte","qty":1},{"id":"pudding","qty":1},{"id":"cola","qty":1}],"utterance":"푸딩 말고 다 주세요","expected":{"action":"update","cart":[{"id":"ice-latte","qty":1},{"id":"cola","qty":1}]}}
-{"id":"M012","type":"multi","tag":"remove","cart_before":[{"id":"sikhye","qty":2}],"utterance":"식혜 하나는 빼줘","expected":{"action":"update","cart":[{"id":"sikhye","qty":1}]}}
-{"id":"M013","type":"multi","tag":"remove","cart_before":[{"id":"cheesecake","qty":1},{"id":"choco-cake","qty":1}],"utterance":"치즈 케이크 빼","expected":{"action":"update","cart":[{"id":"choco-cake","qty":1}]}}
-{"id":"M014","type":"multi","tag":"remove","cart_before":[{"id":"cola","qty":1},{"id":"cider","qty":1}],"utterance":"탄산은 다 빼줘","expected":{"action":"update","cart":[]}}
-{"id":"M015","type":"multi","tag":"remove","cart_before":[{"id":"hot-latte","qty":1},{"id":"scone","qty":1}],"utterance":"빵은 됐어요 빼주세요","expected":{"action":"update","cart":[{"id":"hot-latte","qty":1}]}}
-{"id":"M016","type":"multi","tag":"qty","cart_before":[{"id":"cola","qty":1}],"utterance":"콜라 두 개로 바꿔줘","expected":{"action":"update","cart":[{"id":"cola","qty":2}]}}
-{"id":"M017","type":"multi","tag":"qty","cart_before":[{"id":"yakgwa","qty":5}],"utterance":"약과는 두 개만 줘","expected":{"action":"update","cart":[{"id":"yakgwa","qty":2}]}}
-{"id":"M018","type":"multi","tag":"qty","cart_before":[{"id":"hot-americano","qty":1}],"utterance":"한 잔 더","expected":{"action":"update","cart":[{"id":"hot-americano","qty":2}]}}
-{"id":"M019","type":"multi","tag":"qty","cart_before":[{"id":"honey-rice-cake","qty":2}],"utterance":"꿀떡 하나 더 추가","expected":{"action":"update","cart":[{"id":"honey-rice-cake","qty":3}]}}
-{"id":"M020","type":"multi","tag":"qty","cart_before":[{"id":"ice-americano","qty":2},{"id":"castella","qty":1}],"utterance":"시원한 커피는 세 잔으로 해줘","expected":{"action":"update","cart":[{"id":"ice-americano","qty":3},{"id":"castella","qty":1}]}}
-{"id":"M021","type":"multi","tag":"qty","cart_before":[{"id":"pudding","qty":1}],"utterance":"하나 더 줘","expected":{"action":"update","cart":[{"id":"pudding","qty":2}]}}
-{"id":"M022","type":"multi","tag":"cancel","cart_before":[{"id":"cola","qty":1},{"id":"yakgwa","qty":2}],"utterance":"전부 취소해 주세요","expected":{"action":"update","cart":[]}}
-{"id":"M023","type":"multi","tag":"cancel","cart_before":[{"id":"hot-latte","qty":1}],"utterance":"다 빼줘","expected":{"action":"update","cart":[]}}
-{"id":"M024","type":"multi","tag":"cancel","cart_before":[{"id":"sikhye","qty":1},{"id":"red-bean-bread","qty":1}],"utterance":"주문 전체 취소","expected":{"action":"update","cart":[]}}
-{"id":"M025","type":"multi","tag":"cancel","cart_before":[{"id":"choco-cake","qty":1}],"utterance":"아니야 다 취소할게","expected":{"action":"update","cart":[]}}
-{"id":"M026","type":"multi","tag":"confirm","cart_before":[{"id":"cola","qty":1}],"utterance":"네 맞아요","expected":{"action":"confirm"}}
-{"id":"M027","type":"multi","tag":"confirm","cart_before":[{"id":"hot-americano","qty":1},{"id":"castella","qty":1}],"utterance":"응 그걸로 줘","expected":{"action":"confirm"}}
-{"id":"M028","type":"multi","tag":"confirm","cart_before":[{"id":"yuja-tea","qty":2}],"utterance":"예 그렇게 주문해 주세요","expected":{"action":"confirm"}}
-{"id":"M029","type":"multi","tag":"confirm","cart_before":[{"id":"ice-latte","qty":1}],"utterance":"맞습니다","expected":{"action":"confirm"}}
-{"id":"M030","type":"multi","tag":"confirm","cart_before":[{"id":"dolce-caramel-macchiato","qty":1},{"id":"pudding","qty":1}],"utterance":"확인이요 그대로 주세요","expected":{"action":"confirm"}}
-{"id":"R001","type":"single","tag":"recommend","cart_before":[],"utterance":"뭐가 맛있어요?","expected":{"action":"recommend"}}
-{"id":"R002","type":"single","tag":"recommend","cart_before":[],"utterance":"따뜻한 거 하나 추천해줘","expected":{"action":"recommend"}}
-{"id":"R003","type":"single","tag":"recommend","cart_before":[],"utterance":"달달한 거 좋은 거 없나","expected":{"action":"recommend"}}
-{"id":"R004","type":"single","tag":"recommend","cart_before":[],"utterance":"아무거나 인기 있는 걸로 알려줘","expected":{"action":"recommend"}}
-{"id":"R005","type":"single","tag":"recommend","cart_before":[],"utterance":"부드러운 간식 뭐 추천해요","expected":{"action":"recommend"}}
-{"id":"R006","type":"multi","tag":"recommend","cart_before":[{"id":"hot-americano","qty":1}],"utterance":"같이 먹을 거 뭐가 좋아요?","expected":{"action":"recommend"}}
-{"id": "S071", "type": "single", "tag": "dict", "cart_before": [], "utterance": "시꺼먼 물 차갑게 한 잔", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 1}]}}
-{"id": "S072", "type": "single", "tag": "dict", "cart_before": [], "utterance": "따뜻한 아메리카노 두 잔 줘", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 2}]}}
-{"id": "S073", "type": "single", "tag": "dict", "cart_before": [], "utterance": "허연 우유 탄 커피 시원한 걸로 하나", "expected": {"action": "update", "cart": [{"id": "ice-latte", "qty": 1}]}}
-{"id": "S074", "type": "single", "tag": "dict", "cart_before": [], "utterance": "설탕 듬뿍 든 달달한 커피 하나 줘", "expected": {"action": "update", "cart": [{"id": "dolce-caramel-macchiato", "qty": 1}]}}
-{"id": "S075", "type": "single", "tag": "dict", "cart_before": [], "utterance": "고소한 검은깨 라떼 뜨거운 거", "expected": {"action": "update", "cart": [{"id": "black-sesame-latte", "qty": 1}]}}
-{"id": "S076", "type": "single", "tag": "dict", "cart_before": [], "utterance": "따신 고구마 라떼 하나", "expected": {"action": "update", "cart": [{"id": "sweet-potato-latte", "qty": 1}]}}
-{"id": "S077", "type": "single", "tag": "dict", "cart_before": [], "utterance": "찬 곡물 음료수 한 잔 줘", "expected": {"action": "update", "cart": [{"id": "grain-latte", "qty": 1}]}}
-{"id": "S078", "type": "single", "tag": "dict", "cart_before": [], "utterance": "뜨뜻한 유자 차", "expected": {"action": "update", "cart": [{"id": "yuja-tea", "qty": 1}]}}
-{"id": "S079", "type": "single", "tag": "dict", "cart_before": [], "utterance": "한방 약차 한 잔 다려줘", "expected": {"action": "update", "cart": [{"id": "ssanghwa-tea", "qty": 1}]}}
-{"id": "S080", "type": "single", "tag": "dict", "cart_before": [], "utterance": "시원한 단술 두 대접 줘", "expected": {"action": "update", "cart": [{"id": "sikhye", "qty": 2}]}}
-{"id": "S081", "type": "single", "tag": "dict", "cart_before": [], "utterance": "생딸기 간 거 한 잔 주세요", "expected": {"action": "update", "cart": [{"id": "strawberry-juice", "qty": 1}]}}
-{"id": "S082", "type": "single", "tag": "dict", "cart_before": [], "utterance": "단팥빵 세 개 주세요", "expected": {"action": "update", "cart": [{"id": "red-bean-bread", "qty": 3}]}}
-{"id": "S083", "type": "single", "tag": "dict", "cart_before": [], "utterance": "꽃 모양 과자 두 개", "expected": {"action": "update", "cart": [{"id": "yakgwa", "qty": 2}]}}
-{"id": "S084", "type": "single", "tag": "dict", "cart_before": [], "utterance": "꿀 떡 한 팩 줘", "expected": {"action": "update", "cart": [{"id": "honey-rice-cake", "qty": 1}]}}
-{"id": "S085", "type": "single", "tag": "dict", "cart_before": [], "utterance": "호두 든 거 하나", "expected": {"action": "update", "cart": [{"id": "walnut-cookie", "qty": 1}]}}
-{"id": "S086", "type": "single", "tag": "dict", "cart_before": [], "utterance": "벌집 모양 빵 하나 줘", "expected": {"action": "update", "cart": [{"id": "croffle", "qty": 1}]}}
-{"id": "S087", "type": "single", "tag": "dict", "cart_before": [], "utterance": "안 달고 담백한 빵 하나", "expected": {"action": "update", "cart": [{"id": "scone", "qty": 1}]}}
-{"id": "S088", "type": "single", "tag": "dict", "cart_before": [], "utterance": "노란 부드러운 카스테라 하나", "expected": {"action": "update", "cart": [{"id": "castella", "qty": 1}]}}
-{"id": "S089", "type": "single", "tag": "dict", "cart_before": [], "utterance": "말랑한 푸딩 셋", "expected": {"action": "update", "cart": [{"id": "pudding", "qty": 3}]}}
-{"id": "S090", "type": "single", "tag": "dict", "cart_before": [], "utterance": "코카콜라 두 병", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 2}]}}
-{"id": "S091", "type": "single", "tag": "dict", "cart_before": [], "utterance": "스프라이트 세 캔", "expected": {"action": "update", "cart": [{"id": "cider", "qty": 3}]}}
-{"id": "S092", "type": "single", "tag": "dict", "cart_before": [], "utterance": "치즈 케이크 하나 포장", "expected": {"action": "update", "cart": [{"id": "cheesecake", "qty": 1}]}}
-{"id": "S093", "type": "single", "tag": "dict", "cart_before": [], "utterance": "초코 케익 둘 줘", "expected": {"action": "update", "cart": [{"id": "choco-cake", "qty": 2}]}}
-{"id": "S094", "type": "single", "tag": "dict", "cart_before": [], "utterance": "쓴 커피 뜨거운 거 세 개랑 단팥빵 둘", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 3}, {"id": "red-bean-bread", "qty": 2}]}}
-{"id": "S095", "type": "single", "tag": "dict", "cart_before": [], "utterance": "식혜 네 잔이랑 호두 과자 하나", "expected": {"action": "update", "cart": [{"id": "sikhye", "qty": 4}, {"id": "walnut-cookie", "qty": 1}]}}
-{"id": "S096", "type": "single", "tag": "dict", "cart_before": [], "utterance": "딸기 주스 하나 사이다 둘", "expected": {"action": "update", "cart": [{"id": "strawberry-juice", "qty": 1}, {"id": "cider", "qty": 2}]}}
-{"id": "S097", "type": "single", "tag": "dict", "cart_before": [], "utterance": "뜨뜻한 우유 든 커피 한 잔이랑 카스테라 빵 하나", "expected": {"action": "update", "cart": [{"id": "hot-latte", "qty": 1}, {"id": "castella", "qty": 1}]}}
-{"id": "S098", "type": "single", "tag": "dict", "cart_before": [], "utterance": "약과 여섯 개", "expected": {"action": "update", "cart": [{"id": "yakgwa", "qty": 6}]}}
-{"id": "S099", "type": "single", "tag": "dict", "cart_before": [], "utterance": "꿀 떡 세 개", "expected": {"action": "update", "cart": [{"id": "honey-rice-cake", "qty": 3}]}}
-{"id": "S100", "type": "single", "tag": "dict", "cart_before": [], "utterance": "곡물 라떼 세 잔이요", "expected": {"action": "update", "cart": [{"id": "grain-latte", "qty": 3}]}}
-{"id": "S101", "type": "single", "tag": "dict", "cart_before": [], "utterance": "시원한 우유 커피 다섯 잔", "expected": {"action": "update", "cart": [{"id": "ice-latte", "qty": 5}]}}
-{"id": "S102", "type": "single", "tag": "dict", "cart_before": [], "utterance": "스콘 하나 주세요", "expected": {"action": "update", "cart": [{"id": "scone", "qty": 1}]}}
-{"id": "S103", "type": "single", "tag": "dict", "cart_before": [], "utterance": "따뜻한 아메리카노 하나", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}]}}
-{"id": "S104", "type": "single", "tag": "dict", "cart_before": [], "utterance": "아이스 카페라떼 한 잔", "expected": {"action": "update", "cart": [{"id": "ice-latte", "qty": 1}]}}
-{"id": "S105", "type": "single", "tag": "dict", "cart_before": [], "utterance": "코카콜라 하나주세요", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
-{"id": "M031", "type": "multi", "tag": "add", "cart_before": [{"id": "hot-americano", "qty": 1}], "utterance": "거기다 약과도 하나 더해줘", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}, {"id": "yakgwa", "qty": 1}]}}
-{"id": "M032", "type": "multi", "tag": "add", "cart_before": [{"id": "sikhye", "qty": 2}], "utterance": "단팥빵도 두 개만 추가", "expected": {"action": "update", "cart": [{"id": "sikhye", "qty": 2}, {"id": "red-bean-bread", "qty": 2}]}}
-{"id": "M033", "type": "multi", "tag": "remove", "cart_before": [{"id": "cola", "qty": 1}, {"id": "cider", "qty": 1}], "utterance": "사이다는 빼줘요", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
-{"id": "M034", "type": "multi", "tag": "remove", "cart_before": [{"id": "red-bean-bread", "qty": 2}, {"id": "yakgwa", "qty": 1}], "utterance": "약과는 빼", "expected": {"action": "update", "cart": [{"id": "red-bean-bread", "qty": 2}]}}
-{"id": "M035", "type": "multi", "tag": "qty", "cart_before": [{"id": "ice-americano", "qty": 1}], "utterance": "시원한 커피 세 잔으로 변경해줘", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 3}]}}
-{"id": "M036", "type": "multi", "tag": "qty", "cart_before": [{"id": "sikhye", "qty": 1}, {"id": "honey-rice-cake", "qty": 1}], "utterance": "식혜는 세 잔으로 해줘", "expected": {"action": "update", "cart": [{"id": "sikhye", "qty": 3}, {"id": "honey-rice-cake", "qty": 1}]}}
-{"id": "M037", "type": "multi", "tag": "remove", "cart_before": [{"id": "hot-latte", "qty": 2}], "utterance": "따뜻한 우유 커피 하나는 빼줘", "expected": {"action": "update", "cart": [{"id": "hot-latte", "qty": 1}]}}
-{"id": "M038", "type": "multi", "tag": "qty", "cart_before": [{"id": "cola", "qty": 1}], "utterance": "콜라 하나 더", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 2}]}}
-{"id": "M039", "type": "multi", "tag": "cancel", "cart_before": [{"id": "pudding", "qty": 2}, {"id": "castella", "qty": 1}], "utterance": "아이고 취소할게요 다 빼줘요", "expected": {"action": "update", "cart": []}}
-{"id": "M040", "type": "multi", "tag": "confirm", "cart_before": [{"id": "ssanghwa-tea", "qty": 1}], "utterance": "맞아 그걸로 해줘", "expected": {"action": "confirm"}}
-{"id": "M041", "type": "multi", "tag": "confirm", "cart_before": [{"id": "strawberry-juice", "qty": 1}, {"id": "croffle", "qty": 2}], "utterance": "네 맞습니다 주문 넣어주세요", "expected": {"action": "confirm"}}
-{"id": "M042", "type": "multi", "tag": "confirm", "cart_before": [{"id": "scone", "qty": 1}], "utterance": "응 맞아", "expected": {"action": "confirm"}}
-{"id": "R007", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "시원하고 톡 쏘는 거 추천해줘", "expected": {"action": "recommend"}}
-{"id": "R008", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "여기서 제일 인기 많은 거 하나 골라줘요", "expected": {"action": "recommend"}}
-{"id": "R009", "type": "multi", "tag": "recommend", "cart_before": [{"id": "red-bean-bread", "qty": 2}], "utterance": "같이 마실 만한 음료 추천해줘", "expected": {"action": "recommend"}}
-{"id": "S106", "type": "single", "tag": "dict", "cart_before": [], "utterance": "시원한 단술 한 사발 주이소", "expected": {"action": "update", "cart": [{"id": "sikhye", "qty": 1}]}}
-{"id": "S107", "type": "single", "tag": "dict", "cart_before": [], "utterance": "뜨뜻한 한방차 한 잔 달여주소", "expected": {"action": "update", "cart": [{"id": "ssanghwa-tea", "qty": 1}]}}
-{"id": "S108", "type": "single", "tag": "dict", "cart_before": [], "utterance": "커피 따순 걸로다가 두 잔 주련", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 2}]}}
-{"id": "S109", "type": "single", "tag": "dict", "cart_before": [], "utterance": "우유 커피 시원하게 해서 하나 주소", "expected": {"action": "update", "cart": [{"id": "ice-latte", "qty": 1}]}}
-{"id": "S110", "type": "single", "tag": "dict", "cart_before": [], "utterance": "단팥빵 한 봉다리하고 콜라 하나 주이소", "expected": {"action": "update", "cart": [{"id": "red-bean-bread", "qty": 1}, {"id": "cola", "qty": 1}]}}
-{"id": "S111", "type": "single", "tag": "dict", "cart_before": [], "utterance": "미숫가루 물 차가운 놈으로 한 그릇 줘봐요", "expected": {"action": "update", "cart": [{"id": "grain-latte", "qty": 1}]}}
-{"id": "S112", "type": "single", "tag": "dict", "cart_before": [], "utterance": "꽃 모양 과자 고거 두 개 주소", "expected": {"action": "update", "cart": [{"id": "yakgwa", "qty": 2}]}}
-{"id": "S113", "type": "single", "tag": "dict", "cart_before": [], "utterance": "치즈 빵 노란 거 한 조각 주련", "expected": {"action": "update", "cart": [{"id": "cheesecake", "qty": 1}]}}
-{"id": "S114", "type": "single", "tag": "dict", "cart_before": [], "utterance": "따신 고구마 라떼 한 잔 주이소", "expected": {"action": "update", "cart": [{"id": "sweet-potato-latte", "qty": 1}]}}
-{"id": "S115", "type": "single", "tag": "dict", "cart_before": [], "utterance": "쓴 커피 뜨거운 거 세 잔 부탁함메", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 3}]}}
-{"id": "S116", "type": "single", "tag": "dict", "cart_before": [], "utterance": "꿀떡 한 팩 담아주소", "expected": {"action": "update", "cart": [{"id": "honey-rice-cake", "qty": 1}]}}
-{"id": "S117", "type": "single", "tag": "dict", "cart_before": [], "utterance": "사이다 시원하게 두 캔 주소", "expected": {"action": "update", "cart": [{"id": "cider", "qty": 2}]}}
-{"id": "S118", "type": "single", "tag": "dict", "cart_before": [], "utterance": "딸기 간 거 한 대접 주시라예", "expected": {"action": "update", "cart": [{"id": "strawberry-juice", "qty": 1}]}}
-{"id": "S119", "type": "single", "tag": "dict", "cart_before": [], "utterance": "담백한 스콘 빵 하나 주련", "expected": {"action": "update", "cart": [{"id": "scone", "qty": 1}]}}
-{"id": "S120", "type": "single", "tag": "dict", "cart_before": [], "utterance": "초코 케이크 달달한 놈으로다가 하나 주이소", "expected": {"action": "update", "cart": [{"id": "choco-cake", "qty": 1}]}}
-{"id": "S121", "type": "single", "tag": "dict", "cart_before": [], "utterance": "어... 그러니까... 그... 뜨거운 커피 한 잔하고... 저... 팥 든 빵 하나", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}, {"id": "red-bean-bread", "qty": 1}]}}
-{"id": "S122", "type": "single", "tag": "dict", "cart_before": [], "utterance": "음... 저기요, 아메리카노 시원한 거 한 잔만 줘 봐요", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 1}]}}
-{"id": "S123", "type": "single", "tag": "dict", "cart_before": [], "utterance": "아이고... 날이 더우니까 식혜 한 잔 시원하게 주소", "expected": {"action": "update", "cart": [{"id": "sikhye", "qty": 1}]}}
-{"id": "S124", "type": "single", "tag": "dict", "cart_before": [], "utterance": "어... 그... 고구마 우유 음료 뜨겁게 한 잔 주세요", "expected": {"action": "update", "cart": [{"id": "sweet-potato-latte", "qty": 1}]}}
-{"id": "S125", "type": "single", "tag": "dict", "cart_before": [], "utterance": "저기... 약과가 어디 있나... 약과 두 개 주시오", "expected": {"action": "update", "cart": [{"id": "yakgwa", "qty": 2}]}}
-{"id": "S126", "type": "single", "tag": "dict", "cart_before": [], "utterance": "음... 쓴 커피 뜨거운 걸로 한 잔 주이소", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}]}}
-{"id": "S127", "type": "single", "tag": "dict", "cart_before": [], "utterance": "에... 또... 사이다 하나랑 꿀떡 하나 주시오", "expected": {"action": "update", "cart": [{"id": "cider", "qty": 1}, {"id": "honey-rice-cake", "qty": 1}]}}
-{"id": "S128", "type": "single", "tag": "dict", "cart_before": [], "utterance": "어... 음... 허연 우유 커피 따뜻한 거 한 잔 주이소", "expected": {"action": "update", "cart": [{"id": "hot-latte", "qty": 1}]}}
-{"id": "S129", "type": "single", "tag": "dict", "cart_before": [], "utterance": "저... 시원한 곡물 미숫가루 음료 한 잔 주시오", "expected": {"action": "update", "cart": [{"id": "grain-latte", "qty": 1}]}}
-{"id": "S130", "type": "single", "tag": "dict", "cart_before": [], "utterance": "아이고... 달콤한 설탕 커피 하나 시원한 걸로 주소", "expected": {"action": "update", "cart": [{"id": "dolce-caramel-macchiato", "qty": 1}]}}
-{"id": "S131", "type": "single", "tag": "dict", "cart_before": [], "utterance": "음... 카스텔라 빵 부드러운 거 하나 줘봐요", "expected": {"action": "update", "cart": [{"id": "castella", "qty": 1}]}}
-{"id": "S132", "type": "single", "tag": "dict", "cart_before": [], "utterance": "어... 호두 과자 하나랑... 음... 식혜 하나", "expected": {"action": "update", "cart": [{"id": "walnut-cookie", "qty": 1}, {"id": "sikhye", "qty": 1}]}}
-{"id": "S133", "type": "single", "tag": "dict", "cart_before": [], "utterance": "저기... 노란 치즈 케이크 하나 포장해주소", "expected": {"action": "update", "cart": [{"id": "cheesecake", "qty": 1}]}}
-{"id": "S134", "type": "single", "tag": "dict", "cart_before": [], "utterance": "음... 그러니까... 빨간 딸기 쥬스 하나 주시오", "expected": {"action": "update", "cart": [{"id": "strawberry-juice", "qty": 1}]}}
-{"id": "S135", "type": "single", "tag": "dict", "cart_before": [], "utterance": "에... 벌집 모양 크로플 하나 주세요", "expected": {"action": "update", "cart": [{"id": "croffle", "qty": 1}]}}
-{"id": "S136", "type": "single", "tag": "dict", "cart_before": [], "utterance": "아메리카노아이스 한잔", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 1}]}}
-{"id": "S137", "type": "single", "tag": "dict", "cart_before": [], "utterance": "카패라때 뜨거운거 한잔", "expected": {"action": "update", "cart": [{"id": "hot-latte", "qty": 1}]}}
-{"id": "S138", "type": "single", "tag": "dict", "cart_before": [], "utterance": "돌채 카라맬 마끼아또 한잔", "expected": {"action": "update", "cart": [{"id": "dolce-caramel-macchiato", "qty": 1}]}}
-{"id": "S139", "type": "single", "tag": "dict", "cart_before": [], "utterance": "흑임자라때 뜨끈한걸로 하나", "expected": {"action": "update", "cart": [{"id": "black-sesame-latte", "qty": 1}]}}
-{"id": "S140", "type": "single", "tag": "dict", "cart_before": [], "utterance": "유자차 뜨뜻하게 한잔", "expected": {"action": "update", "cart": [{"id": "yuja-tea", "qty": 1}]}}
-{"id": "S141", "type": "single", "tag": "dict", "cart_before": [], "utterance": "쌍화차 따뜻한거 한그릇", "expected": {"action": "update", "cart": [{"id": "ssanghwa-tea", "qty": 1}]}}
-{"id": "S142", "type": "single", "tag": "dict", "cart_before": [], "utterance": "생딸기주스 얼음띄워서 하나", "expected": {"action": "update", "cart": [{"id": "strawberry-juice", "qty": 1}]}}
-{"id": "S143", "type": "single", "tag": "dict", "cart_before": [], "utterance": "카스테라빵 노란거 하나", "expected": {"action": "update", "cart": [{"id": "castella", "qty": 1}]}}
-{"id": "S144", "type": "single", "tag": "dict", "cart_before": [], "utterance": "치즈케익 하나만", "expected": {"action": "update", "cart": [{"id": "cheesecake", "qty": 1}]}}
-{"id": "S145", "type": "single", "tag": "dict", "cart_before": [], "utterance": "코카꼴라 시원한거 하나", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
-{"id": "M043", "type": "multi", "tag": "remove", "cart_before": [{"id": "hot-americano", "qty": 2}, {"id": "castella", "qty": 1}], "utterance": "아메리카노 하나만 취소해줘", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}, {"id": "castella", "qty": 1}]}}
-{"id": "M044", "type": "multi", "tag": "add", "cart_before": [{"id": "sikhye", "qty": 1}], "utterance": "거기다가 단팥빵 하나 더 얹어주소", "expected": {"action": "update", "cart": [{"id": "sikhye", "qty": 1}, {"id": "red-bean-bread", "qty": 1}]}}
-{"id": "M045", "type": "multi", "tag": "qty", "cart_before": [{"id": "yakgwa", "qty": 1}], "utterance": "약과는 총 여섯 개로 늘려주소", "expected": {"action": "update", "cart": [{"id": "yakgwa", "qty": 6}]}}
-{"id": "M046", "type": "multi", "tag": "confirm", "cart_before": [{"id": "hot-latte", "qty": 2}], "utterance": "그래 고것이 맞다 주문 진행해라", "expected": {"action": "confirm"}}
+{"id": "T001", "type": "single", "tag": "name", "cart_before": [], "utterance": "불고기 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}]}}
+{"id": "T002", "type": "single", "tag": "name", "cart_before": [], "utterance": "치즈 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "cheese-burger", "qty": 1}]}}
+{"id": "T003", "type": "single", "tag": "name", "cart_before": [], "utterance": "새우 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger", "qty": 1}]}}
+{"id": "T004", "type": "single", "tag": "name", "cart_before": [], "utterance": "데리 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "teriyaki-burger", "qty": 1}]}}
+{"id": "T005", "type": "single", "tag": "name", "cart_before": [], "utterance": "한우 불고기 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "hanwoo-burger", "qty": 1}]}}
+{"id": "T006", "type": "single", "tag": "name", "cart_before": [], "utterance": "새우 모짜 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-mozza-burger", "qty": 1}]}}
+{"id": "T007", "type": "single", "tag": "name", "cart_before": [], "utterance": "티렉스 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger", "qty": 1}]}}
+{"id": "T008", "type": "single", "tag": "name", "cart_before": [], "utterance": "에이지 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "az-burger", "qty": 1}]}}
+{"id": "T009", "type": "single", "tag": "name", "cart_before": [], "utterance": "핫크리스피 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "hot-crispy-burger", "qty": 1}]}}
+{"id": "T010", "type": "single", "tag": "name", "cart_before": [], "utterance": "더블 치즈 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "double-cheese-burger", "qty": 1}]}}
+{"id": "T011", "type": "single", "tag": "name", "cart_before": [], "utterance": "모짜렐라 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "mozzarella-burger", "qty": 1}]}}
+{"id": "T012", "type": "single", "tag": "name", "cart_before": [], "utterance": "불새 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "bulsae-burger", "qty": 1}]}}
+{"id": "T013", "type": "single", "tag": "name", "cart_before": [], "utterance": "불고기 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger-set", "qty": 1}]}}
+{"id": "T014", "type": "single", "tag": "name", "cart_before": [], "utterance": "치즈 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "cheese-burger-set", "qty": 1}]}}
+{"id": "T015", "type": "single", "tag": "name", "cart_before": [], "utterance": "새우 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger-set", "qty": 1}]}}
+{"id": "T016", "type": "single", "tag": "name", "cart_before": [], "utterance": "데리 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "teriyaki-burger-set", "qty": 1}]}}
+{"id": "T017", "type": "single", "tag": "name", "cart_before": [], "utterance": "한우 불고기 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "hanwoo-burger-set", "qty": 1}]}}
+{"id": "T018", "type": "single", "tag": "name", "cart_before": [], "utterance": "새우 모짜 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-mozza-burger-set", "qty": 1}]}}
+{"id": "T019", "type": "single", "tag": "name", "cart_before": [], "utterance": "티렉스 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 1}]}}
+{"id": "T020", "type": "single", "tag": "name", "cart_before": [], "utterance": "에이지 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "az-burger-set", "qty": 1}]}}
+{"id": "T021", "type": "single", "tag": "name", "cart_before": [], "utterance": "핫크리스피 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "hot-crispy-burger-set", "qty": 1}]}}
+{"id": "T022", "type": "single", "tag": "name", "cart_before": [], "utterance": "더블 치즈 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "double-cheese-burger-set", "qty": 1}]}}
+{"id": "T023", "type": "single", "tag": "name", "cart_before": [], "utterance": "모짜렐라 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "mozzarella-burger-set", "qty": 1}]}}
+{"id": "T024", "type": "single", "tag": "name", "cart_before": [], "utterance": "불새 버거 세트 하나 주세요", "expected": {"action": "update", "cart": [{"id": "bulsae-burger-set", "qty": 1}]}}
+{"id": "T025", "type": "single", "tag": "name", "cart_before": [], "utterance": "크리스피 치킨 하나 주세요", "expected": {"action": "update", "cart": [{"id": "crispy-chicken", "qty": 1}]}}
+{"id": "T026", "type": "single", "tag": "name", "cart_before": [], "utterance": "매운 닭날개 하나 주세요", "expected": {"action": "update", "cart": [{"id": "hot-wings", "qty": 1}]}}
+{"id": "T027", "type": "single", "tag": "name", "cart_before": [], "utterance": "치킨 너겟 하나 주세요", "expected": {"action": "update", "cart": [{"id": "chicken-nugget", "qty": 1}]}}
+{"id": "T028", "type": "single", "tag": "name", "cart_before": [], "utterance": "치킨 텐더 하나 주세요", "expected": {"action": "update", "cart": [{"id": "chicken-tender", "qty": 1}]}}
+{"id": "T029", "type": "single", "tag": "name", "cart_before": [], "utterance": "감자 튀김 하나 주세요", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 1}]}}
+{"id": "T030", "type": "single", "tag": "name", "cart_before": [], "utterance": "치즈 스틱 하나 주세요", "expected": {"action": "update", "cart": [{"id": "cheese-sticks", "qty": 1}]}}
+{"id": "T031", "type": "single", "tag": "name", "cart_before": [], "utterance": "양파 튀김 하나 주세요", "expected": {"action": "update", "cart": [{"id": "onion-rings", "qty": 1}]}}
+{"id": "T032", "type": "single", "tag": "name", "cart_before": [], "utterance": "오징어 튀김 하나 주세요", "expected": {"action": "update", "cart": [{"id": "squid-rings", "qty": 1}]}}
+{"id": "T033", "type": "single", "tag": "name", "cart_before": [], "utterance": "긴 치즈 스틱 하나 주세요", "expected": {"action": "update", "cart": [{"id": "long-cheese-stick", "qty": 1}]}}
+{"id": "T034", "type": "single", "tag": "name", "cart_before": [], "utterance": "양배추 샐러드 하나 주세요", "expected": {"action": "update", "cart": [{"id": "coleslaw", "qty": 1}]}}
+{"id": "T035", "type": "single", "tag": "name", "cart_before": [], "utterance": "아이스크림 콘 하나 주세요", "expected": {"action": "update", "cart": [{"id": "soft-cone", "qty": 1}]}}
+{"id": "T036", "type": "single", "tag": "name", "cart_before": [], "utterance": "초코 아이스크림 하나 주세요", "expected": {"action": "update", "cart": [{"id": "choco-sundae", "qty": 1}]}}
+{"id": "T037", "type": "single", "tag": "name", "cart_before": [], "utterance": "츄러스 하나 주세요", "expected": {"action": "update", "cart": [{"id": "churros", "qty": 1}]}}
+{"id": "T038", "type": "single", "tag": "name", "cart_before": [], "utterance": "사과 파이 하나 주세요", "expected": {"action": "update", "cart": [{"id": "apple-pie", "qty": 1}]}}
+{"id": "T039", "type": "single", "tag": "name", "cart_before": [], "utterance": "콜라 하나 주세요", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
+{"id": "T040", "type": "single", "tag": "name", "cart_before": [], "utterance": "제로 콜라 하나 주세요", "expected": {"action": "update", "cart": [{"id": "zero-cola", "qty": 1}]}}
+{"id": "T041", "type": "single", "tag": "name", "cart_before": [], "utterance": "사이다 하나 주세요", "expected": {"action": "update", "cart": [{"id": "cider", "qty": 1}]}}
+{"id": "T042", "type": "single", "tag": "name", "cart_before": [], "utterance": "따뜻한 커피 하나 주세요", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}]}}
+{"id": "T043", "type": "single", "tag": "name", "cart_before": [], "utterance": "시원한 커피 하나 주세요", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 1}]}}
+{"id": "T044", "type": "single", "tag": "name", "cart_before": [], "utterance": "따뜻한 우유 커피 하나 주세요", "expected": {"action": "update", "cart": [{"id": "hot-latte", "qty": 1}]}}
+{"id": "T045", "type": "single", "tag": "name", "cart_before": [], "utterance": "시원한 우유 커피 하나 주세요", "expected": {"action": "update", "cart": [{"id": "ice-latte", "qty": 1}]}}
+{"id": "T046", "type": "single", "tag": "name", "cart_before": [], "utterance": "복숭아 아이스티 하나 주세요", "expected": {"action": "update", "cart": [{"id": "ice-tea", "qty": 1}]}}
+{"id": "T047", "type": "single", "tag": "name", "cart_before": [], "utterance": "오렌지 주스 하나 주세요", "expected": {"action": "update", "cart": [{"id": "orange-juice", "qty": 1}]}}
+{"id": "T048", "type": "single", "tag": "name", "cart_before": [], "utterance": "밀크 쉐이크 하나 주세요", "expected": {"action": "update", "cart": [{"id": "milk-shake", "qty": 1}]}}
+{"id": "T049", "type": "single", "tag": "name", "cart_before": [], "utterance": "딸기 쉐이크 하나 주세요", "expected": {"action": "update", "cart": [{"id": "strawberry-shake", "qty": 1}]}}
+{"id": "T050", "type": "single", "tag": "name", "cart_before": [], "utterance": "생수 하나 주세요", "expected": {"action": "update", "cart": [{"id": "water", "qty": 1}]}}
+{"id": "T051", "type": "single", "tag": "dict", "cart_before": [], "utterance": "불고기 하나 줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}]}}
+{"id": "T052", "type": "single", "tag": "dict", "cart_before": [], "utterance": "고기 든 빵 주세요", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}]}}
+{"id": "T053", "type": "single", "tag": "dict", "cart_before": [], "utterance": "한우 버거로 하나 줘요", "expected": {"action": "update", "cart": [{"id": "hanwoo-burger", "qty": 1}]}}
+{"id": "T054", "type": "single", "tag": "dict", "cart_before": [], "utterance": "데리 하나 주쇼", "expected": {"action": "update", "cart": [{"id": "teriyaki-burger", "qty": 1}]}}
+{"id": "T055", "type": "single", "tag": "dict", "cart_before": [], "utterance": "간장 맛 버거 있으면 하나 줘", "expected": {"action": "update", "cart": [{"id": "teriyaki-burger", "qty": 1}]}}
+{"id": "T056", "type": "single", "tag": "dict", "cart_before": [], "utterance": "공룡 버거 하나 주세요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger", "qty": 1}]}}
+{"id": "T057", "type": "single", "tag": "dict", "cart_before": [], "utterance": "티렉스 하나요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger", "qty": 1}]}}
+{"id": "T058", "type": "single", "tag": "dict", "cart_before": [], "utterance": "제일 큰 버거 줘", "expected": {"action": "update", "cart": [{"id": "t-rex-burger", "qty": 1}]}}
+{"id": "T059", "type": "single", "tag": "dict", "cart_before": [], "utterance": "불새 하나 줘요", "expected": {"action": "update", "cart": [{"id": "bulsae-burger", "qty": 1}]}}
+{"id": "T060", "type": "single", "tag": "dict", "cart_before": [], "utterance": "매콤한 버거 하나 줘", "expected": {"action": "update", "cart": [{"id": "hot-crispy-burger", "qty": 1}]}}
+{"id": "T061", "type": "single", "tag": "dict", "cart_before": [], "utterance": "모짜렐라 버거 하나", "expected": {"action": "update", "cart": [{"id": "mozzarella-burger", "qty": 1}]}}
+{"id": "T062", "type": "single", "tag": "dict", "cart_before": [], "utterance": "고기 두 장 든 걸로 줘", "expected": {"action": "update", "cart": [{"id": "double-cheese-burger", "qty": 1}]}}
+{"id": "T063", "type": "single", "tag": "dict", "cart_before": [], "utterance": "닭날개 하나 줘", "expected": {"action": "update", "cart": [{"id": "hot-wings", "qty": 1}]}}
+{"id": "T064", "type": "single", "tag": "dict", "cart_before": [], "utterance": "매운 날개 튀김 주세요", "expected": {"action": "update", "cart": [{"id": "hot-wings", "qty": 1}]}}
+{"id": "T065", "type": "single", "tag": "dict", "cart_before": [], "utterance": "너겟 하나 줘요", "expected": {"action": "update", "cart": [{"id": "chicken-nugget", "qty": 1}]}}
+{"id": "T066", "type": "single", "tag": "dict", "cart_before": [], "utterance": "너게트 주세요", "expected": {"action": "update", "cart": [{"id": "chicken-nugget", "qty": 1}]}}
+{"id": "T067", "type": "single", "tag": "dict", "cart_before": [], "utterance": "텐더 하나 줘", "expected": {"action": "update", "cart": [{"id": "chicken-tender", "qty": 1}]}}
+{"id": "T068", "type": "single", "tag": "dict", "cart_before": [], "utterance": "닭가슴살 튀긴 거 줘", "expected": {"action": "update", "cart": [{"id": "chicken-tender", "qty": 1}]}}
+{"id": "T069", "type": "single", "tag": "dict", "cart_before": [], "utterance": "바삭한 치킨 하나 주세요", "expected": {"action": "update", "cart": [{"id": "crispy-chicken", "qty": 1}]}}
+{"id": "T070", "type": "single", "tag": "dict", "cart_before": [], "utterance": "감자 튀긴 거 줘", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 1}]}}
+{"id": "T071", "type": "single", "tag": "dict", "cart_before": [], "utterance": "포테토 하나 주세요", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 1}]}}
+{"id": "T072", "type": "single", "tag": "dict", "cart_before": [], "utterance": "양파 튀긴 거 하나", "expected": {"action": "update", "cart": [{"id": "onion-rings", "qty": 1}]}}
+{"id": "T073", "type": "single", "tag": "dict", "cart_before": [], "utterance": "오징어 튀긴 거 줘요", "expected": {"action": "update", "cart": [{"id": "squid-rings", "qty": 1}]}}
+{"id": "T074", "type": "single", "tag": "dict", "cart_before": [], "utterance": "긴 치즈 주세요", "expected": {"action": "update", "cart": [{"id": "long-cheese-stick", "qty": 1}]}}
+{"id": "T075", "type": "single", "tag": "dict", "cart_before": [], "utterance": "양배추 샐러드 줘", "expected": {"action": "update", "cart": [{"id": "coleslaw", "qty": 1}]}}
+{"id": "T076", "type": "single", "tag": "dict", "cart_before": [], "utterance": "고깔 아이스크림 하나", "expected": {"action": "update", "cart": [{"id": "soft-cone", "qty": 1}]}}
+{"id": "T077", "type": "single", "tag": "dict", "cart_before": [], "utterance": "초코 아이스크림 줘", "expected": {"action": "update", "cart": [{"id": "choco-sundae", "qty": 1}]}}
+{"id": "T078", "type": "single", "tag": "dict", "cart_before": [], "utterance": "츄러스 하나 주세요", "expected": {"action": "update", "cart": [{"id": "churros", "qty": 1}]}}
+{"id": "T079", "type": "single", "tag": "dict", "cart_before": [], "utterance": "꽈배기 같은 거 줘", "expected": {"action": "update", "cart": [{"id": "churros", "qty": 1}]}}
+{"id": "T080", "type": "single", "tag": "dict", "cart_before": [], "utterance": "사과 파이 하나요", "expected": {"action": "update", "cart": [{"id": "apple-pie", "qty": 1}]}}
+{"id": "T081", "type": "single", "tag": "dict", "cart_before": [], "utterance": "검은 탄산 물 하나 줘", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
+{"id": "T082", "type": "single", "tag": "dict", "cart_before": [], "utterance": "까만 사이다 한 병 줘", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
+{"id": "T083", "type": "single", "tag": "dict", "cart_before": [], "utterance": "꼴라 한 캔 주쇼", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
+{"id": "T084", "type": "single", "tag": "dict", "cart_before": [], "utterance": "설탕 없는 콜라 줘", "expected": {"action": "update", "cart": [{"id": "zero-cola", "qty": 1}]}}
+{"id": "T085", "type": "single", "tag": "dict", "cart_before": [], "utterance": "쏘는 물 줘", "expected": {"action": "update", "cart": [{"id": "cider", "qty": 1}]}}
+{"id": "T086", "type": "single", "tag": "dict", "cart_before": [], "utterance": "복숭아 물 하나 줘요", "expected": {"action": "update", "cart": [{"id": "ice-tea", "qty": 1}]}}
+{"id": "T087", "type": "single", "tag": "dict", "cart_before": [], "utterance": "오렌지 주스 한 잔", "expected": {"action": "update", "cart": [{"id": "orange-juice", "qty": 1}]}}
+{"id": "T088", "type": "single", "tag": "dict", "cart_before": [], "utterance": "귤 주스 주세요", "expected": {"action": "update", "cart": [{"id": "orange-juice", "qty": 1}]}}
+{"id": "T089", "type": "single", "tag": "dict", "cart_before": [], "utterance": "딸기 간 거 하나 줘", "expected": {"action": "update", "cart": [{"id": "strawberry-shake", "qty": 1}]}}
+{"id": "T090", "type": "single", "tag": "dict", "cart_before": [], "utterance": "맹물 하나 주세요", "expected": {"action": "update", "cart": [{"id": "water", "qty": 1}]}}
+{"id": "T091", "type": "single", "tag": "dict", "cart_before": [], "utterance": "생수 한 병 줘요", "expected": {"action": "update", "cart": [{"id": "water", "qty": 1}]}}
+{"id": "T092", "type": "single", "tag": "attr", "cart_before": [], "utterance": "뜨거운 커피 한 잔 줘", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}]}}
+{"id": "T093", "type": "single", "tag": "attr", "cart_before": [], "utterance": "따뜻한 커피 주세요", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}]}}
+{"id": "T094", "type": "single", "tag": "attr", "cart_before": [], "utterance": "시원한 커피 하나 줘", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 1}]}}
+{"id": "T095", "type": "single", "tag": "attr", "cart_before": [], "utterance": "아이스 아메리카노 한 잔", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 1}]}}
+{"id": "T096", "type": "single", "tag": "attr", "cart_before": [], "utterance": "차가운 쓴 커피 줘요", "expected": {"action": "update", "cart": [{"id": "ice-americano", "qty": 1}]}}
+{"id": "T097", "type": "single", "tag": "attr", "cart_before": [], "utterance": "따뜻한 우유 커피 줘", "expected": {"action": "update", "cart": [{"id": "hot-latte", "qty": 1}]}}
+{"id": "T098", "type": "single", "tag": "attr", "cart_before": [], "utterance": "뜨거운 라떼 한 잔 주세요", "expected": {"action": "update", "cart": [{"id": "hot-latte", "qty": 1}]}}
+{"id": "T099", "type": "single", "tag": "attr", "cart_before": [], "utterance": "아이스 라떼 하나", "expected": {"action": "update", "cart": [{"id": "ice-latte", "qty": 1}]}}
+{"id": "T100", "type": "single", "tag": "attr", "cart_before": [], "utterance": "시원한 부드러운 커피 줘", "expected": {"action": "update", "cart": [{"id": "ice-latte", "qty": 1}]}}
+{"id": "T101", "type": "single", "tag": "attr", "cart_before": [], "utterance": "따끈한 커피 있어요? 한 잔 줘요", "expected": {"action": "update", "cart": [{"id": "hot-americano", "qty": 1}]}}
+{"id": "T102", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "커피 하나 줘", "expected": {"action": "clarify"}}
+{"id": "T103", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "라떼 주세요", "expected": {"action": "clarify"}}
+{"id": "T104", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "쉐이크 하나 줘요", "expected": {"action": "clarify"}}
+{"id": "T105", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "아이스크림 주세요", "expected": {"action": "clarify"}}
+{"id": "T106", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "새우 든 거 하나 줘", "expected": {"action": "clarify"}}
+{"id": "T107", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "치즈 들어간 거 줘", "expected": {"action": "clarify"}}
+{"id": "T108", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "탄산 음료 하나 주세요", "expected": {"action": "clarify"}}
+{"id": "T109", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "치킨 하나 줘", "expected": {"action": "clarify"}}
+{"id": "T110", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "버거 하나 주세요", "expected": {"action": "clarify"}}
+{"id": "T111", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "함버거 하나만", "expected": {"action": "clarify"}}
+{"id": "T112", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "매운 거 하나 줘", "expected": {"action": "clarify"}}
+{"id": "T113", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "부드러운 거 하나 줘", "expected": {"action": "clarify"}}
+{"id": "T114", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "달달한 거 주세요", "expected": {"action": "clarify"}}
+{"id": "T115", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "바삭한 거 하나", "expected": {"action": "clarify"}}
+{"id": "T116", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "튀김 하나 줘요", "expected": {"action": "clarify"}}
+{"id": "T117", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "세트 하나 주세요", "expected": {"action": "clarify"}}
+{"id": "T118", "type": "single", "tag": "clarify", "cart_before": [], "utterance": "우유 하나 줘", "expected": {"action": "clarify"}}
+{"id": "T119", "type": "single", "tag": "qty", "cart_before": [], "utterance": "콜라 두 개 줘", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 2}]}}
+{"id": "T120", "type": "single", "tag": "qty", "cart_before": [], "utterance": "콜라 2개 주세요", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 2}]}}
+{"id": "T121", "type": "single", "tag": "qty", "cart_before": [], "utterance": "감자 튀김 3개 줘요", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 3}]}}
+{"id": "T122", "type": "single", "tag": "qty", "cart_before": [], "utterance": "감자 튀김 세 개 주세요", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 3}]}}
+{"id": "T123", "type": "single", "tag": "qty", "cart_before": [], "utterance": "치킨 너겟 다섯 개 줘", "expected": {"action": "update", "cart": [{"id": "chicken-nugget", "qty": 5}]}}
+{"id": "T124", "type": "single", "tag": "qty", "cart_before": [], "utterance": "불고기 버거 네 개 줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 4}]}}
+{"id": "T125", "type": "single", "tag": "qty", "cart_before": [], "utterance": "새우 버거 두 개 주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger", "qty": 2}]}}
+{"id": "T126", "type": "single", "tag": "qty", "cart_before": [], "utterance": "생수 4개 줘요", "expected": {"action": "update", "cart": [{"id": "water", "qty": 4}]}}
+{"id": "T127", "type": "single", "tag": "qty", "cart_before": [], "utterance": "츄러스 세 개 줘", "expected": {"action": "update", "cart": [{"id": "churros", "qty": 3}]}}
+{"id": "T128", "type": "single", "tag": "qty", "cart_before": [], "utterance": "아이스크림 콘 두 개 주세요", "expected": {"action": "update", "cart": [{"id": "soft-cone", "qty": 2}]}}
+{"id": "T129", "type": "single", "tag": "qty", "cart_before": [], "utterance": "사이다 한 캔 줘", "expected": {"action": "update", "cart": [{"id": "cider", "qty": 1}]}}
+{"id": "T130", "type": "single", "tag": "qty", "cart_before": [], "utterance": "티렉스 버거 세트 두 개 주세요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 2}]}}
+{"id": "T131", "type": "single", "tag": "qty", "cart_before": [], "utterance": "양파 튀김 두 봉지 줘", "expected": {"action": "update", "cart": [{"id": "onion-rings", "qty": 2}]}}
+{"id": "T132", "type": "single", "tag": "qty", "cart_before": [], "utterance": "매운 닭날개 여섯 개 줘요", "expected": {"action": "update", "cart": [{"id": "hot-wings", "qty": 6}]}}
+{"id": "T133", "type": "single", "tag": "qty", "cart_before": [], "utterance": "데리 버거 열 개 주세요", "expected": {"action": "update", "cart": [{"id": "teriyaki-burger", "qty": 10}]}}
+{"id": "T134", "type": "single", "tag": "qty", "cart_before": [], "utterance": "오렌지 주스 두 잔 줘", "expected": {"action": "update", "cart": [{"id": "orange-juice", "qty": 2}]}}
+{"id": "T135", "type": "single", "tag": "qty", "cart_before": [], "utterance": "밀크 쉐이크 두 잔 주세요", "expected": {"action": "update", "cart": [{"id": "milk-shake", "qty": 2}]}}
+{"id": "T136", "type": "single", "tag": "qty", "cart_before": [], "utterance": "치즈 스틱 두 개 줘요", "expected": {"action": "update", "cart": [{"id": "cheese-sticks", "qty": 2}]}}
+{"id": "T137", "type": "single", "tag": "qty", "cart_before": [], "utterance": "한우 불고기 버거 두 개 주세요", "expected": {"action": "update", "cart": [{"id": "hanwoo-burger", "qty": 2}]}}
+{"id": "T138", "type": "single", "tag": "qty", "cart_before": [], "utterance": "복숭아 아이스티 2잔 줘", "expected": {"action": "update", "cart": [{"id": "ice-tea", "qty": 2}]}}
+{"id": "T139", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "불고기 버거 한 개랑 콜라 두 개 줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}, {"id": "cola", "qty": 2}]}}
+{"id": "T140", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "새우 버거 두 개하고 사이다 한 캔 주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger", "qty": 2}, {"id": "cider", "qty": 1}]}}
+{"id": "T141", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "티렉스 버거 세트 한 개랑 아이스크림 콘 두 개 줘요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 1}, {"id": "soft-cone", "qty": 2}]}}
+{"id": "T142", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "치즈 버거 한 개, 감자 튀김 한 개 주세요", "expected": {"action": "update", "cart": [{"id": "cheese-burger", "qty": 1}, {"id": "fries", "qty": 1}]}}
+{"id": "T143", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "불고기 버거 세트 두 개랑 생수 한 병 줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger-set", "qty": 2}, {"id": "water", "qty": 1}]}}
+{"id": "T144", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "크리스피 치킨 한 개하고 콜라 한 캔 줘요", "expected": {"action": "update", "cart": [{"id": "crispy-chicken", "qty": 1}, {"id": "cola", "qty": 1}]}}
+{"id": "T145", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "데리 버거 한 개랑 밀크 쉐이크 한 잔 주세요", "expected": {"action": "update", "cart": [{"id": "teriyaki-burger", "qty": 1}, {"id": "milk-shake", "qty": 1}]}}
+{"id": "T146", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "치킨 텐더 두 개랑 사이다 두 캔 줘", "expected": {"action": "update", "cart": [{"id": "chicken-tender", "qty": 2}, {"id": "cider", "qty": 2}]}}
+{"id": "T147", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "에이지 버거 한 개랑 양파 튀김 한 개 줘요", "expected": {"action": "update", "cart": [{"id": "az-burger", "qty": 1}, {"id": "onion-rings", "qty": 1}]}}
+{"id": "T148", "type": "single", "tag": "multi_item", "cart_before": [], "utterance": "한우 불고기 버거 세트 한 개하고 츄러스 두 개 주세요", "expected": {"action": "update", "cart": [{"id": "hanwoo-burger-set", "qty": 1}, {"id": "churros", "qty": 2}]}}
+{"id": "T149", "type": "multi", "tag": "add", "cart_before": [{"id": "bulgogi-burger", "qty": 1}], "utterance": "콜라도 하나 줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}, {"id": "cola", "qty": 1}]}}
+{"id": "T150", "type": "multi", "tag": "add", "cart_before": [{"id": "bulgogi-burger-set", "qty": 1}], "utterance": "츄러스 하나 추가해줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger-set", "qty": 1}, {"id": "churros", "qty": 1}]}}
+{"id": "T151", "type": "multi", "tag": "add", "cart_before": [{"id": "cola", "qty": 2}], "utterance": "감자 튀김 두 개 더 줘", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 2}, {"id": "fries", "qty": 2}]}}
+{"id": "T152", "type": "multi", "tag": "add", "cart_before": [{"id": "shrimp-burger", "qty": 1}], "utterance": "새우 버거 하나 더 주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger", "qty": 2}]}}
+{"id": "T153", "type": "multi", "tag": "add", "cart_before": [{"id": "t-rex-burger-set", "qty": 1}], "utterance": "아이스크림 콘 하나 주세요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 1}, {"id": "soft-cone", "qty": 1}]}}
+{"id": "T154", "type": "multi", "tag": "add", "cart_before": [{"id": "cheese-burger", "qty": 1}, {"id": "cola", "qty": 1}], "utterance": "치즈 스틱도 하나 줘요", "expected": {"action": "update", "cart": [{"id": "cheese-burger", "qty": 1}, {"id": "cola", "qty": 1}, {"id": "cheese-sticks", "qty": 1}]}}
+{"id": "T155", "type": "multi", "tag": "add", "cart_before": [{"id": "crispy-chicken", "qty": 1}], "utterance": "매운 닭날개 두 개 추가요", "expected": {"action": "update", "cart": [{"id": "crispy-chicken", "qty": 1}, {"id": "hot-wings", "qty": 2}]}}
+{"id": "T156", "type": "multi", "tag": "add", "cart_before": [{"id": "hanwoo-burger", "qty": 1}], "utterance": "생수 한 병 주세요", "expected": {"action": "update", "cart": [{"id": "hanwoo-burger", "qty": 1}, {"id": "water", "qty": 1}]}}
+{"id": "T157", "type": "multi", "tag": "add", "cart_before": [{"id": "bulsae-burger", "qty": 1}], "utterance": "복숭아 아이스티 한 잔 줘", "expected": {"action": "update", "cart": [{"id": "bulsae-burger", "qty": 1}, {"id": "ice-tea", "qty": 1}]}}
+{"id": "T158", "type": "multi", "tag": "add", "cart_before": [{"id": "teriyaki-burger-set", "qty": 1}], "utterance": "데리 버거 세트 하나 더요", "expected": {"action": "update", "cart": [{"id": "teriyaki-burger-set", "qty": 2}]}}
+{"id": "T159", "type": "multi", "tag": "add", "cart_before": [{"id": "fries", "qty": 1}], "utterance": "오징어 튀긴 거도 줘", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 1}, {"id": "squid-rings", "qty": 1}]}}
+{"id": "T160", "type": "multi", "tag": "add", "cart_before": [{"id": "cola", "qty": 1}], "utterance": "제로 콜라로 하나 더 줘요", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}, {"id": "zero-cola", "qty": 1}]}}
+{"id": "T161", "type": "multi", "tag": "remove", "cart_before": [{"id": "cola", "qty": 1}, {"id": "fries", "qty": 1}], "utterance": "콜라는 빼줘", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 1}]}}
+{"id": "T162", "type": "multi", "tag": "remove", "cart_before": [{"id": "bulgogi-burger", "qty": 1}, {"id": "cola", "qty": 1}], "utterance": "불고기 버거 빼주세요", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
+{"id": "T163", "type": "multi", "tag": "remove", "cart_before": [{"id": "cola", "qty": 3}], "utterance": "콜라 하나 빼줘", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 2}]}}
+{"id": "T164", "type": "multi", "tag": "remove", "cart_before": [{"id": "shrimp-burger", "qty": 2}, {"id": "cider", "qty": 1}], "utterance": "새우 버거 하나만 빼줘요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger", "qty": 1}, {"id": "cider", "qty": 1}]}}
+{"id": "T165", "type": "multi", "tag": "remove", "cart_before": [{"id": "t-rex-burger-set", "qty": 1}, {"id": "soft-cone", "qty": 2}], "utterance": "아이스크림 콘은 빼주세요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 1}]}}
+{"id": "T166", "type": "multi", "tag": "remove", "cart_before": [{"id": "churros", "qty": 2}, {"id": "water", "qty": 1}], "utterance": "츄러스는 빼고 주세요", "expected": {"action": "update", "cart": [{"id": "water", "qty": 1}]}}
+{"id": "T167", "type": "multi", "tag": "remove", "cart_before": [{"id": "hot-wings", "qty": 1}, {"id": "cola", "qty": 1}], "utterance": "닭날개는 됐어요 빼줘", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 1}]}}
+{"id": "T168", "type": "multi", "tag": "remove", "cart_before": [{"id": "cheese-burger-set", "qty": 1}, {"id": "milk-shake", "qty": 1}], "utterance": "밀크 쉐이크 빼줘요", "expected": {"action": "update", "cart": [{"id": "cheese-burger-set", "qty": 1}]}}
+{"id": "T169", "type": "multi", "tag": "remove", "cart_before": [{"id": "fries", "qty": 2}], "utterance": "감자 튀김 하나 빼줘", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 1}]}}
+{"id": "T170", "type": "multi", "tag": "remove", "cart_before": [{"id": "bulgogi-burger", "qty": 1}, {"id": "teriyaki-burger", "qty": 1}], "utterance": "데리 버거는 빼주세요", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}]}}
+{"id": "T171", "type": "multi", "tag": "qty", "cart_before": [{"id": "cola", "qty": 1}], "utterance": "콜라 두 개로 바꿔줘", "expected": {"action": "update", "cart": [{"id": "cola", "qty": 2}]}}
+{"id": "T172", "type": "multi", "tag": "qty", "cart_before": [{"id": "fries", "qty": 3}], "utterance": "감자 튀김 한 개로 해주세요", "expected": {"action": "update", "cart": [{"id": "fries", "qty": 1}]}}
+{"id": "T173", "type": "multi", "tag": "qty", "cart_before": [{"id": "bulgogi-burger", "qty": 1}], "utterance": "불고기 버거 세 개로 늘려줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 3}]}}
+{"id": "T174", "type": "multi", "tag": "qty", "cart_before": [{"id": "churros", "qty": 2}], "utterance": "츄러스 네 개로 해줘요", "expected": {"action": "update", "cart": [{"id": "churros", "qty": 4}]}}
+{"id": "T175", "type": "multi", "tag": "qty", "cart_before": [{"id": "soft-cone", "qty": 1}], "utterance": "하나 더 줘", "expected": {"action": "update", "cart": [{"id": "soft-cone", "qty": 2}]}}
+{"id": "T176", "type": "multi", "tag": "qty", "cart_before": [{"id": "milk-shake", "qty": 1}], "utterance": "한 개 더 주세요", "expected": {"action": "update", "cart": [{"id": "milk-shake", "qty": 2}]}}
+{"id": "T177", "type": "multi", "tag": "qty", "cart_before": [{"id": "shrimp-burger-set", "qty": 1}], "utterance": "하나 더요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger-set", "qty": 2}]}}
+{"id": "T178", "type": "multi", "tag": "cancel", "cart_before": [{"id": "cola", "qty": 1}, {"id": "fries", "qty": 2}], "utterance": "전부 취소해줘", "expected": {"action": "update", "cart": []}}
+{"id": "T179", "type": "multi", "tag": "cancel", "cart_before": [{"id": "bulgogi-burger-set", "qty": 1}], "utterance": "다 취소해주세요", "expected": {"action": "update", "cart": []}}
+{"id": "T180", "type": "multi", "tag": "cancel", "cart_before": [{"id": "t-rex-burger", "qty": 1}, {"id": "cider", "qty": 1}], "utterance": "전체 다 빼줘", "expected": {"action": "update", "cart": []}}
+{"id": "T181", "type": "multi", "tag": "cancel", "cart_before": [{"id": "churros", "qty": 3}], "utterance": "취소해줘", "expected": {"action": "update", "cart": []}}
+{"id": "T182", "type": "multi", "tag": "cancel", "cart_before": [{"id": "hanwoo-burger-set", "qty": 1}, {"id": "water", "qty": 1}], "utterance": "다 빼주세요", "expected": {"action": "update", "cart": []}}
+{"id": "T183", "type": "multi", "tag": "confirm", "cart_before": [{"id": "bulgogi-burger-set", "qty": 1}], "utterance": "네 맞아요", "expected": {"action": "confirm", "cart": [{"id": "bulgogi-burger-set", "qty": 1}]}}
+{"id": "T184", "type": "multi", "tag": "confirm", "cart_before": [{"id": "cola", "qty": 2}, {"id": "fries", "qty": 1}], "utterance": "그걸로 주문해줘", "expected": {"action": "confirm", "cart": [{"id": "cola", "qty": 2}, {"id": "fries", "qty": 1}]}}
+{"id": "T185", "type": "multi", "tag": "confirm", "cart_before": [{"id": "shrimp-burger", "qty": 1}], "utterance": "응 됐어요", "expected": {"action": "confirm", "cart": [{"id": "shrimp-burger", "qty": 1}]}}
+{"id": "T186", "type": "multi", "tag": "confirm", "cart_before": [{"id": "t-rex-burger-set", "qty": 1}, {"id": "soft-cone", "qty": 1}], "utterance": "주문할게요", "expected": {"action": "confirm", "cart": [{"id": "t-rex-burger-set", "qty": 1}, {"id": "soft-cone", "qty": 1}]}}
+{"id": "T187", "type": "multi", "tag": "confirm", "cart_before": [{"id": "cheese-burger", "qty": 1}], "utterance": "예 확인했어요", "expected": {"action": "confirm", "cart": [{"id": "cheese-burger", "qty": 1}]}}
+{"id": "T188", "type": "multi", "tag": "confirm", "cart_before": [{"id": "hot-wings", "qty": 2}], "utterance": "이대로 계산해주세요", "expected": {"action": "confirm", "cart": [{"id": "hot-wings", "qty": 2}]}}
+{"id": "T189", "type": "multi", "tag": "confirm", "cart_before": [{"id": "teriyaki-burger-set", "qty": 1}], "utterance": "그래 그걸로 줘", "expected": {"action": "confirm", "cart": [{"id": "teriyaki-burger-set", "qty": 1}]}}
+{"id": "T190", "type": "multi", "tag": "confirm", "cart_before": [{"id": "milk-shake", "qty": 1}], "utterance": "맞습니다", "expected": {"action": "confirm", "cart": [{"id": "milk-shake", "qty": 1}]}}
+{"id": "T191", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "뭐가 맛있어요?", "expected": {"action": "recommend"}}
+{"id": "T192", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "추천 좀 해줘", "expected": {"action": "recommend"}}
+{"id": "T193", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "달달한 거 추천해줘", "expected": {"action": "recommend"}}
+{"id": "T194", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "매운 거 추천해주세요", "expected": {"action": "recommend"}}
+{"id": "T195", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "시원한 거 추천해줘요", "expected": {"action": "recommend"}}
+{"id": "T196", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "버거 뭐가 맛있어", "expected": {"action": "recommend"}}
+{"id": "T197", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "치킨 중에 뭐가 좋아요", "expected": {"action": "recommend"}}
+{"id": "T198", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "마실 거 좀 추천해줘", "expected": {"action": "recommend"}}
+{"id": "T199", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "세트 중에 잘 나가는 걸로 추천해줘", "expected": {"action": "recommend"}}
+{"id": "T200", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "아무거나 좋은 거로 줘봐", "expected": {"action": "recommend"}}
+{"id": "T201", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "어르신 입에 맞는 부드러운 거 추천해줘", "expected": {"action": "recommend"}}
+{"id": "T202", "type": "single", "tag": "recommend", "cart_before": [], "utterance": "요즘 인기 있는 게 뭐요", "expected": {"action": "recommend"}}
+{"id": "T203", "type": "single", "tag": "reject", "cart_before": [], "utterance": "짜장면 하나 줘", "expected": {"action": "reject"}}
+{"id": "T204", "type": "single", "tag": "reject", "cart_before": [], "utterance": "김밥 두 줄 주세요", "expected": {"action": "reject"}}
+{"id": "T205", "type": "single", "tag": "reject", "cart_before": [], "utterance": "피자 한 판 줘요", "expected": {"action": "reject"}}
+{"id": "T206", "type": "single", "tag": "reject", "cart_before": [], "utterance": "떡볶이 주세요", "expected": {"action": "reject"}}
+{"id": "T207", "type": "single", "tag": "reject", "cart_before": [], "utterance": "쌍화차 한 잔 줘", "expected": {"action": "reject"}}
+{"id": "T208", "type": "single", "tag": "reject", "cart_before": [], "utterance": "붕어빵 세 개 줘요", "expected": {"action": "reject"}}
+{"id": "T209", "type": "single", "tag": "reject", "cart_before": [], "utterance": "라면 하나 끓여줘", "expected": {"action": "reject"}}
+{"id": "T210", "type": "single", "tag": "reject", "cart_before": [], "utterance": "국밥 한 그릇 주세요", "expected": {"action": "reject"}}
+{"id": "T211", "type": "single", "tag": "reject", "cart_before": [], "utterance": "소주 한 병 줘", "expected": {"action": "reject"}}
+{"id": "T212", "type": "single", "tag": "reject", "cart_before": [], "utterance": "팥빙수 하나 주세요", "expected": {"action": "reject"}}
+{"id": "T213", "type": "multi", "tag": "set_convert", "cart_before": [{"id": "bulgogi-burger", "qty": 1}], "utterance": "세트로 바꿔줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger-set", "qty": 1}]}}
+{"id": "T214", "type": "multi", "tag": "set_convert", "cart_before": [{"id": "shrimp-burger", "qty": 1}], "utterance": "그거 세트로 해주세요", "expected": {"action": "update", "cart": [{"id": "shrimp-burger-set", "qty": 1}]}}
+{"id": "T215", "type": "multi", "tag": "set_convert", "cart_before": [{"id": "t-rex-burger", "qty": 2}], "utterance": "둘 다 세트로 바꿔줘요", "expected": {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 2}]}}
+{"id": "T216", "type": "single", "tag": "hard", "cart_before": [], "utterance": "불고기 버거 하나랑 콜라 하나 줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}, {"id": "cola", "qty": 1}]}}
+{"id": "T217", "type": "single", "tag": "hard", "cart_before": [], "utterance": "손주 줄 아이스께끼 두 개 주쇼", "expected": {"action": "clarify"}}
+{"id": "T218", "type": "single", "tag": "hard", "cart_before": [], "utterance": "여기 젤 잘 나가는 버거가 뭐요", "expected": {"action": "recommend"}}
+{"id": "T219", "type": "single", "tag": "hard", "cart_before": [], "utterance": "이가 안 좋아서 부드러운 걸로 추천해줘", "expected": {"action": "recommend"}}
+{"id": "T220", "type": "single", "tag": "hard", "cart_before": [], "utterance": "커피 말고 다른 마실 거 뭐 있어", "expected": {"action": "recommend"}}
+{"id": "T221", "type": "multi", "tag": "hard", "cart_before": [{"id": "bulgogi-burger", "qty": 1}, {"id": "cola", "qty": 1}], "utterance": "불고기 버거 말고 새우 버거로 바꿔줘", "expected": {"action": "update", "cart": [{"id": "shrimp-burger", "qty": 1}, {"id": "cola", "qty": 1}]}}
+{"id": "T222", "type": "multi", "tag": "hard", "cart_before": [{"id": "bulgogi-burger", "qty": 1}], "utterance": "안 시켰던 걸로 하나 더 뭐 주지? 콜라나 줘", "expected": {"action": "update", "cart": [{"id": "bulgogi-burger", "qty": 1}, {"id": "cola", "qty": 1}]}}

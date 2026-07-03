@@ -5,9 +5,11 @@ import type { CartItem, MenuItem } from "../types";
 
 const CATEGORIES = [
   { id: "recommend", label: "추천메뉴" },
+  { id: "set", label: "세트" },
   { id: "burger", label: "햄버거" },
-  { id: "dessert", label: "디저트/치킨" },
-  { id: "drink", label: "음료/커피" },
+  { id: "chicken", label: "치킨" },
+  { id: "side", label: "사이드" },
+  { id: "dessert-drink", label: "디저트·음료" },
 ] as const;
 
 type CategoryId = (typeof CATEGORIES)[number]["id"];
@@ -25,9 +27,11 @@ type Props = {
 };
 
 function itemCategory(item: MenuItem): CategoryId {
+  if (item.category === "세트") return "set";
   if (item.category === "햄버거") return "burger";
-  if (item.category === "치킨" || item.category === "먹을 것") return "dessert";
-  return "drink";
+  if (item.category === "치킨") return "chicken";
+  if (item.category === "사이드") return "side";
+  return "dessert-drink";
 }
 
 function filterByCategory(items: MenuItem[], catId: CategoryId): MenuItem[] {

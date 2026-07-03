@@ -191,7 +191,7 @@ export default function App() {
           menu={menu}
           qty={detailQty}
           onQtyChange={setDetailQty}
-          onOrder={() => addToCart(selectedMenuId, detailQty)}
+          onOrder={(id) => addToCart(id, detailQty)}
           onBack={() => setScreen("menu-list")}
         />
       ) : null}

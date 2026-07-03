@@ -23,6 +23,9 @@ export type MenuItem = {
   temp: "hot" | "ice" | "none" | string;
   tags?: string[];
   popular?: boolean;
+  allergens?: string[];
+  set_of?: string;
+  set_includes?: string[];
 };
 
 export type CartItem = {

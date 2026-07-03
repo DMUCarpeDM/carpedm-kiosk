@@ -1414,6 +1414,22 @@ button.lotte-menu-footer__a11y-btn {
   gap: 14px;
 }
 
+.lotte-detail-note {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #4a443b;
+  line-height: 1.5;
+}
+
+.lotte-detail-note--allergy {
+  color: #9c2b2e;
+  background: #fdeceb;
+  border: 2px solid #f3c1bf;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
 .lotte-detail-check {
   display: flex;
   align-items: center;

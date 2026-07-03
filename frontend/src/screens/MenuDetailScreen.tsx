@@ -3,28 +3,10 @@ import { formatMenuPrice, formatPrice, menuById, menuDisplayName, menuSubName } 
 import { menuImageSrc } from "../menuImages";
 import { OptionChip, QuantitySelector } from "../components";
 import {
-  BURGER_EXTRAS,
-  BURGER_ORDER_TYPES,
-  BURGER_SIDES,
-  CHICKEN_ORDER_TYPES,
-  CHICKEN_SAUCES,
-  CHICKEN_SIDES,
-  COFFEE_EXTRAS,
-  DESSERT_EXTRAS,
-  DRINK_SIZES,
-  ICE_LEVELS,
-  SET_DRINKS,
-  calcUnitPrice,
   classifyMenuItem,
-  defaultBurgerState,
-  defaultChickenState,
-  defaultDessertState,
-  defaultDrinkState,
-  toggleSet,
-  type BurgerDetailState,
-  type ChickenDetailState,
-  type DessertDetailState,
-  type DrinkDetailState,
+  findSetVariant,
+  findSingleVariant,
+  kindLabel,
 } from "../menuDetailConfig";
 import type { MenuItem } from "../types";
 
@@ -33,17 +15,12 @@ type Props = {
   menu: MenuItem[];
   qty: number;
   onQtyChange: (qty: number) => void;
-  onOrder: () => void;
+  /** 실제 담을 메뉴 id를 넘긴다 — 단품/세트 전환 시 id가 바뀔 수 있다 */
+  onOrder: (id: string) => void;
   onBack: () => void;
 };
 
-function DetailSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
+function DetailSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="lotte-detail-section" aria-label={title}>
       <h3 className="lotte-detail-section__title">{title}</h3>
@@ -52,89 +29,21 @@ function DetailSection({
   );
 }
 
-function CheckOptions({
-  options,
-  selected,
-  onToggle,
-}: {
-  options: readonly { key: string; label: string; extra: number }[];
-  selected: Set<string>;
-  onToggle: (key: string) => void;
-}) {
-  return (
-    <div className="lotte-detail-section__checks">
-      {options.map((opt) => (
-        <label key={opt.key} className="lotte-detail-check">
-          <input
-            type="checkbox"
-            checked={selected.has(opt.key)}
-            onChange={() => onToggle(opt.key)}
-          />
-          <span>
-            {opt.label}
-            {opt.extra > 0 ? ` +${opt.extra.toLocaleString("ko-KR")}원` : ""}
-          </span>
-        </label>
-      ))}
-    </div>
-  );
-}
-
-function ChipOptions({
-  options,
-  selected,
-  onSelect,
-}: {
-  options: readonly { key: string; label: string }[];
-  selected: string;
-  onSelect: (key: string) => void;
-}) {
-  return (
-    <div className="lotte-detail-section__chips">
-      {options.map((opt) => (
-        <OptionChip
-          key={opt.key}
-          label={opt.label}
-          selected={selected === opt.key}
-          onClick={() => onSelect(opt.key)}
-        />
-      ))}
-    </div>
-  );
-}
-
-export function MenuDetailScreen({
-  menuId,
-  menu,
-  qty,
-  onQtyChange,
-  onOrder,
-  onBack,
-}: Props) {
+export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBack }: Props) {
   const item = menuById(menu, menuId);
   const classification = item ? classifyMenuItem(item) : null;
 
-  const [burger, setBurger] = useState<BurgerDetailState>(defaultBurgerState);
-  const [chicken, setChicken] = useState<ChickenDetailState>(defaultChickenState);
-  const [drink, setDrink] = useState<DrinkDetailState>(() =>
-    item ? defaultDrinkState(item) : { size: "R", ice: "normal", extras: new Set() },
-  );
-  const [dessert, setDessert] = useState<DessertDetailState>(defaultDessertState);
+  // 단품 ↔ 세트 전환: 화면에 열린 항목과 상관없이 "지금 선택된 실제 메뉴"를 추적한다
+  const [chosenId, setChosenId] = useState(menuId);
 
-  const unitPrice = useMemo(() => {
-    if (!item || !classification) return 0;
-    return calcUnitPrice(
-      item,
-      classification.kind,
-      classification.drinkSubtype,
-      burger,
-      chicken,
-      drink,
-      dessert,
-    );
-  }, [item, classification, burger, chicken, drink, dessert]);
+  const chosen = menuById(menu, chosenId) ?? item;
+  const setVariant = item ? (findSetVariant(menu, item) ?? (findSingleVariant(menu, item) ? item : null)) : null;
+  const singleVariant = item ? (findSingleVariant(menu, item) ?? (findSetVariant(menu, item) ? item : null)) : null;
 
-  if (!item || !classification) {
+  const unitPrice = chosen?.price ?? 0;
+  const total = useMemo(() => unitPrice * qty, [unitPrice, qty]);
+
+  if (!item || !classification || !chosen) {
     return (
       <div className="screen screen--lotte-page">
         <div className="lotte-page-top">
@@ -148,10 +57,10 @@ export function MenuDetailScreen({
     );
   }
 
-  const total = unitPrice * qty;
-  const { kind, drinkSubtype } = classification;
-  const showIce = kind === "drink" && (drinkSubtype === "carbonated" || item.temp === "ice");
-  const showCoffeeExtras = kind === "drink" && drinkSubtype === "coffee";
+  const { kind } = classifyMenuItem(chosen);
+  const canChooseSet = Boolean(setVariant && singleVariant);
+  const allergens = chosen.allergens ?? [];
+  const setIncludes = chosen.set_includes ?? [];
 
   return (
     <div className="screen screen--lotte-page screen--lotte-detail">
@@ -163,156 +72,48 @@ export function MenuDetailScreen({
         <button type="button" className="lotte-page-top__back" onClick={onBack} aria-label="메뉴 목록으로">
           ‹
         </button>
-        <h1 className="lotte-page-top__title">{menuDisplayName(item)}</h1>
+        <h1 className="lotte-page-top__title">{menuDisplayName(chosen)}</h1>
       </header>
 
       <main className="lotte-detail-body">
         <div className="lotte-detail-hero">
           <div className="lotte-detail-hero__img-wrap">
-            <img src={menuImageSrc(item)} alt="" className="lotte-detail-hero__img" />
+            <img src={menuImageSrc(chosen)} alt="" className="lotte-detail-hero__img" />
           </div>
           <div className="lotte-detail-hero__info">
-            <h2 className="lotte-detail-hero__name">{menuDisplayName(item)}</h2>
-            {menuSubName(item) ? <p className="lotte-detail-hero__sub">{menuSubName(item)}</p> : null}
-            <p className="lotte-detail-hero__price">{formatMenuPrice(item.price)}</p>
-            <p className="lotte-detail-hero__kind">
-              {kind === "burger" && "햄버거"}
-              {kind === "chicken" && "치킨"}
-              {kind === "drink" && "음료"}
-              {kind === "dessert" && "디저트"}
-            </p>
+            <h2 className="lotte-detail-hero__name">{menuDisplayName(chosen)}</h2>
+            {menuSubName(chosen) ? <p className="lotte-detail-hero__sub">{menuSubName(chosen)}</p> : null}
+            <p className="lotte-detail-hero__price">{formatMenuPrice(chosen.price)}</p>
+            <p className="lotte-detail-hero__kind">{kindLabel(kind)}</p>
           </div>
         </div>
 
-        {kind === "burger" ? (
-          <>
-            <DetailSection title="주문 유형">
-              <ChipOptions
-                options={BURGER_ORDER_TYPES}
-                selected={burger.orderType}
-                onSelect={(key) =>
-                  setBurger((s) => ({
-                    ...s,
-                    orderType: key as BurgerDetailState["orderType"],
-                  }))
-                }
+        {canChooseSet && setVariant && singleVariant ? (
+          <DetailSection title="주문 유형">
+            <div className="lotte-detail-section__chips">
+              <OptionChip
+                label={`단품 ${formatMenuPrice(singleVariant.price)}`}
+                selected={chosenId === singleVariant.id}
+                onClick={() => setChosenId(singleVariant.id)}
               />
-            </DetailSection>
-
-            {burger.orderType === "set" ? (
-              <DetailSection title="세트 음료 선택">
-                <ChipOptions
-                  options={SET_DRINKS}
-                  selected={burger.setDrink}
-                  onSelect={(key) =>
-                    setBurger((s) => ({
-                      ...s,
-                      setDrink: key as BurgerDetailState["setDrink"],
-                    }))
-                  }
-                />
-              </DetailSection>
-            ) : null}
-
-            <DetailSection title="버거 변경">
-              <CheckOptions
-                options={BURGER_EXTRAS}
-                selected={burger.extras}
-                onToggle={(key) => setBurger((s) => ({ ...s, extras: toggleSet(s.extras, key) }))}
+              <OptionChip
+                label={`세트 ${formatMenuPrice(setVariant.price)}`}
+                selected={chosenId === setVariant.id}
+                onClick={() => setChosenId(setVariant.id)}
               />
-            </DetailSection>
-
-            <DetailSection title="사이드 추가">
-              <CheckOptions
-                options={BURGER_SIDES}
-                selected={burger.sides}
-                onToggle={(key) => setBurger((s) => ({ ...s, sides: toggleSet(s.sides, key) }))}
-              />
-            </DetailSection>
-          </>
+            </div>
+          </DetailSection>
         ) : null}
 
-        {kind === "chicken" ? (
-          <>
-            <DetailSection title="주문 유형">
-              <ChipOptions
-                options={CHICKEN_ORDER_TYPES}
-                selected={chicken.orderType}
-                onSelect={(key) =>
-                  setChicken((s) => ({
-                    ...s,
-                    orderType: key as ChickenDetailState["orderType"],
-                  }))
-                }
-              />
-            </DetailSection>
-
-            <DetailSection title="소스 선택">
-              <ChipOptions
-                options={CHICKEN_SAUCES}
-                selected={chicken.sauce}
-                onSelect={(key) =>
-                  setChicken((s) => ({
-                    ...s,
-                    sauce: key as ChickenDetailState["sauce"],
-                  }))
-                }
-              />
-            </DetailSection>
-
-            <DetailSection title="사이드 추가">
-              <CheckOptions
-                options={CHICKEN_SIDES}
-                selected={chicken.sides}
-                onToggle={(key) => setChicken((s) => ({ ...s, sides: toggleSet(s.sides, key) }))}
-              />
-            </DetailSection>
-          </>
+        {setIncludes.length > 0 ? (
+          <DetailSection title="세트 구성">
+            <p className="lotte-detail-note">버거 + {setIncludes.join(" + ")}</p>
+          </DetailSection>
         ) : null}
 
-        {kind === "drink" ? (
-          <>
-            <DetailSection title="사이즈">
-              <ChipOptions
-                options={DRINK_SIZES}
-                selected={drink.size}
-                onSelect={(key) =>
-                  setDrink((s) => ({ ...s, size: key as DrinkDetailState["size"] }))
-                }
-              />
-            </DetailSection>
-
-            {showIce ? (
-              <DetailSection title="얼음량">
-                <ChipOptions
-                  options={ICE_LEVELS}
-                  selected={drink.ice}
-                  onSelect={(key) =>
-                    setDrink((s) => ({ ...s, ice: key as DrinkDetailState["ice"] }))
-                  }
-                />
-              </DetailSection>
-            ) : null}
-
-            {showCoffeeExtras ? (
-              <DetailSection title="추가 옵션">
-                <CheckOptions
-                  options={COFFEE_EXTRAS}
-                  selected={drink.extras}
-                  onToggle={(key) => setDrink((s) => ({ ...s, extras: toggleSet(s.extras, key) }))}
-                />
-              </DetailSection>
-            ) : null}
-          </>
-        ) : null}
-
-        {kind === "dessert" ? (
-          <DetailSection title="추가 토핑">
-            <CheckOptions
-              options={DESSERT_EXTRAS}
-              selected={dessert.extras}
-              onToggle={(key) => setDessert((s) => ({ ...s, extras: toggleSet(s.extras, key) }))}
-            />
+        {allergens.length > 0 ? (
+          <DetailSection title="알레르기 주의">
+            <p className="lotte-detail-note lotte-detail-note--allergy">{allergens.join(", ")} 이(가) 들어 있어요.</p>
           </DetailSection>
         ) : null}
 
@@ -343,7 +144,7 @@ export function MenuDetailScreen({
           <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--cancel" onClick={onBack}>
             취소하기
           </button>
-          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--pay" onClick={onOrder}>
+          <button type="button" className="lotte-menu-footer__btn lotte-menu-footer__btn--pay" onClick={() => onOrder(chosen.id)}>
             담기
           </button>
         </div>

@@ -59,7 +59,7 @@ def test_expressions_reference_valid_ids():
 def test_testset_schema_and_count():
     lines = (ROOT / "data" / "testset.jsonl").read_text(encoding="utf-8").splitlines()
     cases = [json.loads(l) for l in lines if l.strip()]
-    assert len(cases) == 200  # 단일 145 + 멀티턴 46 + 추천 9
+    assert len(cases) >= 200  # scripts/gen_testset.py로 생성 (롯데리아 v1: 222건)
     for c in cases:
         assert c["type"] in {"single", "multi"}
         assert c["expected"]["action"] in {"update", "confirm", "clarify", "reject", "recommend"}
@@ -99,18 +99,18 @@ def test_rule_ambiguous_clarifies_not_guesses():
 
 
 def test_rule_multiturn_remove():
-    r = run("콜라는 빼줘", [{"id": "cola", "qty": 1}, {"id": "castella", "qty": 1}])
-    assert r.action == "update" and carts(r) == [("castella", 1)]
+    r = run("콜라는 빼줘", [{"id": "cola", "qty": 1}, {"id": "fries", "qty": 1}])
+    assert r.action == "update" and carts(r) == [("fries", 1)]
 
 
 def test_rule_cancel_all():
-    r = run("전부 취소해줘", [{"id": "cola", "qty": 1}, {"id": "yakgwa", "qty": 2}])
+    r = run("전부 취소해줘", [{"id": "cola", "qty": 1}, {"id": "churros", "qty": 2}])
     assert r.action == "update" and r.cart == []
 
 
 def test_rule_one_more():
-    r = run("하나 더 줘", [{"id": "sikhye", "qty": 1}])
-    assert r.action == "update" and carts(r) == [("sikhye", 2)]
+    r = run("하나 더 줘", [{"id": "milk-shake", "qty": 1}])
+    assert r.action == "update" and carts(r) == [("milk-shake", 2)]
 
 
 def test_rule_confirm():
@@ -144,8 +144,24 @@ def test_specific_menu_not_treated_as_recommend():
 
 
 def test_rule_quantity_parse():
-    r = run("약과 세 개 줘")
-    assert carts(r) == [("yakgwa", 3)]
+    r = run("츄러스 세 개 줘")
+    assert carts(r) == [("churros", 3)]
+
+
+def test_rule_set_menu_direct():
+    r = run("불고기 버거 세트 하나 주세요")
+    assert r.action == "update" and carts(r) == [("bulgogi-burger-set", 1)]
+
+
+def test_rule_qty_word_not_confirm():
+    # "네 개"의 '네'가 확정으로 오인되지 않아야 한다
+    r = run("불고기 버거 네 개 줘", [{"id": "cola", "qty": 1}])
+    assert r.action == "update" and carts(r) == [("bulgogi-burger", 4), ("cola", 1)]
+
+
+def test_rule_replace_item():
+    r = run("불고기 버거 말고 새우 버거로 바꿔줘", [{"id": "bulgogi-burger", "qty": 1}])
+    assert r.action == "update" and carts(r) == [("shrimp-burger", 1)]
 
 
 # ── API + 로깅 (FR-B1/D1, P-6) ───────────────────────
