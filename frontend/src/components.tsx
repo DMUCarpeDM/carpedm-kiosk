@@ -172,8 +172,8 @@ export function recommendReason(item: MenuItem): string {
   const tags = item.tags ?? [];
   if (tags.includes("맵다")) return "매콤한 맛";
   if (tags.includes("달다")) return "달콤한 맛";
-  if (tags.includes("부드럽다")) return "부드러워요";
-  if (tags.includes("바삭하다")) return "바삭해요";
-  if (tags.includes("신메뉴")) return "새로 나왔어요";
+  if (tags.includes("부드럽다")) return "부드러운 맛";
+  if (tags.includes("바삭하다")) return "바삭한 식감";
+  if (tags.includes("신메뉴")) return "신메뉴";
   return "추천 메뉴";
 }

@@ -33,6 +33,7 @@ from backend.interpreter import (
     load_menu,
     make_provider,
 )
+from backend.presence import PresenceMonitor
 from backend.providers.stt import SttError, make_stt_provider
 from backend.providers.tts import TtsError, make_tts_provider
 
@@ -52,6 +53,7 @@ PROVIDER = make_provider()
 FALLBACK = RuleProvider()
 STT = make_stt_provider(MENU)
 TTS = make_tts_provider()
+PRESENCE = PresenceMonitor.from_env()  # PIR 미장착 환경에서는 자동 비활성
 
 
 class InterpretReq(BaseModel):
@@ -84,7 +86,7 @@ def run_interpret(utterance: str, cart: list[CartItem]) -> tuple[InterpretResult
                 InterpretResult(
                     action="clarify",
                     cart=cart,
-                    question="죄송해요, 잘 알아듣지 못했어요. 화면의 큰 버튼으로 골라 주셔도 돼요.",
+                    question="죄송합니다. 잘 알아듣지 못했습니다. 화면에서 직접 선택하실 수도 있습니다.",
                     provider="error",
                 ),
                 fallback_used,
@@ -104,12 +106,19 @@ def healthz():
         "provider": PROVIDER.name,
         "stt": STT.name if STT else None,
         "tts": TTS.name if TTS else None,
+        "pir": PRESENCE.enabled,
     }
 
 
 @app.get("/api/menu")
 def get_menu():
     return {"items": list(MENU.values())}
+
+
+@app.get("/api/presence")
+def presence():
+    """PIR 인체 감지 상태 — 프론트 대기 화면이 2초 간격으로 조회한다."""
+    return PRESENCE.status()
 
 
 @app.post("/api/interpret")
@@ -182,7 +191,7 @@ async def order(
             "ok": False,
             "stage": "stt",
             "session_id": sid,
-            "message": "말씀이 잘 들리지 않았어요. 다시 한 번 천천히 말씀해 주세요.",
+            "message": "음성이 잘 들리지 않았습니다. 다시 한 번 말씀해 주세요.",
         }
 
     # 2) 해석

@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import { fetchMenu, fetchTtsAudio, interpretUtterance, menuById } from "./api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { fetchMenu, fetchPresence, fetchTtsAudio, interpretUtterance, menuById } from "./api";
 import { A11yBar, StepBar, TopBar } from "./components";
 import { IconBell } from "./icons";
 import { isLocalConfirmFallback, viewFromInterpret } from "./interpretFlow";
 import { playSpeech } from "./speech";
 import { AllergyGate } from "./screens/AllergyGate";
+import { AttractOverlay } from "./screens/AttractOverlay";
 import { MainScreen } from "./screens/MainScreen";
 import { MenuDetailScreen } from "./screens/MenuDetailScreen";
 import { MenuListScreen } from "./screens/MenuListScreen";
@@ -45,6 +46,11 @@ export default function App() {
   const [gateOpen, setGateOpen] = useState(false); // 결제 전 알레르기 확인
   const [helpOpen, setHelpOpen] = useState(false); // 직원 호출
 
+  // 대기(어트랙트) 화면 + PIR 인체 감지 — ?attract=1 로 강제 표시(시연·검증용)
+  const [attract, setAttract] = useState(() => new URLSearchParams(window.location.search).has("attract"));
+  const prevPresentRef = useRef(false);
+  const IDLE_TO_ATTRACT_MS = 45000;
+
   const loadMenu = useCallback(async () => {
     try {
       const items = await fetchMenu();
@@ -52,7 +58,7 @@ export default function App() {
       setMenuError(null);
       setApiDown(false);
     } catch {
-      setMenuError("메뉴를 불러오지 못했어요. 백엔드 서버가 켜져 있는지 확인해 주세요.");
+      setMenuError("메뉴를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
       setApiDown(true);
     }
   }, []);
@@ -60,6 +66,51 @@ export default function App() {
   useEffect(() => {
     void loadMenu();
   }, [loadMenu]);
+
+  // 첫 화면에서 45초간 조작이 없으면 대기 화면으로
+  useEffect(() => {
+    if (screen !== "main" || attract) return;
+    let timer = window.setTimeout(() => setAttract(true), IDLE_TO_ATTRACT_MS);
+    const reset = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setAttract(true), IDLE_TO_ATTRACT_MS);
+    };
+    window.addEventListener("pointerdown", reset);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", reset);
+    };
+  }, [screen, attract]);
+
+  /** 대기 화면 해제 — PIR 감지로 깨어난 경우에는 인사 음성도 나간다 */
+  const wake = useCallback((greet: boolean) => {
+    setAttract(false);
+    if (greet) {
+      const say = "어서 오세요, 롯데리아입니다. 화면을 터치하시면 주문이 시작됩니다.";
+      void (async () => {
+        const audio = await fetchTtsAudio(say);
+        void playSpeech(say, audio?.b64, audio?.mime);
+      })();
+    }
+  }, []);
+
+  // 대기 화면 동안 PIR 상태를 2초 간격으로 확인 — 손님이 다가오면 깨어난다
+  useEffect(() => {
+    if (!attract) return;
+    const iv = window.setInterval(() => {
+      void (async () => {
+        const p = await fetchPresence();
+        if (!p?.enabled) return;
+        if (p.present && !prevPresentRef.current) {
+          prevPresentRef.current = true;
+          wake(true);
+        } else if (!p.present) {
+          prevPresentRef.current = false;
+        }
+      })();
+    }, 2000);
+    return () => window.clearInterval(iv);
+  }, [attract, wake]);
 
   const goMain = useCallback(() => {
     setScreen("main");
@@ -165,7 +216,7 @@ export default function App() {
       setVoiceAudio(null);
       setVoiceView({
         kind: "reject",
-        text: "서버에 연결할 수 없어요. 메뉴를 직접 골라 주시거나, 서버를 켠 뒤 다시 시도해 주세요.",
+        text: "서버에 연결할 수 없습니다. 메뉴판에서 직접 선택해 주세요.",
       });
       setScreen("voice-result");
     }
@@ -230,7 +281,7 @@ export default function App() {
 
   return (
     <div className={appClass}>
-      <div className="lk-low-notice">아래쪽 화면으로 편하게 이용하세요</div>
+      <div className="lk-low-notice">화면을 아래쪽으로 낮췄습니다</div>
       <div className="lk-viewport">
         <TopBar dining={dining} onHome={goMain} showHome={screen !== "main"} />
         <StepBar
@@ -357,24 +408,26 @@ export default function App() {
             <span className="lk-modal__badge lk-modal__badge--help">
               <IconBell size={34} />
             </span>
-            <h2 className="lk-modal__title">직원을 불렀어요</h2>
+            <h2 className="lk-modal__title">직원을 호출했습니다</h2>
             <p className="lk-modal__sub">
-              잠시만 기다려 주세요. 직원이 곧 도와드리러 갑니다.
+              잠시만 기다려 주세요. 직원이 곧 도와드리겠습니다.
               <br />
-              그동안 화면은 그대로 두셔도 돼요.
+              화면은 그대로 두셔도 됩니다.
             </p>
             <div className="lk-modal__actions">
               <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={() => setHelpOpen(false)}>
-                알겠어요
+                확인
               </button>
             </div>
           </div>
         </div>
       ) : null}
 
+      {attract ? <AttractOverlay onWake={() => wake(false)} /> : null}
+
       {apiDown && screen !== "main" ? (
         <p className="lk-api-banner" role="status">
-          서버 연결 끊김 — 음성 해석이 제한될 수 있어요
+          서버 연결이 원활하지 않습니다 — 음성 주문이 제한될 수 있습니다
         </p>
       ) : null}
     </div>

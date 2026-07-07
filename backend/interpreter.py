@@ -116,7 +116,7 @@ SYSTEM_TMPL = """너는 고령 어르신을 돕는 롯데리아(햄버거 가게
 7) action=recommend: 사용자가 추천을 청하거나("뭐가 맛있어?", "따뜻한 거 추천해줘", "아무거나 좋은 거") 무엇을 고를지 망설일 때. suggestions에 추천 메뉴 id를 1~3개 담고(반드시 아래 [메뉴]의 id), reply에 왜 추천하는지 쉬운 말로 1~2문장. cart는 현재 그대로. 사용자가 조건을 말하면(따뜻한/시원한/달달한/부드러운 등) 거기 맞춰 고른다.
 8) cart와 suggestions의 id는 위 [메뉴]의 id만 쓴다. 메뉴 이름·가격을 창작하지 않는다.
 9) 추가/수량 변경/항목 제거/전체 취소/확인/추천 외의 요청(환불, 배달, 잡담 등)은 clarify로 공손히 되묻는다.
-10) reply와 question은 쉬운 우리말 존댓말 1~2문장. 외래어 최소화. 재촉하지 않는다. 어르신이 겁먹지 않도록 부드럽고 따뜻하게 말한다.
+10) reply와 question은 쉬운 우리말의 정중한 존댓말(-습니다체) 1~2문장. 외래어·감탄사·과장 표현은 쓰지 않는다. 재촉하지 않는다.
 11) 온도(뜨거운/시원한)가 필요한 메뉴인데 온도를 말하지 않았으면 clarify로 묻는다. 단 추천(recommend) 상황에서는 적절히 골라 제안해도 된다.
 12) '세트'는 버거에 감자 튀김과 콜라가 함께 나오는 메뉴다. "~세트", "세트로 줘"라고 하면 분류가 '세트'인 id를 담는다. 장바구니의 버거를 "세트로 바꿔줘"라고 하면 그 버거를 빼고 같은 버거의 세트 id로 바꾼 최종 장바구니를 반환한다.
 13) 메뉴 이름(쉬운 이름·원래 이름)과 정확히 일치하게 말하면 되묻지 말고 바로 그 메뉴로 update한다. 위 [표현 사전]에 있는 표현은 그 매핑을 그대로 따른다 — 후보가 1개면 비슷한 다른 메뉴가 있어도 되묻지 않고 확정한다. 후보가 2개 이상일 때만 clarify.
@@ -384,7 +384,7 @@ class RuleProvider:
                 {
                     "action": "recommend",
                     "suggestions": sugg,
-                    "reply": f"손님들이 많이 찾으시는 걸로 골라 봤어요. {names} 어떠세요? 화면에서 눌러 담으셔도 돼요.",
+                    "reply": f"손님들이 많이 찾는 메뉴입니다. {names} 어떠세요? 화면에서 선택하실 수도 있습니다.",
                 },
                 cart, menu, self.name,
             )
@@ -393,12 +393,12 @@ class RuleProvider:
 
         # 1) 확정 — 메뉴 언급이 없을 때만 ("불고기 버거 네 개"의 '네'를 확정으로 오인 방지)
         if cart and not matches and len(u) <= 25 and CONFIRM_RE.search(u) and not NEG_RE.search(u):
-            return finalize({"action": "confirm", "reply": "주문을 확정할게요."}, cart, menu, self.name)
+            return finalize({"action": "confirm", "reply": "주문을 확정하겠습니다."}, cart, menu, self.name)
 
         # 2) 전체 취소
         if CANCEL_ALL_RE.search(u):
             return finalize(
-                {"action": "update", "cart": [], "reply": "전부 취소했어요."}, cart, menu, self.name
+                {"action": "update", "cart": [], "reply": "전부 취소했습니다."}, cart, menu, self.name
             )
 
         # 3) 항목 제거 / 교체 (장바구니 안 항목 언급 + 동사)
@@ -417,14 +417,14 @@ class RuleProvider:
                         cart_map.pop(t, None)
                     else:
                         cart_map[t] = new_val
-                reply = "뺐어요."
+                reply = "담은 메뉴에서 뺐습니다."
                 # "A 말고 B로" — 장바구니에 없는 단일 후보는 교체로 보고 새로 담는다
                 if re.search(r"말고|대신", u):
                     for _, ids in matches:
                         ids2 = self._temp_filter(ids, u, menu, expressions)
                         if len(set(ids2)) == 1 and ids2[0] not in targets and ids2[0] not in cart_map:
                             cart_map[ids2[0]] = 1
-                            reply = "바꿨어요."
+                            reply = "변경했습니다."
                 new_cart = [{"id": k, "qty": v} for k, v in cart_map.items()]
                 return finalize(
                     {"action": "update", "cart": new_cart, "reply": reply}, cart, menu, self.name
@@ -439,7 +439,7 @@ class RuleProvider:
             cart_map[last.id] = cart_map[last.id] + 1
             new_cart = [{"id": k, "qty": v} for k, v in cart_map.items()]
             return finalize(
-                {"action": "update", "cart": new_cart, "reply": "하나 더 담았어요."},
+                {"action": "update", "cart": new_cart, "reply": "하나 더 담았습니다."},
                 cart, menu, self.name,
             )
 
@@ -450,7 +450,7 @@ class RuleProvider:
                 cart_map[targets[0]] = self._qty(u)
                 new_cart = [{"id": k, "qty": v} for k, v in cart_map.items()]
                 return finalize(
-                    {"action": "update", "cart": new_cart, "reply": "수량을 바꿨어요."},
+                    {"action": "update", "cart": new_cart, "reply": "수량을 변경했습니다."},
                     cart, menu, self.name,
                 )
 
@@ -499,7 +499,7 @@ class RuleProvider:
                     cart_map[sid] = cart_map.get(sid, 0) + qty
             new_cart = [{"id": k, "qty": v} for k, v in cart_map.items()]
             return finalize(
-                {"action": "update", "cart": new_cart, "reply": "담았어요."}, cart, menu, self.name
+                {"action": "update", "cart": new_cart, "reply": "담았습니다."}, cart, menu, self.name
             )
         if ambiguous:
             names = ", ".join(menu[i]["easy_name"] for i in ambiguous[0][:4])
@@ -511,7 +511,7 @@ class RuleProvider:
         # 7) Reject — no menu items matched but utterance looks like a food order
         if not matches and FOOD_CONTEXT_RE.search(u):
             return finalize(
-                {"action": "reject", "reply": "죄송해요, 저희 매장에는 해당 메뉴가 없어요. 다른 메뉴를 골라 주시겠어요?"},
+                {"action": "reject", "reply": "죄송합니다. 저희 매장에 없는 메뉴입니다. 다른 메뉴를 선택해 주시겠어요?"},
                 cart, menu, self.name,
             )
 

@@ -24,7 +24,7 @@ export function OrderCompleteScreen({ orderNo, dining, cart, menu, onHome }: Pro
 
   // 주문 완료 음성 안내 (자막은 화면 전체가 대신한다)
   useEffect(() => {
-    const say = `주문이 완료되었습니다. 주문 번호는 ${orderNo}번이에요. 번호가 뜨면 카운터에서 받아 가세요. 감사합니다.`;
+    const say = `주문이 완료되었습니다. 주문 번호는 ${orderNo}번입니다. 카운터 화면에 번호가 표시되면 받아 가세요. 감사합니다.`;
     let cancelled = false;
     void (async () => {
       const audio = await fetchTtsAudio(say);
@@ -50,7 +50,7 @@ export function OrderCompleteScreen({ orderNo, dining, cart, menu, onHome }: Pro
       </span>
       <h1 className="lk-complete__title">주문이 완료되었습니다</h1>
       <p className="lk-complete__dine">
-        {dining === "togo" ? "포장 주문이에요. 카운터에서 받아 가세요." : "매장 식사예요. 자리에 앉아 계세요."}
+        {dining === "togo" ? "포장 주문입니다. 카운터에서 받아 가세요." : "매장 식사 주문입니다. 잠시 후 준비해 드리겠습니다."}
       </p>
 
       <p className="lk-complete__no-label">주문 번호</p>
@@ -77,10 +77,10 @@ export function OrderCompleteScreen({ orderNo, dining, cart, menu, onHome }: Pro
         </div>
       ) : null}
 
-      <p className="lk-complete__hint">번호가 화면에 뜨면 카운터에서 받아 가세요.</p>
+      <p className="lk-complete__hint">카운터 화면에 번호가 표시되면 받아 가세요.</p>
 
       <button type="button" className="lk-complete__home" onClick={onHome}>
-        처음 화면으로 ({left}초 후 자동 이동)
+        처음으로 ({left}초 후 자동 이동)
       </button>
     </div>
   );

@@ -60,7 +60,7 @@ export function VoiceResultScreen({
   return (
     <div className="lk-result">
       <section className="lk-quote">
-        <p className="lk-quote__label">고객님이 말씀하신 내용</p>
+        <p className="lk-quote__label">말씀하신 내용</p>
         <p className="lk-quote__text">“{utterance}”</p>
       </section>
 
@@ -118,14 +118,14 @@ export function VoiceResultScreen({
 
       {cart.length > 0 ? (
         <div className="lk-result__cartline">
-          <span>지금까지 담은 것 {count}개</span>
+          <span>담은 메뉴 {count}개</span>
           <strong>{total.toLocaleString("ko-KR")}원</strong>
         </div>
       ) : null}
 
       <div className="lk-result__microw">
         <MicButton active={false} onClick={onRetry} />
-        <p className="lk-result__michint">단추를 누르고 이어서 말씀하세요</p>
+        <p className="lk-result__michint">버튼을 누르고 이어서 말씀해 주세요</p>
       </div>
 
       <div className="lk-paybar">
@@ -138,7 +138,7 @@ export function VoiceResultScreen({
           onClick={onConfirm}
           disabled={cart.length === 0}
         >
-          {cart.length === 0 ? "메뉴를 담아 주세요" : `${total.toLocaleString("ko-KR")}원 결제하기`}
+          {cart.length === 0 ? "메뉴를 선택해 주세요" : `${total.toLocaleString("ko-KR")}원 결제하기`}
         </button>
       </div>
     </div>

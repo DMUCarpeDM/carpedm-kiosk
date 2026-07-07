@@ -32,11 +32,11 @@ function UpsellModal({
   return (
     <div className="lk-modal-wrap" role="dialog" aria-modal="true" aria-label="세트 안내">
       <div className="lk-modal">
-        <h2 className="lk-modal__title">세트로 드시면 어떠세요?</h2>
+        <h2 className="lk-modal__title">세트로 변경하시겠어요?</h2>
         <p className="lk-modal__sub">
-          {diff.toLocaleString("ko-KR")}원만 더 내시면
+          {diff.toLocaleString("ko-KR")}원을 추가하시면
           <br />
-          감자 튀김과 콜라가 함께 나와요.
+          감자 튀김과 콜라가 함께 제공됩니다.
         </p>
         <div className="lk-modal__imgs" aria-hidden="true">
           <img src={menuImageSrc(single)} alt="" />
@@ -47,10 +47,10 @@ function UpsellModal({
         </div>
         <div className="lk-modal__actions">
           <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={onSet}>
-            좋아요, 세트로 주세요 ({set.price.toLocaleString("ko-KR")}원)
+            세트로 변경 ({set.price.toLocaleString("ko-KR")}원)
           </button>
           <button type="button" className="lk-modal__btn lk-modal__btn--no" onClick={onSingle}>
-            아니요, 단품만 주세요 ({single.price.toLocaleString("ko-KR")}원)
+            단품 유지 ({single.price.toLocaleString("ko-KR")}원)
           </button>
         </div>
       </div>
@@ -75,7 +75,7 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
           <h1 className="lk-pagehead__title">메뉴 상세</h1>
         </div>
         <div className="lk-error">
-          <p className="lk-error__text">메뉴를 찾을 수 없어요.</p>
+          <p className="lk-error__text">메뉴를 찾을 수 없습니다.</p>
         </div>
       </div>
     );
@@ -126,7 +126,7 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
 
         {canChooseSet && singleVariant && setVariant ? (
           <section className="lk-section" aria-label="주문 유형">
-            <h3 className="lk-section__title">단품과 세트 중 골라 주세요</h3>
+            <h3 className="lk-section__title">단품 / 세트 선택</h3>
             <div className="lk-seg">
               <button
                 type="button"
@@ -173,16 +173,16 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
         ) : null}
 
         <section className="lk-section" aria-label="알레르기 및 원산지">
-          <h3 className="lk-section__title">드시기 전에 확인해 주세요</h3>
+          <h3 className="lk-section__title">알레르기·원산지 정보</h3>
           {allergens.length > 0 ? (
             <div className="lk-allergy">
               <span className="lk-allergy__icon">
                 <IconWarning size={28} />
               </span>
               <p className="lk-allergy__text">
-                알레르기 주의: {allergens.join(", ")}이(가) 들어 있어요.
+                알레르기 유발 성분: {allergens.join(", ")}
                 <br />
-                결제 전에 한 번 더 확인해 드릴게요.
+                결제 전에 한 번 더 확인해 드립니다.
               </p>
             </div>
           ) : (
@@ -190,7 +190,7 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
               <span className="lk-allergy__icon">
                 <IconCheck size={28} />
               </span>
-              <p className="lk-allergy__text">주요 알레르기 유발 성분이 없어요.</p>
+              <p className="lk-allergy__text">주요 알레르기 유발 성분이 없습니다.</p>
             </div>
           )}
           {origin.length > 0 ? <p className="lk-origin">원산지: {origin.join(" · ")}</p> : null}

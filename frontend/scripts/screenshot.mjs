@@ -7,6 +7,7 @@ import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
 const OUT = process.argv[2] ?? "/tmp/kiosk-shots";
+const BASE = process.env.KIOSK_URL ?? "http://localhost:5173";
 mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch();
@@ -20,7 +21,7 @@ async function shot(name) {
   console.log(`✓ ${name}`);
 }
 
-await page.goto("http://localhost:5173/");
+await page.goto(`${BASE}/`);
 await page.waitForLoadState("networkidle");
 await shot("01-start");
 
@@ -46,7 +47,7 @@ await page.getByText("담기").click();
 await shot("06-upsell-modal");
 
 // 세트로 변경 → 메뉴판(장바구니 채워짐)
-await page.getByText("좋아요, 세트로 주세요").click();
+await page.getByText("세트로 변경 (").click();
 await shot("07-menu-with-cart");
 
 // 결제 → 알레르기 확인 게이트
@@ -54,15 +55,15 @@ await page.getByText("결제하기").click();
 await shot("08a-allergy-gate");
 
 // "있어요" → 메뉴별 검토 화면
-await page.getByText("있어요, 확인할래요").click();
+await page.getByText("있습니다 — 메뉴 확인").click();
 await shot("08b-allergy-review");
 
 // 계속 결제 → 주문 완료
-await page.getByText("확인했어요, 결제할게요").click();
+await page.getByText("확인 완료 — 결제 진행").click();
 await shot("08-complete");
 
 // 처음으로 → 음성 주문 화면
-await page.getByText("처음 화면으로").click();
+await page.getByText("처음으로 (").click();
 await page.getByText("매장에서 먹고 가요").click();
 await page.getByText("말로 주문하기").click();
 await page.waitForTimeout(1200);
@@ -98,6 +99,12 @@ await page.getByText("큰 글씨").click();
 // 직원 호출
 await page.getByText("직원 호출").click();
 await shot("14-help-call");
+await page.getByText("확인", { exact: true }).click();
+
+// 대기(어트랙트) 화면 — 인체감지센서 대기 상태
+await page.goto(`${BASE}/?attract=1`);
+await page.waitForLoadState("networkidle");
+await shot("15-attract");
 
 await browser.close();
 console.log(`저장 위치: ${OUT}`);

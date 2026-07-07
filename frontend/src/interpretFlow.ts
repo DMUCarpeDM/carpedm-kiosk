@@ -18,17 +18,17 @@ export function qtyFromResult(result: InterpretResult, menuId: string): number {
 export function viewFromInterpret(result: InterpretResult, say?: string): VoiceResultView | "confirm" {
   if (result.action === "confirm") return "confirm";
   if (result.action === "clarify") {
-    return { kind: "clarify", text: result.question || result.reply || "다시 말씀해 주세요." };
+    return { kind: "clarify", text: result.question || result.reply || "다시 한 번 말씀해 주세요." };
   }
   if (result.action === "reject") {
-    return { kind: "reject", text: result.reply || "죄송해요, 다시 말씀해 주시거나 메뉴를 골라 주세요." };
+    return { kind: "reject", text: result.reply || "죄송합니다. 다시 말씀해 주시거나 메뉴판에서 선택해 주세요." };
   }
   if (result.action === "recommend" && result.suggestions.length > 0) {
     return { kind: "recommend", menuIds: result.suggestions.slice(0, 3), say: say ?? result.reply };
   }
   const menuId = menuIdFromResult(result);
   if (menuId) return { kind: "menu", menuId, qty: qtyFromResult(result, menuId), say: say ?? result.reply };
-  return { kind: "clarify", text: result.reply || "다시 말씀해 주세요." };
+  return { kind: "clarify", text: result.reply || "다시 한 번 말씀해 주세요." };
 }
 
 // ponytail: API 미연동 시에만 사용. 실제 키오스크는 /api/interpret confirm 액션 우선.

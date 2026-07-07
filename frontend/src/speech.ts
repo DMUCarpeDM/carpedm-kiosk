@@ -59,7 +59,7 @@ type ListenOpts = {
 export function listenOnce(opts: ListenOpts): () => void {
   const Ctor = getRecognitionCtor();
   if (!Ctor) {
-    opts.onError("이 기기에서는 음성 인식을 쓸 수 없어요.");
+    opts.onError("이 기기에서는 음성 인식을 사용할 수 없습니다.");
     return () => {};
   }
 
@@ -81,16 +81,16 @@ export function listenOnce(opts: ListenOpts): () => void {
     if (rec.interimResults) {
       if (isFinal) {
         if (text) opts.onResult(text);
-        else opts.onError("말씀이 잘 들리지 않았어요. 다시 말씀해 주세요.");
+        else opts.onError("음성이 잘 들리지 않았습니다. 다시 한 번 말씀해 주세요.");
       } else {
         opts.onInterimResult?.(text);
       }
     } else {
       if (text) opts.onResult(text);
-      else opts.onError("말씀이 잘 들리지 않았어요. 다시 말씀해 주세요.");
+      else opts.onError("음성이 잘 들리지 않았습니다. 다시 한 번 말씀해 주세요.");
     }
   };
-  rec.onerror = () => opts.onError("음성 인식에 실패했어요. 다시 시도하거나 버튼으로 골라 주세요.");
+  rec.onerror = () => opts.onError("음성을 인식하지 못했습니다. 다시 시도하시거나 화면에서 선택해 주세요.");
   rec.onend = () => {};
 
   rec.start();
@@ -106,13 +106,13 @@ export function listenOnce(opts: ListenOpts): () => void {
 export function voiceStateLabel(state: VoiceState): string {
   switch (state) {
     case "speaking":
-      return "말씀 키오스크가 대답하는 중이에요…";
+      return "안내 음성이 나오고 있습니다";
     case "listening":
-      return "듣는 중이에요, 천천히 말씀해 주세요…";
+      return "말씀을 듣고 있습니다";
     case "processing":
-      return "어르신의 말씀을 이해하는 중이에요…";
+      return "주문 내용을 확인하고 있습니다";
     case "error":
-      return "음성 인식에 오류가 생겼어요";
+      return "음성을 인식하지 못했습니다";
     default:
       return "";
   }

@@ -13,13 +13,13 @@ import {
 import type { CartItem, OrderResponse, VoiceState } from "../types";
 
 const GREETING = "안녕하세요, 롯데리아입니다.";
-const GREETING_SUB = "가운데 빨간 단추를 누르고 천천히 말씀해 주세요.";
+const GREETING_SUB = "마이크 버튼을 누르고 주문하실 메뉴를 말씀해 주세요.";
 const MAX_RECORD_MS = 7000; // 최대 녹음 길이 — 누르는 걸 잊어도 자동 완료
 
 const EXAMPLES = [
   "불고기버거 세트 하나 주세요",
   "새우버거 두 개랑 콜라 하나",
-  "매운 거 추천해 줘요",
+  "매운 거 추천해 줘",
   "감자 튀김은 빼 주세요",
 ];
 
@@ -61,7 +61,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
       timerRef.current = window.setTimeout(() => void finishListening(), MAX_RECORD_MS);
     } catch {
       setVoiceState("error");
-      setStatusText("마이크를 사용할 수 없어요. 아래에 적어 주시거나 메뉴에서 골라 주세요.");
+      setStatusText("마이크를 사용할 수 없습니다. 아래 입력창을 이용하시거나 메뉴판에서 선택해 주세요.");
     }
   };
 
@@ -98,7 +98,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
     } catch {
       if (!mountedRef.current) return;
       setVoiceState("error");
-      setStatusText("서버에 연결할 수 없어요. 아래에 적어 주시거나 메뉴에서 골라 주세요.");
+      setStatusText("서버에 연결할 수 없습니다. 아래 입력창을 이용하시거나 메뉴판에서 선택해 주세요.");
     }
   };
 
@@ -153,11 +153,11 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
 
       <p className="lk-voice__status" aria-live="polite">
         {statusText ?? voiceStateLabel(voiceState)}
-        {voiceState === "listening" ? " — 다 말씀하셨으면 단추를 한 번 더 누르세요" : ""}
+        {voiceState === "listening" ? " — 말씀이 끝나면 버튼을 한 번 더 눌러 주세요" : ""}
       </p>
 
       <section className="lk-examples" aria-label="말하기 예시">
-        <p className="lk-examples__title">이렇게 말씀해 보세요</p>
+        <p className="lk-examples__title">이렇게 말씀하실 수 있습니다</p>
         <div className="lk-examples__list">
           {EXAMPLES.map((e) => (
             <span key={e} className="lk-examples__chip">“{e}”</span>
@@ -180,7 +180,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
             </button>
           </div>
           <button type="button" className="lk-mode__back" onClick={() => void startListening()}>
-            🎤 다시 말하기
+            다시 말하기
           </button>
         </div>
       ) : null}

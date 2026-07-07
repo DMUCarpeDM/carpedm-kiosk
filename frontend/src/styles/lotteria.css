@@ -1797,6 +1797,68 @@ img {
   font-weight: 900;
 }
 
+/* ── 대기(어트랙트) 화면 ───────────────────────────── */
+.lk-attract {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: linear-gradient(180deg, var(--lk-red) 0%, var(--lk-red-deep) 100%);
+  color: #fff;
+  cursor: pointer;
+}
+
+.lk-attract__logo {
+  font-family: var(--lk-logo-font);
+  font-size: 58px;
+  letter-spacing: 7px;
+  margin-bottom: 10px;
+}
+
+.lk-attract__ring {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 5px solid rgba(255, 255, 255, 0.85);
+  position: relative;
+}
+
+.lk-attract__ring::before {
+  content: "";
+  position: absolute;
+  inset: -22px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  animation: lk-attract-pulse 2s ease-out infinite;
+}
+
+@keyframes lk-attract-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.lk-attract__title {
+  font-size: 56px;
+  font-weight: 900;
+  margin-top: 14px;
+}
+
+.lk-attract__sub {
+  font-size: 27px;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
 /* ── 공통 배너 (API 끊김) ──────────────────────────── */
 .lk-api-banner {
   position: absolute;

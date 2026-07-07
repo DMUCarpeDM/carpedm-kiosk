@@ -59,6 +59,17 @@ export async function fetchTtsAudio(text: string): Promise<{ b64: string; mime: 
   }
 }
 
+/** PIR 인체 감지 상태 (센서 미장착이면 enabled=false) */
+export async function fetchPresence(): Promise<{ enabled: boolean; present: boolean } | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/presence`);
+    if (!res.ok) return null;
+    return (await res.json()) as { enabled: boolean; present: boolean };
+  } catch {
+    return null;
+  }
+}
+
 export function formatPrice(price: number): string {
   return `${new Intl.NumberFormat("ko-KR").format(price)}원`;
 }
