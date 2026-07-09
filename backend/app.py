@@ -33,7 +33,7 @@ from backend.interpreter import (
     load_menu,
     make_provider,
 )
-from backend.presence import PresenceMonitor
+from backend.presence import make_presence_monitor
 from backend.providers.stt import SttError, make_stt_provider
 from backend.providers.tts import TtsError, make_tts_provider
 
@@ -53,7 +53,7 @@ PROVIDER = make_provider()
 FALLBACK = RuleProvider()
 STT = make_stt_provider(MENU)
 TTS = make_tts_provider()
-PRESENCE = PresenceMonitor.from_env()  # PIR 미장착 환경에서는 자동 비활성
+PRESENCE = make_presence_monitor()  # 카메라(기본)/PIR — 미장착 환경에서는 자동 비활성
 
 
 class InterpretReq(BaseModel):
@@ -106,7 +106,7 @@ def healthz():
         "provider": PROVIDER.name,
         "stt": STT.name if STT else None,
         "tts": TTS.name if TTS else None,
-        "pir": PRESENCE.enabled,
+        "presence": type(PRESENCE).__name__ if PRESENCE.enabled else False,
     }
 
 
@@ -117,7 +117,7 @@ def get_menu():
 
 @app.get("/api/presence")
 def presence():
-    """PIR 인체 감지 상태 — 프론트 대기 화면이 2초 간격으로 조회한다."""
+    """인체 감지 상태(카메라/PIR) — 프론트 대기 화면이 2초 간격으로 조회한다."""
     return PRESENCE.status()
 
 
