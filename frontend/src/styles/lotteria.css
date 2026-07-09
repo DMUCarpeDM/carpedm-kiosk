@@ -5,11 +5,19 @@
    ============================================================ */
 
 /* 화면 폭·높이 비례 스케일 — 파이 세로(800×1280)와 태블릿(iPad 4:3 등) 모두 대응.
-   rem을 폭(2vw)과 높이(1.35vh) 중 작은 값으로 정해, 세로가 짧은 화면(주소창 있는 Safari 포함)에서도
+   rem을 폭(2vw)과 높이(1.45vh) 중 작은 값으로 정해, 세로가 짧은 화면(주소창 있는 Safari 포함)에서도
    레이아웃이 비율 그대로 줄어 겹치지 않는다. 800×1280 파이는 폭 기준 16px 상한이 그대로 적용됨.
-   1.35vh: 세로 예산 약 74rem이 화면 높이에 들어맞도록 잡은 계수. */
+   고령자 가독성을 위해 하한을 12px로 높였고(너무 작아지지 않게), 짧은 화면에서는 배너를 줄여
+   공간을 확보한다(아래 @media max-height). */
 html {
-  font-size: clamp(9px, min(2vw, 1.35vh), 16px);
+  font-size: clamp(12px, min(2vw, 1.45vh), 16px);
+}
+
+/* 세로가 짧은 화면(태블릿·주소창 있는 Safari): 장식용 배너를 줄여 본문·버튼 공간 확보 */
+@media (max-height: 1024px) {
+  .lk-banner {
+    height: 4.75rem;
+  }
 }
 
 :root {
@@ -182,7 +190,7 @@ img {
 
 .lk-topbar__home {
   min-width: 3.5rem;
-  min-height: 3.5rem;
+  min-height: max(3.5rem, 48px); /* 태블릿 축소 시에도 터치 표적 48px 보장 */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -213,7 +221,7 @@ img {
   gap: 0.4375rem;
   font-size: 1.125rem;
   font-weight: 700;
-  color: #9a9a9a;
+  color: #6e6e6e; /* 예정 단계도 4.5:1 이상 (기존 #9a9a9a는 2.8:1로 미달) */
 }
 
 .lk-steps__num {
@@ -225,8 +233,8 @@ img {
   justify-content: center;
   font-size: 1rem;
   font-weight: 900;
-  background: #ececec;
-  color: #9a9a9a;
+  background: #dcdcdc;
+  color: #595959; /* 예정 단계 번호도 대비 확보 (배경도 살짝 진하게) */
 }
 
 .lk-steps__item--now {
@@ -257,13 +265,13 @@ img {
 /* ── 접근성 바 (전 화면 하단 고정) ─────────────────── */
 .lk-a11y {
   flex-shrink: 0;
-  height: 4.5rem;
+  min-height: 4.5rem;
   background: #fff;
   border-top: 2px solid var(--lk-line);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
+  justify-content: center;
+  padding: 0.375rem 1rem;
 }
 
 .lk-a11y__group {
@@ -272,7 +280,7 @@ img {
 }
 
 .lk-a11y__btn {
-  min-height: 3.25rem;
+  min-height: max(3.25rem, 48px); /* 터치 표적 48px 보장 (태블릿 축소 대비) */
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -295,17 +303,6 @@ img {
   border-color: #2b5d8f;
   color: #24507c;
   background: #eef5fc;
-}
-
-.lk-a11y__lang {
-  display: flex;
-  gap: 0.875rem;
-  font-size: 1.0625rem;
-  color: var(--lk-gray);
-}
-
-.lk-a11y__lang b {
-  color: var(--lk-ink);
 }
 
 /* ── 시작 화면 (매장/포장) ─────────────────────────── */
@@ -561,7 +558,7 @@ img {
 
 .lk-cat {
   flex: 1 0 auto;
-  min-height: 3.625rem;
+  min-height: max(3.625rem, 48px); /* 터치 표적 48px 보장 */
   padding: 0.5rem 1.25rem;
   border-radius: 0.875rem;
   font-size: 1.5rem;
@@ -679,7 +676,7 @@ img {
 
 .lk-pager__btn {
   min-width: 8.25rem;
-  min-height: 3.375rem;
+  min-height: max(3.375rem, 48px); /* 터치 표적 48px 보장 */
   border: 2px solid #bdbdbd;
   border-radius: 0.875rem;
   background: #fff;
@@ -747,9 +744,9 @@ img {
 
 .lk-cart__empty {
   text-align: center;
-  color: var(--lk-gray-light);
+  color: var(--lk-gray); /* #8a8a8a(3.45:1)→#595959(7:1) 고령 가독성 */
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 0.875rem 0 1.125rem;
   margin: 0;
 }
@@ -822,7 +819,8 @@ img {
 }
 
 .lk-paybar__btn--pay:disabled {
-  background: #cfcfcf;
+  background: #e6e6e6; /* 비활성이지만 안내문("메뉴를 선택해 주세요")이 읽히도록 */
+  color: #5f5f5f; /* 흰 글씨(1.56:1)→진회색(≈4.9:1) */
   box-shadow: none;
 }
 

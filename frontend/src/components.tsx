@@ -92,12 +92,6 @@ export function A11yBar({
           <IconBell /> 직원 호출
         </button>
       </div>
-      <div className="lk-a11y__lang" aria-label="언어">
-        <b>한국어</b>
-        <span>English</span>
-        <span>中文</span>
-        <span>日本語</span>
-      </div>
     </footer>
   );
 }
