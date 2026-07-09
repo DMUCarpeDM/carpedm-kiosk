@@ -8,11 +8,13 @@ import { mkdirSync } from "node:fs";
 
 const OUT = process.argv[2] ?? "/tmp/kiosk-shots";
 const BASE = process.env.KIOSK_URL ?? "http://localhost:5173";
+// 해상도 지정: KIOSK_VIEWPORT=600x1024 (기본 800x1280)
+const [VW, VH] = (process.env.KIOSK_VIEWPORT ?? "800x1280").split("x").map(Number);
 mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch();
 const page = await browser.newPage({
-  viewport: { width: 800, height: 1280 }, // 10.1" 세로 키오스크 비율
+  viewport: { width: VW, height: VH }, // 10.1" 세로 키오스크
 });
 
 async function shot(name) {

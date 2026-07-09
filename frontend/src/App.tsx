@@ -51,6 +51,15 @@ export default function App() {
   const prevPresentRef = useRef(false);
   const IDLE_TO_ATTRACT_MS = 45000;
 
+  // 세로 화면 전용 — 가로로 켜져 있으면 회전 안내 (개발 편의를 위해 닫을 수 있음)
+  const [landscape, setLandscape] = useState(window.innerWidth > window.innerHeight);
+  const [rotateDismissed, setRotateDismissed] = useState(false);
+  useEffect(() => {
+    const onResize = () => setLandscape(window.innerWidth > window.innerHeight);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   const loadMenu = useCallback(async () => {
     try {
       const items = await fetchMenu();
@@ -424,6 +433,22 @@ export default function App() {
       ) : null}
 
       {attract ? <AttractOverlay onWake={() => wake(false)} /> : null}
+
+      {landscape && !rotateDismissed ? (
+        <div className="lk-rotate" role="alertdialog" aria-label="화면 회전 안내">
+          <div className="lk-rotate__box">
+            <p className="lk-rotate__title">이 키오스크는 세로 화면 전용입니다</p>
+            <p className="lk-rotate__sub">
+              화면을 세로로 회전해 주세요.
+              <br />
+              라즈베리파이 설정 방법은 docs/raspberry-pi.md 3.6절에 있습니다.
+            </p>
+            <button type="button" className="lk-rotate__skip" onClick={() => setRotateDismissed(true)}>
+              그대로 진행 (개발용)
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {apiDown && screen !== "main" ? (
         <p className="lk-api-banner" role="status">
