@@ -1,0 +1,17 @@
+{
+  "name": "CarpeDM 롯데리아 키오스크",
+  "short_name": "키오스크",
+  "description": "고령층을 위한 음성·터치 병행 주문 키오스크",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#222222",
+  "theme_color": "#da291c",
+  "icons": [
+    {
+      "src": "/rsc/lotteria_header.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

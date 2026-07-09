@@ -271,3 +271,13 @@ def text_to_speech(req: TtsReq):
         return {"audio_b64": base64.b64encode(r.audio).decode("ascii"), "mime": r.mime, "cached": r.cached}
     except TtsError as e:
         return {"audio_b64": None, "error": str(e)}
+
+
+# ── 운영/태블릿 모드: 빌드된 프론트(frontend/dist)를 백엔드가 직접 서빙 ──
+# 태블릿은 https://<서버IP>:8443 단일 주소로 접속 (docs/tablet.md).
+# API 라우트가 먼저 등록되므로 이 마운트가 API를 가리지 않는다.
+_DIST = ROOT / "frontend" / "dist"
+if _DIST.is_dir():
+    from fastapi.staticfiles import StaticFiles
+
+    app.mount("/", StaticFiles(directory=_DIST, html=True), name="frontend")

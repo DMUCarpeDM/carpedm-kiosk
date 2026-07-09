@@ -45,6 +45,23 @@ body {
   overflow: hidden;
 }
 
+/* ── 태블릿(iPad·갤럭시탭) 브라우저 대응 ─────────────────────
+   키오스크 전용 화면: 스크롤 바운스·핀치줌·더블탭줌·길게눌러 선택을 모두 차단 */
+html,
+body {
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed; /* iOS Safari 고무줄 바운스 차단 (내부 스크롤 영역은 그대로 동작) */
+  inset: 0;
+  width: 100%;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 button {
   font-family: inherit;
   cursor: pointer;
@@ -77,6 +94,8 @@ img {
   background: var(--lk-bg);
   position: relative;
   overflow: hidden;
+  /* 태블릿 홈 인디케이터·노치와 하단 버튼이 겹치지 않게 */
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .lk-viewport {
