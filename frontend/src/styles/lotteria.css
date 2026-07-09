@@ -4,10 +4,12 @@
    원칙: WCAG 대비 4.5:1↑, 터치 표적 48dp↑, 고령 친화 큰 글씨
    ============================================================ */
 
-/* 화면 폭 비례 스케일 — 10.1" 세로(600×1024·800×1280) 어디서나 같은 비율
-   1rem = 화면 폭의 2% (폭 800 → 16px, 폭 600 → 12px). 데스크톱에선 16px 상한. */
+/* 화면 폭·높이 비례 스케일 — 파이 세로(800×1280)와 태블릿(iPad 4:3 등) 모두 대응.
+   rem을 폭(2vw)과 높이(1.35vh) 중 작은 값으로 정해, 세로가 짧은 화면(주소창 있는 Safari 포함)에서도
+   레이아웃이 비율 그대로 줄어 겹치지 않는다. 800×1280 파이는 폭 기준 16px 상한이 그대로 적용됨.
+   1.35vh: 세로 예산 약 74rem이 화면 높이에 들어맞도록 잡은 계수. */
 html {
-  font-size: clamp(9px, 2vw, 16px);
+  font-size: clamp(9px, min(2vw, 1.35vh), 16px);
 }
 
 :root {
@@ -665,12 +667,14 @@ img {
 }
 
 .lk-pager {
+  position: relative;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1.125rem;
-  padding: 0.625rem 0 0.25rem;
+  /* 오른쪽에 '말로 주문' 버튼 자리를 비워, 페이저 버튼과 겹치지 않게 한다 */
+  padding: 0.625rem 12.5rem 0.25rem;
 }
 
 .lk-pager__btn {
@@ -822,11 +826,12 @@ img {
   box-shadow: none;
 }
 
-/* 음성 주문 FAB */
+/* 음성 주문 FAB — 페이저 행 오른쪽 끝에 고정(세로 중앙). 카드·페이저와 겹치지 않는다. */
 .lk-mic-fab {
   position: absolute;
-  right: 1.125rem;
-  bottom: 18.75rem;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   min-height: 4.75rem;
   display: flex;
   align-items: center;
@@ -1531,11 +1536,14 @@ img {
 }
 
 .lk-result__center {
-  flex: 1;
+  /* flex-grow로 공간이 남으면 가운데 정렬하되, 내용이 크면 줄지 않고(0) 부모가 스크롤되게 한다.
+     예전 flex:1(=축소 허용)은 내용이 박스보다 크면 위아래로 넘쳐 마이크 버튼과 겹쳤다. */
+  flex: 1 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 0;
+  padding: 0.25rem 0;
 }
 
 .lk-result-card {

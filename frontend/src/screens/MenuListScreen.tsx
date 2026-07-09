@@ -125,6 +125,13 @@ export function MenuListScreen({
           >
             다음 →
           </button>
+
+          <button type="button" className="lk-mic-fab" onClick={onVoice}>
+            <span className="lk-mic-fab__icon">
+              <IconMic size={28} />
+            </span>
+            말로 주문
+          </button>
         </div>
       </div>
 
@@ -188,13 +195,6 @@ export function MenuListScreen({
           {cart.length === 0 ? "메뉴를 선택해 주세요" : `${total.toLocaleString("ko-KR")}원 결제하기`}
         </button>
       </div>
-
-      <button type="button" className="lk-mic-fab" onClick={onVoice}>
-        <span className="lk-mic-fab__icon">
-          <IconMic size={28} />
-        </span>
-        말로 주문
-      </button>
     </div>
   );
 }
