@@ -41,9 +41,9 @@ function UpsellModal({
         <div className="lk-modal__imgs" aria-hidden="true">
           <img src={menuImageSrc(single)} alt="" />
           <span className="lk-modal__plus">+</span>
-          <img src="/menu/products/fries.png" alt="" />
+          <img src="/menu/products/fries.webp" alt="" />
           <span className="lk-modal__plus">+</span>
-          <img src="/menu/products/cola.png" alt="" />
+          <img src="/menu/products/cola.webp" alt="" />
         </div>
         <div className="lk-modal__actions">
           <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={onSet}>
@@ -160,12 +160,12 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
               </span>
               <span className="lk-includes__plus" aria-hidden="true">+</span>
               <span className="lk-includes__item">
-                <img src="/menu/products/fries.png" alt="" />
+                <img src="/menu/products/fries.webp" alt="" />
                 <span>감자 튀김</span>
               </span>
               <span className="lk-includes__plus" aria-hidden="true">+</span>
               <span className="lk-includes__item">
-                <img src="/menu/products/cola.png" alt="" />
+                <img src="/menu/products/cola.webp" alt="" />
                 <span>콜라</span>
               </span>
             </div>

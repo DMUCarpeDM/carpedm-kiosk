@@ -13,7 +13,8 @@ const CATEGORIES = [
 ] as const;
 
 type CategoryId = (typeof CATEGORIES)[number]["id"];
-const ITEMS_PER_PAGE = 6;
+// 고령층 배려: 한 화면에 4개(2×2)만 — 카드·사진을 크게, 인지 부담을 낮춘다
+const ITEMS_PER_PAGE = 4;
 
 type Props = {
   items: MenuItem[];
@@ -79,7 +80,7 @@ export function MenuListScreen({
   return (
     <div className="lk-menu">
       <div className="lk-banner" aria-hidden="true">
-        <img src="/rsc/lotteria_header2.png" alt="" />
+        <img src="/rsc/lotteria_header2.webp" alt="" />
       </div>
 
       <nav className="lk-cats" aria-label="메뉴 분류">

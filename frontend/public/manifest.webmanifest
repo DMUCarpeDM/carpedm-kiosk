@@ -9,9 +9,9 @@
   "theme_color": "#da291c",
   "icons": [
     {
-      "src": "/rsc/lotteria_header.png",
+      "src": "/rsc/lotteria_header2.webp",
       "sizes": "any",
-      "type": "image/png"
+      "type": "image/webp"
     }
   ]
 }

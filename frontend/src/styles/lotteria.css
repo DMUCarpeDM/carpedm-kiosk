@@ -584,8 +584,8 @@ img {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 0.75rem;
+  grid-template-rows: repeat(2, 1fr); /* 2×2 = 4개. 카드·사진을 크게 (고령 배려) */
+  gap: 1rem;
   min-height: 0;
 }
 
