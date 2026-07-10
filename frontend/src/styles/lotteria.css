@@ -473,7 +473,9 @@ img {
 }
 
 .lk-mode-card--voice .lk-mode-card__icon {
-  background: rgba(255, 255, 255, 0.18);
+  /* 빨간 카드 위 반투명 원은 잘 안 보임 → 흰 원 + 빨간 마이크 (대비 확보) */
+  background: #fff;
+  color: var(--lk-red);
 }
 
 .lk-mode-card--touch .lk-mode-card__icon {
@@ -1455,9 +1457,38 @@ img {
   gap: 0.75rem;
 }
 
+/* 마이크 실패 시 큰 버튼 2개 — 타자 없이 터치로 회복 (고령 배려) */
+.lk-voice-fallback__actions {
+  display: flex;
+  gap: 0.875rem;
+}
+
+.lk-voice-fallback__retry,
+.lk-voice-fallback__menu {
+  flex: 1;
+  min-height: max(4.5rem, 56px);
+  border-radius: 1.125rem;
+  font-size: 1.625rem;
+  font-weight: 900;
+}
+
+.lk-voice-fallback__retry {
+  border: 3px solid #bdbdbd;
+  background: #fff;
+  color: #333;
+}
+
+.lk-voice-fallback__menu {
+  background: var(--lk-red);
+  color: #fff;
+  box-shadow: 0 0.5rem 1.125rem rgba(218, 41, 28, 0.3);
+}
+
 .lk-voice-fallback__row {
   display: flex;
   gap: 0.625rem;
+  width: 100%;
+  max-width: 40rem;
 }
 
 .lk-voice-fallback__input {

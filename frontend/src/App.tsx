@@ -91,16 +91,18 @@ export default function App() {
     };
   }, [screen, attract]);
 
-  /** 대기 화면 해제 — PIR 감지로 깨어난 경우에는 인사 음성도 나간다 */
-  const wake = useCallback((greet: boolean) => {
+  /** 대기 화면 해제 — 감지(카메라/PIR)든 터치든 첫 만남에는 인사 음성이 나간다.
+      터치 웨이크는 사용자 제스처라 태블릿(자동재생 차단 환경)에서도 확실히 소리가 난다. */
+  const wake = useCallback((source: "presence" | "touch") => {
     setAttract(false);
-    if (greet) {
-      const say = "어서 오세요, 롯데리아입니다. 화면을 터치하시면 주문이 시작됩니다.";
-      void (async () => {
-        const audio = await fetchTtsAudio(say);
-        void playSpeech(say, audio?.b64, audio?.mime);
-      })();
-    }
+    const say =
+      source === "presence"
+        ? "어서 오세요, 롯데리아입니다. 화면을 터치하시면 주문이 시작됩니다."
+        : "어서 오세요, 롯데리아입니다. 어디에서 드실지 화면에서 눌러 주세요.";
+    void (async () => {
+      const audio = await fetchTtsAudio(say);
+      void playSpeech(say, audio?.b64, audio?.mime);
+    })();
   }, []);
 
   // 대기 화면 동안 PIR 상태를 2초 간격으로 확인 — 손님이 다가오면 깨어난다
@@ -112,7 +114,7 @@ export default function App() {
         if (!p?.enabled) return;
         if (p.present && !prevPresentRef.current) {
           prevPresentRef.current = true;
-          wake(true);
+          wake("presence");
         } else if (!p.present) {
           prevPresentRef.current = false;
         }
@@ -333,6 +335,7 @@ export default function App() {
             sessionId={sessionId}
             skipGreeting={voiceRetry}
             onBack={() => setScreen("order-mode")}
+            onOpenMenu={() => setScreen("menu-list")}
             onOrderResult={handleOrderResult}
             onUtterance={onVoiceUtterance}
           />
@@ -432,7 +435,7 @@ export default function App() {
         </div>
       ) : null}
 
-      {attract ? <AttractOverlay onWake={() => wake(false)} /> : null}
+      {attract ? <AttractOverlay onWake={() => wake("touch")} /> : null}
 
       {landscape && !rotateDismissed ? (
         <div className="lk-rotate" role="alertdialog" aria-label="화면 회전 안내">

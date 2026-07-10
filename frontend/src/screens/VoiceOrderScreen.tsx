@@ -27,6 +27,8 @@ type Props = {
   cart: CartItem[];
   sessionId: string | null;
   onBack: () => void;
+  /** 마이크 실패 시 터치 주문으로 안내 (음성·터치 병행 원칙) */
+  onOpenMenu: () => void;
   /** 서버 /order 성공 (STT+해석+TTS 완료) */
   onOrderResult: (res: OrderResponse) => void;
   /** 브라우저 STT 폴백 등 텍스트만 얻었을 때 */
@@ -34,7 +36,18 @@ type Props = {
   skipGreeting?: boolean;
 };
 
-export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtterance, skipGreeting = false }: Props) {
+// 텍스트 입력은 개발·자동 검증 전용(?dev=1) — 실사용 화면에는 타자 입력을 두지 않는다
+const DEV_MODE = new URLSearchParams(window.location.search).has("dev");
+
+export function VoiceOrderScreen({
+  cart,
+  sessionId,
+  onBack,
+  onOpenMenu,
+  onOrderResult,
+  onUtterance,
+  skipGreeting = false,
+}: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>("idle");
   const [statusText, setStatusText] = useState<string | null>(null);
   const [testInput, setTestInput] = useState("");
@@ -61,7 +74,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
       timerRef.current = window.setTimeout(() => void finishListening(), MAX_RECORD_MS);
     } catch {
       setVoiceState("error");
-      setStatusText("마이크를 사용할 수 없습니다. 아래 입력창을 이용하시거나 메뉴판에서 선택해 주세요.");
+      setStatusText("마이크를 사용할 수 없습니다. 다시 시도하시거나 메뉴판에서 골라 주세요.");
     }
   };
 
@@ -98,7 +111,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
     } catch {
       if (!mountedRef.current) return;
       setVoiceState("error");
-      setStatusText("서버에 연결할 수 없습니다. 아래 입력창을 이용하시거나 메뉴판에서 선택해 주세요.");
+      setStatusText("서버에 연결할 수 없습니다. 메뉴판에서 골라 주세요.");
     }
   };
 
@@ -167,20 +180,29 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
 
       {showFallback ? (
         <div className="lk-voice-fallback">
-          <div className="lk-voice-fallback__row">
-            <input
-              className="lk-voice-fallback__input"
-              value={testInput}
-              onChange={(e) => setTestInput(e.target.value)}
-              placeholder="예: 불고기버거 한 개 주세요"
-              onKeyDown={(e) => e.key === "Enter" && submitTest()}
-            />
-            <button type="button" className="lk-voice-fallback__submit" onClick={submitTest}>
-              확인
+          {/* 타자 입력 대신 큰 버튼 2개 — 음성이 안 되면 터치로 자연스럽게 회복 */}
+          <div className="lk-voice-fallback__actions">
+            <button type="button" className="lk-voice-fallback__retry" onClick={() => void startListening()}>
+              다시 말하기
+            </button>
+            <button type="button" className="lk-voice-fallback__menu" onClick={onOpenMenu}>
+              메뉴판에서 고르기
             </button>
           </div>
-          <button type="button" className="lk-mode__back" onClick={() => void startListening()}>
-            다시 말하기
+        </div>
+      ) : null}
+
+      {DEV_MODE ? (
+        <div className="lk-voice-fallback__row">
+          <input
+            className="lk-voice-fallback__input"
+            value={testInput}
+            onChange={(e) => setTestInput(e.target.value)}
+            placeholder="개발용 텍스트 입력"
+            onKeyDown={(e) => e.key === "Enter" && submitTest()}
+          />
+          <button type="button" className="lk-voice-fallback__submit" onClick={submitTest}>
+            확인
           </button>
         </div>
       ) : null}

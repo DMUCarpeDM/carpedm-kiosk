@@ -23,7 +23,8 @@ async function shot(name) {
   console.log(`✓ ${name}`);
 }
 
-await page.goto(`${BASE}/`);
+// ?dev=1: 음성 화면의 개발용 텍스트 입력 활성화 (헤드리스엔 마이크가 없어 발화를 타자로 대신)
+await page.goto(`${BASE}/?dev=1`);
 await page.waitForLoadState("networkidle");
 await shot("01-start");
 
