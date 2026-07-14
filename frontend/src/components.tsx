@@ -152,9 +152,7 @@ export function ProductCard({ item, onClick }: { item: MenuItem; onClick: () => 
         <img src={menuImageSrc(item)} alt="" />
       </span>
       <span className="lk-card__name">{menuDisplayName(item)}</span>
-      <span className="lk-card__meta">
-        {typeof item.kcal === "number" ? `${item.kcal.toLocaleString("ko-KR")}kcal` : " "}
-      </span>
+      {/* 칼로리는 카드에서 빼고 상세 화면(열량 ○○kcal)에서만 — 메뉴판은 이름·가격만 크게 */}
       <span className="lk-card__price">{item.price.toLocaleString("ko-KR")}원</span>
     </button>
   );
