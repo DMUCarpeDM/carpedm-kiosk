@@ -13,6 +13,18 @@ html {
   font-size: clamp(12px, min(2vw, 1.45vh), 16px);
 }
 
+/* 가로 화면(파이 세로 전환 실패 시 등): 세로 예산이 빠듯하므로 높이 계수를 낮춰
+   전체가 비율대로 들어가게 하고, 폭은 남으니 컬럼을 넓혀 터치 표적을 키운다 */
+@media (orientation: landscape) {
+  html {
+    font-size: clamp(9px, 1.3vh, 16px);
+  }
+
+  .lk-app {
+    max-width: 60rem;
+  }
+}
+
 /* 세로가 짧은 화면(태블릿·주소창 있는 Safari): 장식용 배너를 줄여 본문·버튼 공간 확보 */
 @media (max-height: 1024px) {
   .lk-banner {
@@ -1568,53 +1580,78 @@ img {
   padding: 0.25rem 0;
 }
 
-.lk-result-card {
+/* 음성 결과 — 장바구니 전체 목록. 여러 개를 한 번에 말해도 전부 보이고,
+   이번 발화로 담긴 항목은 붉은 테두리 + '방금 담음' 배지로 강조한다 */
+.lk-cartlist {
+  width: 100%;
+  max-width: 40rem;
+  max-height: 24rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.lk-cartrow {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   background: #fff;
+  border: 2px solid var(--lk-line);
+  border-radius: 1.125rem;
+  padding: 0.625rem 1rem;
+  min-height: max(4.5rem, 56px);
+}
+
+.lk-cartrow--new {
   border: 3px solid var(--lk-red);
-  border-radius: 1.375rem;
-  padding: 1.25rem 1.75rem;
-  max-width: 40rem;
+  background: #fff8f0;
 }
 
-.lk-result-card__img {
-  width: 11.875rem;
-  height: 11.875rem;
+.lk-cartrow__img {
+  width: 4.5rem;
+  height: 4.5rem;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.lk-result-card__img img {
-  width: 100%;
-  height: 100%;
+.lk-cartrow__img img {
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
 }
 
-.lk-result-card__name {
-  margin: 0;
-  font-size: 1.875rem;
-  font-weight: 900;
+.lk-cartrow__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  text-align: left;
 }
 
-.lk-result-card__meta {
-  margin: 0.375rem 0 0;
-  font-size: 1.25rem;
-  color: var(--lk-gray);
-  font-weight: 500;
+.lk-cartrow__name {
+  font-size: 1.4375rem;
+  font-weight: 800;
+  color: var(--lk-ink);
 }
 
-.lk-result-card__price {
-  margin: 0.625rem 0 0;
-  font-size: 1.75rem;
-  font-weight: 900;
+.lk-cartrow__qty {
+  font-size: 1.3125rem;
+  font-weight: 800;
   color: var(--lk-red-dark);
 }
 
-.lk-result-card__qty {
-  margin: 0.375rem 0 0;
-  font-size: 1.375rem;
-  font-weight: 800;
+.lk-cartrow__badge {
+  flex-shrink: 0;
+  background: var(--lk-yellow);
+  color: #4a3000;
+  font-size: 1.0625rem;
+  font-weight: 900;
+  border-radius: 0.5rem;
+  padding: 0.3125rem 0.75rem;
 }
 
 .lk-suggests {

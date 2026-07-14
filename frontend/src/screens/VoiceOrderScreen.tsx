@@ -14,7 +14,11 @@ import type { CartItem, OrderResponse, VoiceState } from "../types";
 
 const GREETING = "안녕하세요, 롯데리아입니다.";
 const GREETING_SUB = "마이크 버튼을 누르고 주문하실 메뉴를 말씀해 주세요.";
+const PROMPT_SHORT = "주문하실 메뉴를 말씀해 주세요."; // 재진입 시 — 풀 인사는 세션당 1회
 const MAX_RECORD_MS = 7000; // 최대 녹음 길이 — 누르는 걸 잊어도 자동 완료
+
+/** 풀 인사(full) / 짧은 안내(short) / 무음 재시도(none) */
+export type GreetingMode = "full" | "short" | "none";
 
 const EXAMPLES = [
   "불고기버거 세트 하나 주세요",
@@ -33,7 +37,9 @@ type Props = {
   onOrderResult: (res: OrderResponse) => void;
   /** 브라우저 STT 폴백 등 텍스트만 얻었을 때 */
   onUtterance: (text: string) => void;
-  skipGreeting?: boolean;
+  greeting?: GreetingMode;
+  /** 풀 인사가 나간 뒤 호출 — 같은 세션에서는 다시 풀 인사를 하지 않는다 */
+  onGreeted?: () => void;
 };
 
 // 텍스트 입력은 개발·자동 검증 전용(?dev=1) — 실사용 화면에는 타자 입력을 두지 않는다
@@ -47,7 +53,8 @@ export function VoiceOrderScreen({
   onOpenMenu,
   onOrderResult,
   onUtterance,
-  skipGreeting = false,
+  greeting = "full",
+  onGreeted,
 }: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>("idle");
   const [statusText, setStatusText] = useState<string | null>(null);
@@ -86,7 +93,13 @@ export function VoiceOrderScreen({
     clearTimer();
     setVoiceState("processing");
     try {
-      const wav = await rec.stop();
+      const { blob: wav, peak, voicedMs } = await rec.stop();
+      // 거의 무음이면 API를 부르지 않고 바로 다시 안내 (소음 환경에서 흔한 실패)
+      if (peak < 0.015 || voicedMs < 250) {
+        setVoiceState("error");
+        setStatusText("목소리가 잘 들리지 않았어요. 마이크 가까이에서 또박또박 말씀해 주세요.");
+        return;
+      }
       const res = await orderVoice(wav, cart, sessionId);
       if (!mountedRef.current) return;
       if (res.ok) {
@@ -122,17 +135,20 @@ export function VoiceOrderScreen({
   };
 
   // ── 인사말 (Google TTS 캐시 → 브라우저 폴백) 후 자동 듣기 ──
+  // 풀 인사는 세션당 1회만 — "말로 주문"을 다시 눌러도 반복하지 않는다 (짧은 안내로 대체)
   useEffect(() => {
     mountedRef.current = true;
 
     const begin = async () => {
-      if (!skipGreeting) {
+      const line = greeting === "full" ? `${GREETING} ${GREETING_SUB}` : greeting === "short" ? PROMPT_SHORT : null;
+      if (line) {
         setVoiceState("speaking");
-        const audio = await fetchTtsAudio(`${GREETING} ${GREETING_SUB}`);
+        const audio = await fetchTtsAudio(line);
         if (!mountedRef.current) return;
         if (audio) await playSpeech("", audio.b64, audio.mime);
-        else await new Promise<void>((r) => speak(`${GREETING} ${GREETING_SUB}`, undefined, () => r()));
+        else await new Promise<void>((r) => speak(line, undefined, () => r()));
         if (!mountedRef.current) return;
+        if (greeting === "full") onGreeted?.();
       }
       await startListening();
     };
@@ -146,7 +162,7 @@ export function VoiceOrderScreen({
       stopAllAudio();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [skipGreeting]);
+  }, [greeting]);
 
   const submitTest = () => {
     const t = testInput.trim();
@@ -159,7 +175,7 @@ export function VoiceOrderScreen({
 
   return (
     <div className="lk-voice">
-      <h1 className="lk-voice__title">{GREETING}</h1>
+      <h1 className="lk-voice__title">{greeting === "full" ? GREETING : "무엇을 드릴까요?"}</h1>
       <p className="lk-voice__sub">{GREETING_SUB}</p>
 
       <VoiceWaveform active={voiceState === "listening" || voiceState === "speaking"} />

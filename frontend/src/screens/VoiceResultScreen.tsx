@@ -47,7 +47,6 @@ export function VoiceResultScreen({
   onOpenMenu,
   onPickSuggestion,
 }: Props) {
-  const item = view.kind === "menu" ? menuById(menu, view.menuId) : undefined;
   const spoken = say ?? (view.kind === "clarify" || view.kind === "reject" ? view.text : view.say);
   const { count, total } = cartTotal(cart, menu);
 
@@ -74,17 +73,28 @@ export function VoiceResultScreen({
       ) : null}
 
       <div className="lk-result__center">
-        {view.kind === "menu" && item ? (
-          <div className="lk-result-card">
-            <span className="lk-result-card__img">
-              <img src={menuImageSrc(item)} alt="" />
-            </span>
-            <div>
-              <h2 className="lk-result-card__name">{menuDisplayName(item)}</h2>
-              {item.desc ? <p className="lk-result-card__meta">{item.desc}</p> : null}
-              <p className="lk-result-card__price">{item.price.toLocaleString("ko-KR")}원</p>
-              <p className="lk-result-card__qty">수량 {view.qty}개</p>
-            </div>
+        {view.kind === "cart" ? (
+          // 여러 개를 한 번에 말해도 전부 보이도록 장바구니 전체를 목록으로 — 방금 담긴 것은 강조
+          <div className="lk-cartlist" role="list" aria-label="담은 메뉴">
+            {cart.map((c) => {
+              const m = menuById(menu, c.id);
+              if (!m) return null;
+              const changed = view.changedIds.includes(c.id);
+              return (
+                <div key={c.id} role="listitem" className={`lk-cartrow${changed ? " lk-cartrow--new" : ""}`}>
+                  <span className="lk-cartrow__img">
+                    <img src={menuImageSrc(m)} alt="" />
+                  </span>
+                  <span className="lk-cartrow__body">
+                    <span className="lk-cartrow__name">{menuDisplayName(m)}</span>
+                    <span className="lk-cartrow__qty">
+                      {c.qty}개 · {(m.price * c.qty).toLocaleString("ko-KR")}원
+                    </span>
+                  </span>
+                  {changed ? <span className="lk-cartrow__badge">방금 담음</span> : null}
+                </div>
+              );
+            })}
           </div>
         ) : null}
 

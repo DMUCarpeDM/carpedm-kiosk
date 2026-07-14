@@ -11,7 +11,7 @@ import { MenuDetailScreen } from "./screens/MenuDetailScreen";
 import { MenuListScreen } from "./screens/MenuListScreen";
 import { OrderCompleteScreen } from "./screens/OrderCompleteScreen";
 import { OrderModeScreen } from "./screens/OrderModeScreen";
-import { VoiceOrderScreen } from "./screens/VoiceOrderScreen";
+import { VoiceOrderScreen, type GreetingMode } from "./screens/VoiceOrderScreen";
 import { VoiceResultScreen } from "./screens/VoiceResultScreen";
 import type {
   CartItem,
@@ -36,7 +36,8 @@ export default function App() {
   const [voiceSay, setVoiceSay] = useState<string | undefined>(undefined);
   const [voiceAudio, setVoiceAudio] = useState<{ b64: string; mime: string } | null>(null);
   const [apiDown, setApiDown] = useState(false);
-  const [voiceRetry, setVoiceRetry] = useState(false);
+  // 진입 시점에 확정 — 렌더 중 재계산하면 화면에 머무는 동안 인사가 다시 나갈 수 있다
+  const [voiceGreeting, setVoiceGreeting] = useState<GreetingMode>("full");
 
   // 실기기 요소: 식사 장소·주문 번호·접근성 모드
   const [dining, setDining] = useState<DiningOption | null>(null);
@@ -48,6 +49,8 @@ export default function App() {
 
   // 대기(어트랙트) 화면 + PIR 인체 감지 — ?attract=1 로 강제 표시(시연·검증용)
   const [attract, setAttract] = useState(() => new URLSearchParams(window.location.search).has("attract"));
+  // 풀 인사("안녕하세요, 롯데리아입니다")는 세션당 1회 — 이후 재진입은 짧은 안내만
+  const greetedRef = useRef(false);
   const prevPresentRef = useRef(false);
   const IDLE_TO_ATTRACT_MS = 45000;
 
@@ -125,6 +128,7 @@ export default function App() {
 
   const goMain = useCallback(() => {
     setScreen("main");
+    greetedRef.current = false; // 다음 손님에게는 다시 풀 인사
     setCart([]);
     setSessionId(null);
     setSelectedMenuId(null);
@@ -187,7 +191,8 @@ export default function App() {
     };
     setVoiceSay(res.say);
     setVoiceAudio(res.audio_b64 ? { b64: res.audio_b64, mime: res.audio_mime } : null);
-    showResultView(viewFromInterpret(result, res.say));
+    // cart는 아직 갱신 전 값 — 이번 발화로 바뀐 항목을 강조하는 데 쓴다
+    showResultView(viewFromInterpret(result, res.say, cart));
   };
 
   /** 텍스트 발화 경로 (브라우저 STT 폴백·직접 입력) — /api/interpret + TTS 별도 합성 */
@@ -215,7 +220,7 @@ export default function App() {
       }
       setVoiceSay(say || undefined);
       setVoiceAudio(say ? await fetchTtsAudio(say) : null);
-      showResultView(viewFromInterpret(result, say));
+      showResultView(viewFromInterpret(result, say, currentCart));
     } catch {
       setApiDown(true);
       // ponytail: API 미연동 시에만 로컬 확정 키워드 판단
@@ -239,7 +244,13 @@ export default function App() {
 
   const onVoiceRetry = () => {
     setVoiceView(null);
-    setVoiceRetry(true);
+    setVoiceGreeting("none"); // 이어 말하기 — 인사 없이 바로 듣는다
+    setScreen("voice-order");
+  };
+
+  /** 음성 주문 화면 열기 — 풀 인사는 세션당 1회, 재진입은 짧은 안내 */
+  const openVoiceOrder = () => {
+    setVoiceGreeting(greetedRef.current ? "short" : "full");
     setScreen("voice-order");
   };
 
@@ -319,21 +330,17 @@ export default function App() {
         ) : null}
 
         {screen === "order-mode" ? (
-          <OrderModeScreen
-            onVoice={() => {
-              setVoiceRetry(false);
-              setScreen("voice-order");
-            }}
-            onTouch={() => setScreen("menu-list")}
-            onBack={goMain}
-          />
+          <OrderModeScreen onVoice={openVoiceOrder} onTouch={() => setScreen("menu-list")} onBack={goMain} />
         ) : null}
 
         {screen === "voice-order" ? (
           <VoiceOrderScreen
             cart={cart}
             sessionId={sessionId}
-            skipGreeting={voiceRetry}
+            greeting={voiceGreeting}
+            onGreeted={() => {
+              greetedRef.current = true;
+            }}
             onBack={() => setScreen("order-mode")}
             onOpenMenu={() => setScreen("menu-list")}
             onOrderResult={handleOrderResult}
@@ -365,10 +372,7 @@ export default function App() {
             onUpdateQty={updateCartQty}
             onRemoveItem={removeFromCart}
             onClearCart={() => setCart([])}
-            onVoice={() => {
-              setVoiceRetry(false);
-              setScreen("voice-order");
-            }}
+            onVoice={openVoiceOrder}
             onPay={() => {
               if (cart.length > 0) requestComplete();
             }}
