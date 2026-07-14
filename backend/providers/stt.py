@@ -165,7 +165,11 @@ class GeminiSttProvider(SttProvider):
             "단, 사용자가 말하지 않은 내용을 추가하지 말고, 설명·인사말 없이 받아쓴 문장만 출력해."
         )
         try:
-            res = self._model.generate_content([prompt, {"mime_type": content_type, "data": audio}])
+            res = self._model.generate_content(
+                [prompt, {"mime_type": content_type, "data": audio}],
+                # 무한 대기 방지 — 폴백 단계에서 어르신을 오래 기다리게 하지 않는다
+                request_options={"timeout": float(os.getenv("KIOSK_STT_TIMEOUT", "15"))},
+            )
             text = (res.text or "").strip()
         except Exception as e:
             raise SttError(f"Gemini STT 실패: {type(e).__name__}") from e

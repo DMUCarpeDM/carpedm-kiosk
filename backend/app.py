@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from starlette.concurrency import run_in_threadpool
 
 from backend.interpreter import (
     CartItem,
@@ -191,7 +192,9 @@ async def order(
         audio = await file.read()
         t0 = time.perf_counter()
         try:
-            text = STT.transcribe(audio, file.content_type or "audio/wav").text
+            # 스레드풀 실행 — 동기 API 호출이 이벤트 루프를 막으면 태블릿 여러 대가 줄을 선다
+            r = await run_in_threadpool(STT.transcribe, audio, file.content_type or "audio/wav")
+            text = r.text
         except SttError as e:
             stt_error = str(e)
         stt_ms = round((time.perf_counter() - t0) * 1000)
@@ -220,7 +223,7 @@ async def order(
 
     # 2) 해석
     t0 = time.perf_counter()
-    result, fallback_used, interp_error = run_interpret(text, cart_items)
+    result, fallback_used, interp_error = await run_in_threadpool(run_interpret, text, cart_items)
     interpret_ms = round((time.perf_counter() - t0) * 1000)
 
     # 3) TTS (실패해도 주문 흐름은 계속 — 프론트 브라우저 TTS 폴백)
@@ -231,7 +234,7 @@ async def order(
     if TTS is not None and say:
         t0 = time.perf_counter()
         try:
-            tts = TTS.synthesize(say)
+            tts = await run_in_threadpool(TTS.synthesize, say)
             tts_b64 = base64.b64encode(tts.audio).decode("ascii")
             tts_mime = tts.mime
         except TtsError:
@@ -280,7 +283,7 @@ async def speech_to_text(file: UploadFile = File(...)):
         return {"text": "", "error": "STT 프로바이더 미설정 (.env의 CLOVA/GEMINI 키 확인)"}
     audio = await file.read()
     try:
-        r = STT.transcribe(audio, file.content_type or "audio/wav")
+        r = await run_in_threadpool(STT.transcribe, audio, file.content_type or "audio/wav")
         return {"text": r.text, "provider": r.provider}
     except SttError as e:
         return {"text": "", "error": str(e)}
