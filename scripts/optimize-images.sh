@@ -45,4 +45,12 @@ done
 
 echo ""
 echo "완료: $cnt개 최적화. 원본은 $BACKUP 에 백업됨."
+
+# 투명 여백 트리밍 — 카드에서 실물 크기가 통일돼 보이게 (모짜렐라버거 등)
+if [ -x "$DIR/.venv/bin/python" ]; then
+  "$DIR/.venv/bin/python" "$DIR/scripts/trim_product_images.py"
+else
+  python3 "$DIR/scripts/trim_product_images.py" || echo "(트리밍 생략 — Pillow 필요: pip install pillow)"
+fi
+
 echo "프론트 다시 빌드하세요: (cd frontend && npm run build)"

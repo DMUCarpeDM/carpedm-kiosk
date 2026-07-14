@@ -14,6 +14,9 @@ python-multipart>=0.0.9
 # HTTP 요청
 requests>=2.32
 
+# 상품 이미지 여백 트리밍 (scripts/trim_product_images.py)
+pillow>=10.0
+
 # 카메라 인체 감지 (얼굴 검출, 경량 고전 CV). 파이: python3-opencv(apt)로 대체 가능.
 # 미설치 시 presence는 자동 비활성 — 필수 아님.
 # 4.x 고정: 5.0에서 CascadeClassifier API 위치가 바뀜(Haar 캐스케이드는 4.x가 안정적).
