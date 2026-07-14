@@ -443,8 +443,12 @@ export default function App() {
             <p className="lk-rotate__title">이 키오스크는 세로 화면 전용입니다</p>
             <p className="lk-rotate__sub">
               화면(태블릿)을 세로로 회전해 주세요.
-              <br />
-              라즈베리파이는 docs/raspberry-pi.md 3.6절, 태블릿은 docs/tablet.md 참조.
+              {import.meta.env.DEV ? (
+                <>
+                  <br />
+                  라즈베리파이는 docs/raspberry-pi.md 3.6절, 태블릿은 docs/tablet.md 참조.
+                </>
+              ) : null}
             </p>
             {import.meta.env.DEV ? (
               <button type="button" className="lk-rotate__skip" onClick={() => setRotateDismissed(true)}>
