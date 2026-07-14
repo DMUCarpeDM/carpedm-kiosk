@@ -10,18 +10,18 @@ type Props = {
 export function OrderModeScreen({ onVoice, onTouch, onBack }: Props) {
   return (
     <div className="lk-mode">
-      <h1 className="lk-mode__title">어떻게 주문할까요?</h1>
-      <p className="lk-mode__sub">두 가지 중 편한 방법을 골라 주세요</p>
+      <h1 className="lk-mode__title">주문 방법을 선택해 주세요</h1>
+      <p className="lk-mode__sub">편하신 방법으로 주문하실 수 있습니다</p>
 
       <div className="lk-mode__cards">
         <button type="button" className="lk-mode-card lk-mode-card--voice" onClick={onVoice}>
-          <span className="lk-mode-card__flag">쉽고 빨라요</span>
+          <span className="lk-mode-card__flag">간편 주문</span>
           <span className="lk-mode-card__icon">
             <IconMic size={62} />
           </span>
           <span>
             <span className="lk-mode-card__label">말로 주문하기</span>
-            <span className="lk-mode-card__sub">"불고기버거 세트 하나 주세요" 라고 말씀만 하세요</span>
+            <span className="lk-mode-card__sub">마이크에 대고 주문하실 메뉴를 말씀하시면 됩니다</span>
           </span>
         </button>
 
@@ -31,7 +31,7 @@ export function OrderModeScreen({ onVoice, onTouch, onBack }: Props) {
           </span>
           <span>
             <span className="lk-mode-card__label">화면 보고 주문하기</span>
-            <span className="lk-mode-card__sub">사진을 보면서 하나씩 골라요</span>
+            <span className="lk-mode-card__sub">사진을 보고 메뉴를 선택합니다</span>
           </span>
         </button>
       </div>

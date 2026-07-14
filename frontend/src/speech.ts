@@ -59,7 +59,7 @@ type ListenOpts = {
 export function listenOnce(opts: ListenOpts): () => void {
   const Ctor = getRecognitionCtor();
   if (!Ctor) {
-    opts.onError("이 기기에서는 음성 인식을 쓸 수 없어요.");
+    opts.onError("이 기기에서는 음성 인식을 사용할 수 없습니다.");
     return () => {};
   }
 
@@ -81,16 +81,16 @@ export function listenOnce(opts: ListenOpts): () => void {
     if (rec.interimResults) {
       if (isFinal) {
         if (text) opts.onResult(text);
-        else opts.onError("말씀이 잘 들리지 않았어요. 다시 말씀해 주세요.");
+        else opts.onError("음성이 잘 들리지 않았습니다. 다시 한 번 말씀해 주세요.");
       } else {
         opts.onInterimResult?.(text);
       }
     } else {
       if (text) opts.onResult(text);
-      else opts.onError("말씀이 잘 들리지 않았어요. 다시 말씀해 주세요.");
+      else opts.onError("음성이 잘 들리지 않았습니다. 다시 한 번 말씀해 주세요.");
     }
   };
-  rec.onerror = () => opts.onError("음성 인식에 실패했어요. 다시 시도하거나 버튼으로 골라 주세요.");
+  rec.onerror = () => opts.onError("음성을 인식하지 못했습니다. 다시 시도하시거나 화면에서 선택해 주세요.");
   rec.onend = () => {};
 
   rec.start();
@@ -106,43 +106,72 @@ export function listenOnce(opts: ListenOpts): () => void {
 export function voiceStateLabel(state: VoiceState): string {
   switch (state) {
     case "speaking":
-      return "말씀 키오스크가 대답하는 중이에요…";
+      return "안내 음성이 나오고 있습니다";
     case "listening":
-      return "듣는 중이에요, 천천히 말씀해 주세요…";
+      return "말씀을 듣고 있습니다";
     case "processing":
-      return "어르신의 말씀을 이해하는 중이에요…";
+      return "주문 내용을 확인하고 있습니다";
     case "error":
-      return "음성 인식에 오류가 생겼어요";
+      return "음성을 인식하지 못했습니다";
     default:
       return "";
   }
 }
 // ── 서버 TTS 오디오 재생 (Google) + 브라우저 폴백 ──────────────────────────
-let currentAudio: HTMLAudioElement | null = null;
+// iOS Safari는 사용자 제스처 없이 audio.play()를 차단한다. 첫 터치 제스처에서
+// unlockAudioPlayback()으로 "재생 이력이 있는" 엘리먼트를 만들어 두고 재사용한다.
+let sharedAudio: HTMLAudioElement | null = null;
+let playing = false;
+let resolveCurrent: (() => void) | null = null;
+
+// 무음 0.01초 16kHz mono WAV — 잠금 해제용
+const SILENT_WAV =
+  "data:audio/wav;base64,UklGRmQBAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YUABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+
+/** 첫 사용자 터치 제스처에서 호출 — iOS/Android 오디오 자동재생 잠금 해제 */
+export function unlockAudioPlayback(): void {
+  if (!sharedAudio) sharedAudio = new Audio();
+  sharedAudio.src = SILENT_WAV;
+  void sharedAudio.play().catch(() => {
+    /* 이미 잠금 해제됐거나 미지원 — 실재생 시 재시도 */
+  });
+  // speechSynthesis도 제스처 안에서 한 번 호출해 두면 이후 폴백 발화가 허용된다
+  try {
+    const u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+  } catch {
+    /* noop */
+  }
+}
+
+function settleCurrent(): void {
+  if (resolveCurrent) {
+    const r = resolveCurrent;
+    resolveCurrent = null;
+    r();
+  }
+  playing = false;
+}
 
 export function stopAllAudio(): void {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio = null;
-  }
+  if (sharedAudio && playing) sharedAudio.pause();
+  settleCurrent(); // 중단된 재생의 await가 영원히 걸리지 않도록 즉시 resolve
   window.speechSynthesis.cancel();
 }
 
-/** base64 오디오 재생. 끝나면 resolve. */
+/** base64 오디오 재생. 끝나면(또는 중단되면) resolve. */
 export function playBase64Audio(b64: string, mime = "audio/mpeg"): Promise<void> {
   stopAllAudio();
   return new Promise((resolve) => {
-    const audio = new Audio(`data:${mime};base64,${b64}`);
-    currentAudio = audio;
-    audio.onended = () => {
-      if (currentAudio === audio) currentAudio = null;
-      resolve();
-    };
-    audio.onerror = () => {
-      if (currentAudio === audio) currentAudio = null;
-      resolve();
-    };
-    void audio.play().catch(() => resolve());
+    if (!sharedAudio) sharedAudio = new Audio();
+    const audio = sharedAudio;
+    resolveCurrent = resolve;
+    playing = true;
+    audio.onended = settleCurrent;
+    audio.onerror = settleCurrent;
+    audio.src = `data:${mime};base64,${b64}`;
+    void audio.play().catch(() => settleCurrent());
   });
 }
 

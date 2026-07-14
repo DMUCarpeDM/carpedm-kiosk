@@ -174,8 +174,29 @@ class GeminiSttProvider(SttProvider):
         return SttResult(text=text, provider=self.name)
 
 
+class ChainedSttProvider(SttProvider):
+    """여러 STT 엔진을 순서대로 시도 — 앞 엔진이 실패(빈 결과 포함)하면 다음 엔진으로.
+
+    소음 환경 대응: CLOVA가 못 알아들은 오디오도 Gemini(메뉴명 힌트 프롬프트)가
+    건질 수 있어 현장 STT 성공률을 올린다. 전부 실패해야 SttError.
+    """
+
+    def __init__(self, providers: list[SttProvider]):
+        self.providers = providers
+        self.name = "+".join(p.name for p in providers)
+
+    def transcribe(self, audio: bytes, content_type: str = "audio/wav") -> SttResult:
+        last: SttError | None = None
+        for p in self.providers:
+            try:
+                return p.transcribe(audio, content_type)
+            except SttError as e:
+                last = e
+        raise last or SttError("사용 가능한 STT 엔진 없음")
+
+
 def make_stt_provider(menu: dict[str, dict], kind: str | None = None) -> SttProvider | None:
-    """auto: CLOVA 키 있으면 CLOVA, 아니면 Gemini, 둘 다 없으면 None(프론트 브라우저 STT 폴백)."""
+    """auto: 키가 있는 엔진을 CLOVA→Gemini 순으로 체인. 둘 다 없으면 None(프론트 브라우저 STT 폴백)."""
     kind = (kind or os.getenv("KIOSK_STT", "auto")).lower()
     if kind == "none":
         return None
@@ -183,11 +204,14 @@ def make_stt_provider(menu: dict[str, dict], kind: str | None = None) -> SttProv
         return ClovaSttProvider(menu)
     if kind == "gemini":
         return GeminiSttProvider(menu)
-    try:
-        return ClovaSttProvider(menu)
-    except SttError:
-        pass
-    try:
-        return GeminiSttProvider(menu)
-    except SttError:
+    providers: list[SttProvider] = []
+    for cls in (ClovaSttProvider, GeminiSttProvider):
+        try:
+            providers.append(cls(menu))
+        except SttError:
+            pass
+    if not providers:
         return None
+    if len(providers) == 1:
+        return providers[0]
+    return ChainedSttProvider(providers)

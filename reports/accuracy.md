@@ -1,7 +1,11 @@
 # 매핑 정확도 리포트
 
+> ⚠ 2026-07-03 측정 — **구(舊) 메뉴 기준** 수치입니다. 2026-07-12 메뉴 최신화 이후의
+> Claude 정확도는 `python scripts/measure.py --provider claude` 재실행으로 갱신해야 합니다.
+> 규칙 폴백의 최신(새 메뉴) 수치는 [accuracy_rule.md](accuracy_rule.md) — 98.8% (245/248).
+
 - provider: **claude**
-- 케이스: 246건 / 소요: 450.2s
+- 케이스: 246건 / 소요: 459.6s
 - **전체 정확도: 96.3%** (목표 ≥90%)
 - 멀티턴 정확도: 95.7% (목표 ≥85%)
 
@@ -16,10 +20,10 @@
 - cancel: 100.0% (5/5)
 - clarify: 92.3% (12/13)
 - confirm: 100.0% (8/8)
-- dict: 95.2% (60/63)
+- dict: 93.7% (59/63)
 - hard: 85.7% (6/7)
 - multi_item: 100.0% (10/10)
-- name: 96.0% (48/50)
+- name: 98.0% (49/50)
 - qty: 100.0% (27/27)
 - recommend: 100.0% (12/12)
 - reject: 100.0% (10/10)
@@ -28,9 +32,9 @@
 
 ## 실패 케이스 (9건, 최대 30건 표시)
 - `T009` "핫크리스피 버거 하나 주세요" → 기대 {"action": "update", "cart": [{"id": "hot-crispy-burger", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
-- `T021` "핫크리스피 버거 세트 하나 주세요" → 기대 {"action": "update", "cart": [{"id": "hot-crispy-burger-set", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
 - `T060` "매콤한 버거 하나 줘" → 기대 {"action": "update", "cart": [{"id": "hot-crispy-burger", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
 - `T064` "매운 날개 튀김 주세요" → 기대 {"action": "update", "cart": [{"id": "hot-wings", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
+- `T084` "쏘는 물 줘" → 기대 {"action": "update", "cart": [{"id": "cider", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
 - `T096` "매운 불고기 버거 하나 줘요" → 기대 {"action": "update", "cart": [{"id": "bulsae-burger", "qty": 1}]} / 실제 {"action": "clarify", "cart": []}
 - `T128` "새우 든 거 하나 줘" → 기대 {"action": "clarify"} / 실제 {"action": "update", "cart": [["shrimp-burger", 1]]}
 - `T189` "아이스크림 콘은 빼주세요" → 기대 {"action": "update", "cart": [{"id": "t-rex-burger-set", "qty": 1}]} / 실제 {"action": "update", "cart": [["soft-cone", 1], ["t-rex-burger-set", 1]]}

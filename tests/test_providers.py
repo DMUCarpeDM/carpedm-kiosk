@@ -27,8 +27,8 @@ MENU = load_menu()
 # ── 부스팅 키워드 ────────────────────────────────────
 def test_build_boost_words_covers_menu_names():
     words = stt_mod.build_boost_words(MENU)
-    assert "불고기 버거" in words and "불고기버거" in words
-    assert "티렉스 버거" in words
+    assert "불고기 버거" in words and "리아 불고기" in words
+    assert "미라클 버거" in words
     assert len(words) == len(set(words))  # 중복 없음
     assert len(words) <= 1000  # CLOVA 제한
 
@@ -211,3 +211,47 @@ def test_order_multiturn_carries_cart(client, monkeypatch):
     body = res.json()
     assert body["session_id"] == "s1"
     assert sorted((c["id"], c["qty"]) for c in body["cart"]) == [("bulgogi-burger", 1), ("fries", 1)]
+
+
+# ── 규칙 우선 게이트 (KIOSK_RULE_FIRST) — API 비용 절감 ──
+def test_rule_first_skips_llm_for_clear_order(client, monkeypatch):
+    """표현 사전으로 확실히 풀리는 주문은 LLM을 호출하지 않는다."""
+    import backend.app as appmod
+
+    class BoomProvider:
+        name = "claude"
+
+        def interpret(self, *a, **kw):
+            raise AssertionError("확실한 주문인데 LLM이 호출됨")
+
+    monkeypatch.setattr(appmod, "PROVIDER", BoomProvider())
+    monkeypatch.setattr(appmod, "RULE_FIRST", "1")
+    res = client.post("/api/interpret", json={"utterance": "콜라 두 개 줘", "cart": []})
+    body = res.json()
+    assert body["action"] == "update"
+    assert [(c["id"], c["qty"]) for c in body["cart"]] == [("cola", 2)]
+    assert body["provider"] == "rule" and body["fallback"] is False
+
+
+def test_rule_first_defers_uncertain_to_llm(client, monkeypatch):
+    """규칙이 확신 못 하는 발화(추천·되묻기)는 기존대로 LLM이 맡는다."""
+    import backend.app as appmod
+    from backend.interpreter import InterpretResult
+
+    calls = {"n": 0}
+
+    class FakeLlm:
+        name = "claude"
+
+        def interpret(self, utterance, cart, menu, expressions):
+            calls["n"] += 1
+            return InterpretResult(
+                action="recommend", cart=[], reply="추천드립니다.",
+                suggestions=["cola"], provider="claude",
+            )
+
+    monkeypatch.setattr(appmod, "PROVIDER", FakeLlm())
+    monkeypatch.setattr(appmod, "RULE_FIRST", "1")
+    res = client.post("/api/interpret", json={"utterance": "요즘 인기 있는 게 뭐요", "cart": []})
+    body = res.json()
+    assert calls["n"] == 1 and body["action"] == "recommend" and body["provider"] == "claude"

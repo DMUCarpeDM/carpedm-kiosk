@@ -116,13 +116,13 @@ def test_rule_multiturn_remove():
 
 
 def test_rule_cancel_all():
-    r = run("전부 취소해줘", [{"id": "cola", "qty": 1}, {"id": "churros", "qty": 2}])
+    r = run("전부 취소해줘", [{"id": "cola", "qty": 1}, {"id": "fries", "qty": 2}])
     assert r.action == "update" and r.cart == []
 
 
 def test_rule_one_more():
-    r = run("하나 더 줘", [{"id": "milk-shake", "qty": 1}])
-    assert r.action == "update" and carts(r) == [("milk-shake", 2)]
+    r = run("하나 더 줘", [{"id": "soft-cone", "qty": 1}])
+    assert r.action == "update" and carts(r) == [("soft-cone", 2)]
 
 
 def test_rule_confirm():
@@ -156,8 +156,8 @@ def test_specific_menu_not_treated_as_recommend():
 
 
 def test_rule_quantity_parse():
-    r = run("츄러스 세 개 줘")
-    assert carts(r) == [("churros", 3)]
+    r = run("치즈 스틱 세 개 줘")
+    assert carts(r) == [("cheese-sticks", 3)]
 
 
 def test_rule_set_menu_direct():

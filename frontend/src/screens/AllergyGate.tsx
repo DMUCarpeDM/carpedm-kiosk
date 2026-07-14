@@ -35,7 +35,7 @@ export function AllergyGate({ cart, menu, onProceed, onRemoveItem, onOpenMenu, o
 
   // 음성 안내 + 자막 (한 번만)
   useEffect(() => {
-    const say = `결제하기 전에 확인해 주세요. 주문하신 메뉴에 ${allergens.join(", ")} 성분이 들어 있어요. 알레르기가 있으신가요?`;
+    const say = `결제 전에 알레르기 정보를 확인해 주세요. 주문하신 메뉴에 ${allergens.join(", ")} 성분이 포함되어 있습니다. 해당 알레르기가 있으신가요?`;
     let cancelled = false;
     void (async () => {
       const audio = await fetchTtsAudio(say);
@@ -56,20 +56,20 @@ export function AllergyGate({ cart, menu, onProceed, onRemoveItem, onOpenMenu, o
             <span className="lk-modal__badge lk-modal__badge--warn">
               <IconWarning size={30} />
             </span>
-            <h2 className="lk-modal__title">드시기 전에 확인해 주세요</h2>
-            <p className="lk-modal__sub">주문하신 메뉴에 아래 성분이 들어 있어요.</p>
+            <h2 className="lk-modal__title">알레르기 확인</h2>
+            <p className="lk-modal__sub">주문하신 메뉴에 아래 성분이 포함되어 있습니다.</p>
             <div className="lk-allergen-chips">
               {allergens.map((a) => (
                 <span key={a} className="lk-allergen-chip">{a}</span>
               ))}
             </div>
-            <p className="lk-modal__question">이 중에 알레르기가 있으신가요?</p>
+            <p className="lk-modal__question">해당 알레르기가 있으신가요?</p>
             <div className="lk-modal__actions">
               <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={onProceed}>
-                없어요, 결제할게요
+                없습니다 — 결제 진행
               </button>
               <button type="button" className="lk-modal__btn lk-modal__btn--no" onClick={() => setStep("review")}>
-                있어요, 확인할래요
+                있습니다 — 메뉴 확인
               </button>
               <button type="button" className="lk-modal__btn lk-modal__btn--plain" onClick={onCancel}>
                 이전으로
@@ -78,12 +78,12 @@ export function AllergyGate({ cart, menu, onProceed, onRemoveItem, onOpenMenu, o
           </>
         ) : (
           <>
-            <h2 className="lk-modal__title">어떤 메뉴를 뺄까요?</h2>
-            <p className="lk-modal__sub">알레르기 성분이 든 메뉴예요. 빼실 메뉴를 눌러 주세요.</p>
+            <h2 className="lk-modal__title">메뉴별 알레르기 성분</h2>
+            <p className="lk-modal__sub">빼실 메뉴가 있으면 선택해 주세요.</p>
             <div className="lk-allergy-rows">
               {itemsWithAllergens.length === 0 ? (
                 <p className="lk-allergy-rows__done">
-                  <IconCheck size={22} /> 알레르기 성분이 든 메뉴가 없어요. 안심하고 결제하세요.
+                  <IconCheck size={22} /> 알레르기 성분이 든 메뉴가 없습니다. 안심하고 결제하세요.
                 </p>
               ) : (
                 itemsWithAllergens.map((m) => (
@@ -102,7 +102,7 @@ export function AllergyGate({ cart, menu, onProceed, onRemoveItem, onOpenMenu, o
             <div className="lk-modal__actions">
               {cart.length > 0 ? (
                 <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={onProceed}>
-                  확인했어요, 결제할게요
+                  확인 완료 — 결제 진행
                 </button>
               ) : null}
               <button type="button" className="lk-modal__btn lk-modal__btn--no" onClick={onOpenMenu}>

@@ -80,7 +80,8 @@ export type OrderResponse =
   | { ok: false; stage: "stt"; session_id: string; message: string };
 
 export type VoiceResultView =
-  | { kind: "menu"; menuId: string; qty: number; say?: string }
+  /** update 결과 — 전체 장바구니를 보여주고, 이번 발화로 바뀐 항목을 강조한다 */
+  | { kind: "cart"; changedIds: string[]; say?: string }
   | { kind: "recommend"; menuIds: string[]; say?: string }
   | { kind: "clarify"; text: string }
   | { kind: "reject"; text: string };

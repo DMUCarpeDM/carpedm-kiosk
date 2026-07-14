@@ -10,7 +10,7 @@ export function MainScreen({ onSelect }: Props) {
   return (
     <div className="lk-start">
       <div className="lk-start__hero">
-        <p className="lk-start__tag">어서 오세요! 천천히, 편하게 주문하세요</p>
+        <p className="lk-start__tag">어서 오세요</p>
         <h1 className="lk-start__question">어디에서 드시겠어요?</h1>
       </div>
 
@@ -21,7 +21,7 @@ export function MainScreen({ onSelect }: Props) {
           </span>
           <span className="lk-choice__label">매장에서
 먹고 가요</span>
-          <span className="lk-choice__sub">자리에서 드시고 가세요</span>
+          <span className="lk-choice__sub">매장 이용</span>
         </button>
         <button type="button" className="lk-choice" onClick={() => onSelect("togo")}>
           <span className="lk-choice__icon lk-choice__icon--togo">
@@ -29,11 +29,11 @@ export function MainScreen({ onSelect }: Props) {
           </span>
           <span className="lk-choice__label">포장해서
 가져가요</span>
-          <span className="lk-choice__sub">봉투에 담아 드려요</span>
+          <span className="lk-choice__sub">가지고 가기</span>
         </button>
       </div>
 
-      <p className="lk-start__hint">원하시는 쪽을 눌러 주세요</p>
+      <p className="lk-start__hint">화면을 눌러 선택해 주세요</p>
     </div>
   );
 }

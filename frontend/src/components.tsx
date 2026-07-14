@@ -92,12 +92,6 @@ export function A11yBar({
           <IconBell /> 직원 호출
         </button>
       </div>
-      <div className="lk-a11y__lang" aria-label="언어">
-        <b>한국어</b>
-        <span>English</span>
-        <span>中文</span>
-        <span>日本語</span>
-      </div>
     </footer>
   );
 }
@@ -158,9 +152,7 @@ export function ProductCard({ item, onClick }: { item: MenuItem; onClick: () => 
         <img src={menuImageSrc(item)} alt="" />
       </span>
       <span className="lk-card__name">{menuDisplayName(item)}</span>
-      <span className="lk-card__meta">
-        {typeof item.kcal === "number" ? `${item.kcal.toLocaleString("ko-KR")}kcal` : " "}
-      </span>
+      {/* 칼로리는 카드에서 빼고 상세 화면(열량 ○○kcal)에서만 — 메뉴판은 이름·가격만 크게 */}
       <span className="lk-card__price">{item.price.toLocaleString("ko-KR")}원</span>
     </button>
   );
@@ -172,8 +164,8 @@ export function recommendReason(item: MenuItem): string {
   const tags = item.tags ?? [];
   if (tags.includes("맵다")) return "매콤한 맛";
   if (tags.includes("달다")) return "달콤한 맛";
-  if (tags.includes("부드럽다")) return "부드러워요";
-  if (tags.includes("바삭하다")) return "바삭해요";
-  if (tags.includes("신메뉴")) return "새로 나왔어요";
+  if (tags.includes("부드럽다")) return "부드러운 맛";
+  if (tags.includes("바삭하다")) return "바삭한 식감";
+  if (tags.includes("신메뉴")) return "신메뉴";
   return "추천 메뉴";
 }

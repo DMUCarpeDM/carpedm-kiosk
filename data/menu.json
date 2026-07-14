@@ -1,14 +1,15 @@
 {
-  "version": "0.2",
+  "version": "0.3",
   "currency": "KRW",
   "domain": "lotteria",
+  "updated": "2026-07-12 (lotteeatz.com 라인업 기준, 가격·kcal 근사)",
   "items": [
     {
       "id": "bulgogi-burger",
       "easy_name": "불고기 버거",
-      "original_name": "불고기버거",
+      "original_name": "리아 불고기",
       "category": "햄버거",
-      "price": 4500,
+      "price": 5800,
       "temp": "none",
       "tags": [
         "인기",
@@ -31,34 +32,34 @@
       ]
     },
     {
-      "id": "cheese-burger",
-      "easy_name": "치즈 버거",
-      "original_name": "치즈버거",
+      "id": "bulgogi-burger-double",
+      "easy_name": "더블 불고기 버거",
+      "original_name": "리아 불고기 더블",
       "category": "햄버거",
-      "price": 3900,
+      "price": 8400,
       "temp": "none",
       "tags": [
-        "부드럽다"
+        "진하다"
       ],
       "allergens": [
         "밀",
-        "우유",
         "대두",
+        "우유",
+        "계란",
         "쇠고기"
       ],
-      "kcal": 438,
-      "desc": "고소한 치즈가 들어간 기본 버거",
+      "kcal": 720,
+      "desc": "불고기 패티가 두 장 든 든든한 버거",
       "origin": [
-        "쇠고기: 호주산",
-        "치즈: 뉴질랜드산"
+        "쇠고기: 호주산"
       ]
     },
     {
       "id": "shrimp-burger",
       "easy_name": "새우 버거",
-      "original_name": "새우버거",
+      "original_name": "리아 새우",
       "category": "햄버거",
-      "price": 5200,
+      "price": 5800,
       "temp": "none",
       "tags": [
         "인기",
@@ -78,11 +79,57 @@
       ]
     },
     {
+      "id": "cheese-burger",
+      "easy_name": "치즈 버거",
+      "original_name": "클래식치즈버거",
+      "category": "햄버거",
+      "price": 6300,
+      "temp": "none",
+      "tags": [
+        "부드럽다"
+      ],
+      "allergens": [
+        "밀",
+        "우유",
+        "대두",
+        "쇠고기"
+      ],
+      "kcal": 510,
+      "desc": "고소한 치즈가 들어간 클래식 버거",
+      "origin": [
+        "쇠고기: 호주산",
+        "치즈: 뉴질랜드산"
+      ]
+    },
+    {
+      "id": "double-cheese-burger",
+      "easy_name": "더블 치즈 버거",
+      "original_name": "더블 클래식치즈버거",
+      "category": "햄버거",
+      "price": 8000,
+      "temp": "none",
+      "tags": [
+        "진하다"
+      ],
+      "allergens": [
+        "밀",
+        "우유",
+        "대두",
+        "쇠고기"
+      ],
+      "kcal": 750,
+      "desc": "치즈와 고기가 두 배로 든 버거",
+      "origin": [
+        "쇠고기: 호주산",
+        "치즈: 뉴질랜드산"
+      ]
+    },
+    {
       "id": "teriyaki-burger",
       "easy_name": "데리 버거",
       "original_name": "데리버거",
       "category": "햄버거",
-      "price": 4300,
+      "price": 4500,
       "temp": "none",
       "tags": [
         "달다"
@@ -100,105 +147,33 @@
       ]
     },
     {
-      "id": "hanwoo-burger",
-      "easy_name": "한우 불고기 버거",
-      "original_name": "한우불고기버거",
+      "id": "chicken-burger",
+      "easy_name": "치킨 버거",
+      "original_name": "치킨버거",
       "category": "햄버거",
-      "price": 7500,
+      "price": 5100,
       "temp": "none",
       "tags": [
-        "신메뉴",
-        "진하다"
-      ],
-      "allergens": [
-        "밀",
-        "대두",
-        "우유",
-        "쇠고기"
-      ],
-      "kcal": 620,
-      "desc": "한우로 만든 고급 불고기 버거",
-      "origin": [
-        "쇠고기: 국내산 한우"
-      ]
-    },
-    {
-      "id": "shrimp-mozza-burger",
-      "easy_name": "새우 모짜 버거",
-      "original_name": "새우모짜버거",
-      "category": "햄버거",
-      "price": 5600,
-      "temp": "none",
-      "tags": [
-        "바삭하다",
-        "고소하다"
-      ],
-      "allergens": [
-        "새우",
-        "우유",
-        "밀",
-        "계란"
-      ],
-      "kcal": 561,
-      "desc": "새우와 모짜렐라 치즈가 함께",
-      "origin": [
-        "새우: 베트남산",
-        "치즈: 뉴질랜드산"
-      ]
-    },
-    {
-      "id": "t-rex-burger",
-      "easy_name": "티렉스 버거",
-      "original_name": "T-REX버거",
-      "category": "햄버거",
-      "price": 6900,
-      "temp": "none",
-      "tags": [
-        "인기",
         "바삭하다"
       ],
-      "popular": true,
       "allergens": [
         "닭고기",
         "밀",
         "계란",
         "대두"
       ],
-      "kcal": 465,
-      "desc": "큼직한 닭다리살 튀김 버거",
+      "kcal": 460,
+      "desc": "바삭한 닭고기 패티 버거",
       "origin": [
         "닭고기: 국내산"
       ]
     },
     {
-      "id": "az-burger",
-      "easy_name": "에이지 버거",
-      "original_name": "AZ버거",
-      "category": "햄버거",
-      "price": 5400,
-      "temp": "none",
-      "tags": [
-        "인기"
-      ],
-      "popular": true,
-      "allergens": [
-        "밀",
-        "대두",
-        "우유",
-        "쇠고기"
-      ],
-      "kcal": 622,
-      "desc": "두툼한 소고기 패티의 든든한 버거",
-      "origin": [
-        "쇠고기: 호주산"
-      ]
-    },
-    {
       "id": "hot-crispy-burger",
       "easy_name": "핫크리스피 버거",
-      "original_name": "핫크리스피버거",
+      "original_name": "핫크리스피치킨버거",
       "category": "햄버거",
-      "price": 5500,
+      "price": 7000,
       "temp": "none",
       "tags": [
         "바삭하다",
@@ -217,34 +192,54 @@
       ]
     },
     {
-      "id": "double-cheese-burger",
-      "easy_name": "더블 치즈 버거",
-      "original_name": "더블치즈버거",
+      "id": "miracle-burger",
+      "easy_name": "미라클 버거",
+      "original_name": "미라클버거",
       "category": "햄버거",
-      "price": 6300,
+      "price": 6500,
+      "temp": "none",
+      "tags": [
+        "신메뉴",
+        "담백하다"
+      ],
+      "allergens": [
+        "밀",
+        "대두"
+      ],
+      "kcal": 530,
+      "desc": "콩고기 패티로 만든 담백한 버거",
+      "origin": [
+        "콩단백: 수입산"
+      ]
+    },
+    {
+      "id": "hanwoo-burger",
+      "easy_name": "한우 불고기 버거",
+      "original_name": "한우불고기버거",
+      "category": "햄버거",
+      "price": 9800,
       "temp": "none",
       "tags": [
         "진하다"
       ],
       "allergens": [
         "밀",
-        "우유",
         "대두",
+        "우유",
         "쇠고기"
       ],
-      "kcal": 649,
-      "desc": "치즈와 고기가 두 배로 든 버거",
+      "kcal": 620,
+      "desc": "한우로 만든 고급 불고기 버거",
       "origin": [
-        "쇠고기: 호주산",
-        "치즈: 뉴질랜드산"
+        "쇠고기: 국내산 한우"
       ]
     },
     {
       "id": "mozzarella-burger",
       "easy_name": "모짜렐라 버거",
-      "original_name": "모짜렐라 인 더 버거",
+      "original_name": "모짜렐라 인 더 버거 베이컨",
       "category": "햄버거",
-      "price": 6600,
+      "price": 8800,
       "temp": "none",
       "tags": [
         "부드럽다",
@@ -253,44 +248,46 @@
       "allergens": [
         "밀",
         "우유",
+        "돼지고기",
         "토마토"
       ],
       "kcal": 685,
       "desc": "치즈가 쭉 늘어나는 부드러운 버거",
       "origin": [
-        "치즈: 뉴질랜드산"
+        "치즈: 뉴질랜드산",
+        "베이컨: 외국산"
       ]
     },
     {
-      "id": "bulsae-burger",
-      "easy_name": "불새 버거",
-      "original_name": "불새버거",
+      "id": "bibim-rice-burger",
+      "easy_name": "비빔밥 버거",
+      "original_name": "전주 비빔라이스 버거",
       "category": "햄버거",
-      "price": 5000,
+      "price": 8100,
       "temp": "none",
       "tags": [
         "신메뉴",
-        "맵다"
+        "담백하다"
       ],
       "allergens": [
-        "새우",
         "밀",
         "대두",
-        "계란"
+        "계란",
+        "쇠고기"
       ],
-      "kcal": 520,
-      "desc": "매콤 불고기와 새우가 함께",
+      "kcal": 560,
+      "desc": "고추장 비빔 맛의 밥 버거",
       "origin": [
-        "새우: 베트남산",
+        "쌀: 국내산",
         "쇠고기: 호주산"
       ]
     },
     {
       "id": "bulgogi-burger-set",
       "easy_name": "불고기 버거 세트",
-      "original_name": "불고기버거 세트",
+      "original_name": "리아 불고기 세트",
       "category": "세트",
-      "price": 7000,
+      "price": 8600,
       "temp": "none",
       "tags": [
         "인기",
@@ -309,7 +306,7 @@
         "계란",
         "쇠고기"
       ],
-      "kcal": 1050,
+      "kcal": 1045,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
         "쇠고기: 호주산",
@@ -317,39 +314,39 @@
       ]
     },
     {
-      "id": "cheese-burger-set",
-      "easy_name": "치즈 버거 세트",
-      "original_name": "치즈버거 세트",
+      "id": "bulgogi-burger-double-set",
+      "easy_name": "더블 불고기 버거 세트",
+      "original_name": "리아 불고기 더블 세트",
       "category": "세트",
-      "price": 6400,
+      "price": 10900,
       "temp": "none",
       "tags": [
         "세트"
       ],
-      "set_of": "cheese-burger",
+      "set_of": "bulgogi-burger-double",
       "set_includes": [
         "감자 튀김",
         "콜라"
       ],
       "allergens": [
         "밀",
-        "우유",
         "대두",
+        "우유",
+        "계란",
         "쇠고기"
       ],
-      "kcal": 993,
+      "kcal": 1270,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
-        "쇠고기: 호주산",
-        "치즈: 뉴질랜드산"
+        "쇠고기: 호주산"
       ]
     },
     {
       "id": "shrimp-burger-set",
       "easy_name": "새우 버거 세트",
-      "original_name": "새우버거 세트",
+      "original_name": "리아 새우 세트",
       "category": "세트",
-      "price": 7700,
+      "price": 8600,
       "temp": "none",
       "tags": [
         "인기",
@@ -367,10 +364,66 @@
         "계란",
         "대두"
       ],
-      "kcal": 1002,
+      "kcal": 997,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
         "새우: 베트남산"
+      ]
+    },
+    {
+      "id": "cheese-burger-set",
+      "easy_name": "치즈 버거 세트",
+      "original_name": "클래식치즈버거 세트",
+      "category": "세트",
+      "price": 9000,
+      "temp": "none",
+      "tags": [
+        "세트"
+      ],
+      "set_of": "cheese-burger",
+      "set_includes": [
+        "감자 튀김",
+        "콜라"
+      ],
+      "allergens": [
+        "밀",
+        "우유",
+        "대두",
+        "쇠고기"
+      ],
+      "kcal": 1060,
+      "desc": "감자 튀김·콜라가 함께 나오는 세트",
+      "origin": [
+        "쇠고기: 호주산",
+        "치즈: 뉴질랜드산"
+      ]
+    },
+    {
+      "id": "double-cheese-burger-set",
+      "easy_name": "더블 치즈 버거 세트",
+      "original_name": "더블 클래식치즈버거 세트",
+      "category": "세트",
+      "price": 10500,
+      "temp": "none",
+      "tags": [
+        "세트"
+      ],
+      "set_of": "double-cheese-burger",
+      "set_includes": [
+        "감자 튀김",
+        "콜라"
+      ],
+      "allergens": [
+        "밀",
+        "우유",
+        "대두",
+        "쇠고기"
+      ],
+      "kcal": 1300,
+      "desc": "감자 튀김·콜라가 함께 나오는 세트",
+      "origin": [
+        "쇠고기: 호주산",
+        "치즈: 뉴질랜드산"
       ]
     },
     {
@@ -378,7 +431,7 @@
       "easy_name": "데리 버거 세트",
       "original_name": "데리버거 세트",
       "category": "세트",
-      "price": 6800,
+      "price": 7400,
       "temp": "none",
       "tags": [
         "세트"
@@ -394,81 +447,23 @@
         "계란",
         "닭고기"
       ],
-      "kcal": 1023,
+      "kcal": 1018,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
         "닭고기: 국내산"
       ]
     },
     {
-      "id": "hanwoo-burger-set",
-      "easy_name": "한우 불고기 버거 세트",
-      "original_name": "한우불고기버거 세트",
+      "id": "chicken-burger-set",
+      "easy_name": "치킨 버거 세트",
+      "original_name": "치킨버거 세트",
       "category": "세트",
-      "price": 10000,
-      "temp": "none",
-      "tags": [
-        "신메뉴",
-        "세트"
-      ],
-      "set_of": "hanwoo-burger",
-      "set_includes": [
-        "감자 튀김",
-        "콜라"
-      ],
-      "allergens": [
-        "밀",
-        "대두",
-        "우유",
-        "쇠고기"
-      ],
-      "kcal": 1175,
-      "desc": "감자 튀김·콜라가 함께 나오는 세트",
-      "origin": [
-        "쇠고기: 국내산 한우"
-      ]
-    },
-    {
-      "id": "shrimp-mozza-burger-set",
-      "easy_name": "새우 모짜 버거 세트",
-      "original_name": "새우모짜버거 세트",
-      "category": "세트",
-      "price": 8100,
+      "price": 8000,
       "temp": "none",
       "tags": [
         "세트"
       ],
-      "set_of": "shrimp-mozza-burger",
-      "set_includes": [
-        "감자 튀김",
-        "콜라"
-      ],
-      "allergens": [
-        "새우",
-        "우유",
-        "밀",
-        "계란"
-      ],
-      "kcal": 1116,
-      "desc": "감자 튀김·콜라가 함께 나오는 세트",
-      "origin": [
-        "새우: 베트남산",
-        "치즈: 뉴질랜드산"
-      ]
-    },
-    {
-      "id": "t-rex-burger-set",
-      "easy_name": "티렉스 버거 세트",
-      "original_name": "T-REX버거 세트",
-      "category": "세트",
-      "price": 9400,
-      "temp": "none",
-      "tags": [
-        "인기",
-        "세트"
-      ],
-      "popular": true,
-      "set_of": "t-rex-burger",
+      "set_of": "chicken-burger",
       "set_includes": [
         "감자 튀김",
         "콜라"
@@ -479,45 +474,18 @@
         "계란",
         "대두"
       ],
-      "kcal": 1020,
+      "kcal": 1010,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
         "닭고기: 국내산"
       ]
     },
     {
-      "id": "az-burger-set",
-      "easy_name": "에이지 버거 세트",
-      "original_name": "AZ버거 세트",
-      "category": "세트",
-      "price": 7900,
-      "temp": "none",
-      "tags": [
-        "세트"
-      ],
-      "set_of": "az-burger",
-      "set_includes": [
-        "감자 튀김",
-        "콜라"
-      ],
-      "allergens": [
-        "밀",
-        "대두",
-        "우유",
-        "쇠고기"
-      ],
-      "kcal": 1177,
-      "desc": "감자 튀김·콜라가 함께 나오는 세트",
-      "origin": [
-        "쇠고기: 호주산"
-      ]
-    },
-    {
       "id": "hot-crispy-burger-set",
       "easy_name": "핫크리스피 버거 세트",
-      "original_name": "핫크리스피버거 세트",
+      "original_name": "핫크리스피치킨버거 세트",
       "category": "세트",
-      "price": 8000,
+      "price": 9600,
       "temp": "none",
       "tags": [
         "세트",
@@ -534,46 +502,70 @@
         "계란",
         "우유"
       ],
-      "kcal": 1039,
+      "kcal": 1034,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
         "닭고기: 국내산"
       ]
     },
     {
-      "id": "double-cheese-burger-set",
-      "easy_name": "더블 치즈 버거 세트",
-      "original_name": "더블치즈버거 세트",
+      "id": "miracle-burger-set",
+      "easy_name": "미라클 버거 세트",
+      "original_name": "미라클버거 세트",
       "category": "세트",
-      "price": 8800,
+      "price": 9200,
       "temp": "none",
       "tags": [
         "세트"
       ],
-      "set_of": "double-cheese-burger",
+      "set_of": "miracle-burger",
       "set_includes": [
         "감자 튀김",
         "콜라"
       ],
       "allergens": [
         "밀",
-        "우유",
-        "대두",
-        "쇠고기"
+        "대두"
       ],
-      "kcal": 1204,
+      "kcal": 1080,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
-        "쇠고기: 호주산",
-        "치즈: 뉴질랜드산"
+        "콩단백: 수입산"
+      ]
+    },
+    {
+      "id": "hanwoo-burger-set",
+      "easy_name": "한우 불고기 버거 세트",
+      "original_name": "한우불고기버거 세트",
+      "category": "세트",
+      "price": 12200,
+      "temp": "none",
+      "tags": [
+        "세트"
+      ],
+      "set_of": "hanwoo-burger",
+      "set_includes": [
+        "감자 튀김",
+        "콜라"
+      ],
+      "allergens": [
+        "밀",
+        "대두",
+        "우유",
+        "쇠고기"
+      ],
+      "kcal": 1170,
+      "desc": "감자 튀김·콜라가 함께 나오는 세트",
+      "origin": [
+        "쇠고기: 국내산 한우"
       ]
     },
     {
       "id": "mozzarella-burger-set",
       "easy_name": "모짜렐라 버거 세트",
-      "original_name": "모짜렐라 인 더 버거 세트",
+      "original_name": "모짜렐라 인 더 버거 베이컨 세트",
       "category": "세트",
-      "price": 9100,
+      "price": 11300,
       "temp": "none",
       "tags": [
         "세트"
@@ -586,52 +578,53 @@
       "allergens": [
         "밀",
         "우유",
+        "돼지고기",
         "토마토"
       ],
-      "kcal": 1240,
+      "kcal": 1235,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
-        "치즈: 뉴질랜드산"
+        "치즈: 뉴질랜드산",
+        "베이컨: 외국산"
       ]
     },
     {
-      "id": "bulsae-burger-set",
-      "easy_name": "불새 버거 세트",
-      "original_name": "불새버거 세트",
+      "id": "bibim-rice-burger-set",
+      "easy_name": "비빔밥 버거 세트",
+      "original_name": "전주 비빔라이스 버거 세트",
       "category": "세트",
-      "price": 7500,
+      "price": 10500,
       "temp": "none",
       "tags": [
-        "신메뉴",
-        "세트",
-        "맵다"
+        "세트"
       ],
-      "set_of": "bulsae-burger",
+      "set_of": "bibim-rice-burger",
       "set_includes": [
         "감자 튀김",
         "콜라"
       ],
       "allergens": [
-        "새우",
         "밀",
         "대두",
-        "계란"
+        "계란",
+        "쇠고기"
       ],
-      "kcal": 1075,
+      "kcal": 1110,
       "desc": "감자 튀김·콜라가 함께 나오는 세트",
       "origin": [
-        "새우: 베트남산",
+        "쌀: 국내산",
         "쇠고기: 호주산"
       ]
     },
     {
-      "id": "crispy-chicken",
-      "easy_name": "크리스피 치킨",
-      "original_name": "치킨 클래식",
+      "id": "chicken-fillet",
+      "easy_name": "순살 치킨",
+      "original_name": "치킨휠레 2조각",
       "category": "치킨",
-      "price": 5900,
+      "price": 3900,
       "temp": "none",
       "tags": [
+        "부드럽다",
         "바삭하다"
       ],
       "allergens": [
@@ -640,17 +633,17 @@
         "계란"
       ],
       "kcal": 330,
-      "desc": "겉은 바삭, 속은 촉촉한 치킨",
+      "desc": "부드러운 순살 닭고기 튀김 2조각",
       "origin": [
         "닭고기: 국내산"
       ]
     },
     {
-      "id": "hot-wings",
+      "id": "fire-wing",
       "easy_name": "매운 닭날개",
-      "original_name": "핫윙",
+      "original_name": "화이어윙 2조각",
       "category": "치킨",
-      "price": 4500,
+      "price": 4000,
       "temp": "none",
       "tags": [
         "맵다",
@@ -660,8 +653,28 @@
         "닭고기",
         "밀"
       ],
-      "kcal": 420,
-      "desc": "매콤한 양념의 닭날개 튀김",
+      "kcal": 350,
+      "desc": "매콤한 양념의 닭날개 튀김 2조각",
+      "origin": [
+        "닭고기: 국내산"
+      ]
+    },
+    {
+      "id": "chicken-leg",
+      "easy_name": "닭다리 튀김",
+      "original_name": "치킨다리 1조각",
+      "category": "치킨",
+      "price": 3700,
+      "temp": "none",
+      "tags": [
+        "바삭하다"
+      ],
+      "allergens": [
+        "닭고기",
+        "밀"
+      ],
+      "kcal": 340,
+      "desc": "겉바속촉 통 닭다리 튀김",
       "origin": [
         "닭고기: 국내산"
       ]
@@ -671,7 +684,7 @@
       "easy_name": "치킨 너겟",
       "original_name": "치킨너겟",
       "category": "치킨",
-      "price": 3500,
+      "price": 3900,
       "temp": "none",
       "tags": [
         "부드럽다"
@@ -688,33 +701,11 @@
       ]
     },
     {
-      "id": "chicken-tender",
-      "easy_name": "치킨 텐더",
-      "original_name": "치킨텐더",
-      "category": "치킨",
-      "price": 4200,
-      "temp": "none",
-      "tags": [
-        "바삭하다",
-        "담백하다"
-      ],
-      "allergens": [
-        "닭고기",
-        "밀",
-        "계란"
-      ],
-      "kcal": 310,
-      "desc": "담백한 닭가슴살 길쭉 튀김",
-      "origin": [
-        "닭고기: 국내산"
-      ]
-    },
-    {
       "id": "fries",
       "easy_name": "감자 튀김",
       "original_name": "포테이토",
       "category": "사이드",
-      "price": 2400,
+      "price": 2800,
       "temp": "none",
       "tags": [
         "인기",
@@ -731,11 +722,32 @@
       ]
     },
     {
+      "id": "seasoned-fries",
+      "easy_name": "양념 감자",
+      "original_name": "양념감자",
+      "category": "사이드",
+      "price": 3400,
+      "temp": "none",
+      "tags": [
+        "바삭하다",
+        "달다"
+      ],
+      "allergens": [
+        "대두",
+        "우유"
+      ],
+      "kcal": 430,
+      "desc": "달콤한 양념 가루를 뿌린 감자 튀김",
+      "origin": [
+        "감자: 미국산"
+      ]
+    },
+    {
       "id": "cheese-sticks",
       "easy_name": "치즈 스틱",
       "original_name": "치즈스틱",
       "category": "사이드",
-      "price": 2800,
+      "price": 3600,
       "temp": "none",
       "tags": [
         "고소하다"
@@ -748,48 +760,11 @@
       "desc": "쭉 늘어나는 치즈 튀김"
     },
     {
-      "id": "onion-rings",
-      "easy_name": "양파 튀김",
-      "original_name": "양파링",
-      "category": "사이드",
-      "price": 2600,
-      "temp": "none",
-      "tags": [
-        "바삭하다"
-      ],
-      "allergens": [
-        "밀",
-        "대두"
-      ],
-      "kcal": 300,
-      "desc": "바삭한 양파 링 튀김"
-    },
-    {
-      "id": "squid-rings",
-      "easy_name": "오징어 튀김",
-      "original_name": "오징어링",
-      "category": "사이드",
-      "price": 3000,
-      "temp": "none",
-      "tags": [
-        "바삭하다"
-      ],
-      "allergens": [
-        "오징어",
-        "밀"
-      ],
-      "kcal": 340,
-      "desc": "쫄깃한 오징어 링 튀김",
-      "origin": [
-        "오징어: 페루산"
-      ]
-    },
-    {
       "id": "long-cheese-stick",
       "easy_name": "긴 치즈 스틱",
       "original_name": "롱치즈스틱",
       "category": "사이드",
-      "price": 2000,
+      "price": 3200,
       "temp": "none",
       "tags": [
         "고소하다"
@@ -802,11 +777,31 @@
       "desc": "길게 즐기는 치즈 스틱"
     },
     {
+      "id": "squid-rings",
+      "easy_name": "오징어 튀김",
+      "original_name": "통오징어링",
+      "category": "사이드",
+      "price": 3600,
+      "temp": "none",
+      "tags": [
+        "바삭하다"
+      ],
+      "allergens": [
+        "오징어",
+        "밀"
+      ],
+      "kcal": 340,
+      "desc": "쫄깃한 통오징어 링 튀김",
+      "origin": [
+        "오징어: 페루산"
+      ]
+    },
+    {
       "id": "coleslaw",
       "easy_name": "양배추 샐러드",
       "original_name": "코울슬로",
       "category": "사이드",
-      "price": 2200,
+      "price": 2700,
       "temp": "none",
       "tags": [
         "새콤하다",
@@ -824,7 +819,7 @@
       "easy_name": "아이스크림 콘",
       "original_name": "소프트콘",
       "category": "디저트",
-      "price": 800,
+      "price": 1300,
       "temp": "ice",
       "tags": [
         "인기",
@@ -840,11 +835,28 @@
       "desc": "부드러운 우유 아이스크림 콘"
     },
     {
-      "id": "choco-sundae",
-      "easy_name": "초코 아이스크림",
-      "original_name": "초코 선데",
+      "id": "sundae-icecream",
+      "easy_name": "컵 아이스크림",
+      "original_name": "선데아이스크림 플레인",
       "category": "디저트",
-      "price": 2000,
+      "price": 2100,
+      "temp": "ice",
+      "tags": [
+        "달다",
+        "부드럽다"
+      ],
+      "allergens": [
+        "우유"
+      ],
+      "kcal": 200,
+      "desc": "컵에 담긴 부드러운 아이스크림"
+    },
+    {
+      "id": "tornado-choco",
+      "easy_name": "초코 회오리 아이스크림",
+      "original_name": "토네이도 더블초코",
+      "category": "디저트",
+      "price": 4000,
       "temp": "ice",
       "tags": [
         "달다",
@@ -854,51 +866,32 @@
         "우유",
         "대두"
       ],
-      "kcal": 240,
-      "desc": "초콜릿을 얹은 아이스크림"
+      "kcal": 320,
+      "desc": "초콜릿을 섞은 회오리 아이스크림"
     },
     {
-      "id": "churros",
-      "easy_name": "츄러스",
-      "original_name": "롱 츄러스",
+      "id": "tornado-strawberry",
+      "easy_name": "딸기 회오리 아이스크림",
+      "original_name": "토네이도 스트로베리",
       "category": "디저트",
-      "price": 2000,
-      "temp": "none",
+      "price": 4000,
+      "temp": "ice",
       "tags": [
         "달다",
-        "바삭하다"
+        "부드럽다"
       ],
       "allergens": [
-        "밀",
         "우유"
       ],
-      "kcal": 290,
-      "desc": "설탕을 뿌린 바삭한 과자빵"
-    },
-    {
-      "id": "apple-pie",
-      "easy_name": "사과 파이",
-      "original_name": "애플파이",
-      "category": "디저트",
-      "price": 2200,
-      "temp": "none",
-      "tags": [
-        "달다",
-        "바삭하다"
-      ],
-      "allergens": [
-        "밀",
-        "대두"
-      ],
-      "kcal": 230,
-      "desc": "따뜻한 사과 조림이 든 파이"
+      "kcal": 310,
+      "desc": "딸기를 섞은 회오리 아이스크림"
     },
     {
       "id": "cola",
       "easy_name": "콜라",
-      "original_name": "코카콜라",
+      "original_name": "펩시콜라",
       "category": "마실 것",
-      "price": 2000,
+      "price": 2700,
       "temp": "ice",
       "tags": [
         "인기",
@@ -906,15 +899,15 @@
       ],
       "popular": true,
       "allergens": [],
-      "kcal": 168,
+      "kcal": 200,
       "desc": "시원하고 톡 쏘는 콜라"
     },
     {
       "id": "zero-cola",
       "easy_name": "제로 콜라",
-      "original_name": "코카콜라 제로",
+      "original_name": "제로슈거콜라",
       "category": "마실 것",
-      "price": 2000,
+      "price": 2700,
       "temp": "ice",
       "tags": [
         "톡쏘다"
@@ -926,15 +919,15 @@
     {
       "id": "cider",
       "easy_name": "사이다",
-      "original_name": "스프라이트",
+      "original_name": "칠성사이다",
       "category": "마실 것",
-      "price": 2000,
+      "price": 2700,
       "temp": "ice",
       "tags": [
         "톡쏘다"
       ],
       "allergens": [],
-      "kcal": 165,
+      "kcal": 180,
       "desc": "맑고 시원한 탄산음료"
     },
     {
@@ -955,9 +948,9 @@
     {
       "id": "ice-americano",
       "easy_name": "시원한 커피",
-      "original_name": "아이스 아메리카노",
+      "original_name": "아이스아메리카노",
       "category": "마실 것",
-      "price": 2500,
+      "price": 3200,
       "temp": "ice",
       "tags": [
         "쓰다",
@@ -972,7 +965,7 @@
       "easy_name": "따뜻한 우유 커피",
       "original_name": "카페라떼",
       "category": "마실 것",
-      "price": 3000,
+      "price": 3300,
       "temp": "hot",
       "tags": [
         "부드럽다",
@@ -987,9 +980,9 @@
     {
       "id": "ice-latte",
       "easy_name": "시원한 우유 커피",
-      "original_name": "아이스 카페라떼",
+      "original_name": "아이스카페라떼",
       "category": "마실 것",
-      "price": 3000,
+      "price": 4000,
       "temp": "ice",
       "tags": [
         "부드럽다",
@@ -1006,7 +999,7 @@
       "easy_name": "복숭아 아이스티",
       "original_name": "아이스티",
       "category": "마실 것",
-      "price": 2700,
+      "price": 3000,
       "temp": "ice",
       "tags": [
         "달다",
@@ -1017,11 +1010,26 @@
       "desc": "달콤한 복숭아 맛 홍차"
     },
     {
+      "id": "lemonade",
+      "easy_name": "레몬 에이드",
+      "original_name": "레몬에이드",
+      "category": "마실 것",
+      "price": 3400,
+      "temp": "ice",
+      "tags": [
+        "새콤하다",
+        "톡쏘다"
+      ],
+      "allergens": [],
+      "kcal": 150,
+      "desc": "상큼한 레몬 탄산 음료"
+    },
+    {
       "id": "orange-juice",
       "easy_name": "오렌지 주스",
       "original_name": "오렌지주스",
       "category": "마실 것",
-      "price": 2800,
+      "price": 3200,
       "temp": "ice",
       "tags": [
         "달다",
@@ -1030,40 +1038,6 @@
       "allergens": [],
       "kcal": 130,
       "desc": "상큼한 오렌지 주스"
-    },
-    {
-      "id": "milk-shake",
-      "easy_name": "밀크 쉐이크",
-      "original_name": "밀크쉐이크",
-      "category": "마실 것",
-      "price": 3000,
-      "temp": "ice",
-      "tags": [
-        "달다",
-        "부드럽다"
-      ],
-      "allergens": [
-        "우유"
-      ],
-      "kcal": 320,
-      "desc": "진하고 시원한 우유 쉐이크"
-    },
-    {
-      "id": "strawberry-shake",
-      "easy_name": "딸기 쉐이크",
-      "original_name": "딸기쉐이크",
-      "category": "마실 것",
-      "price": 3200,
-      "temp": "ice",
-      "tags": [
-        "달다",
-        "부드럽다"
-      ],
-      "allergens": [
-        "우유"
-      ],
-      "kcal": 345,
-      "desc": "달콤한 딸기 우유 쉐이크"
     },
     {
       "id": "water",

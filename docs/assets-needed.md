@@ -1,35 +1,25 @@
 # 준비하면 좋은 이미지·자산 목록
 
-교체 방법: 아래 파일명 그대로 `frontend/public/menu/products/`에 넣으면 끝 (코드 수정 불필요).
+교체 방법 (2단계, 코드 수정 불필요):
+1. 아래 파일명 그대로 `frontend/public/menu/products/`에 PNG를 넣는다.
+2. `bash scripts/optimize-images.sh` 실행 — **필수.** 화면은 WebP만 로드하므로(`frontend/src/menuImages.ts`)
+   PNG만 넣으면 사진이 안 나온다. 원본 PNG는 `rsc/product-originals/`로 자동 백업된다.
+
 권장 규격: **정사각형 800×800 이상, PNG, 배경 투명 또는 흰색**, 음식이 중앙에 크게.
 
-## 1. 제품 사진 — 현재 임시 플레이스홀더인 19종 (우선순위 높음)
+## 1. 제품 사진 — 남은 플레이스홀더 2종
+
+> 2026-07-13 실사진 47종 반영 완료 ✅ (49종 중 47). 남은 것:
 
 | 파일명 | 메뉴 |
 |---|---|
-| hot-crispy-burger.png | 핫크리스피버거 |
-| double-cheese-burger.png | 더블치즈버거 |
-| mozzarella-burger.png | 모짜렐라 인 더 버거 |
-| bulsae-burger.png | 불새버거 |
-| fries.png | 포테이토 (감자 튀김) — **업셀 모달에도 나와서 중요** |
-| cheese-sticks.png | 치즈스틱 |
-| onion-rings.png | 양파링 |
-| squid-rings.png | 오징어링 |
-| long-cheese-stick.png | 롱치즈스틱 |
-| coleslaw.png | 코울슬로 |
-| soft-cone.png | 소프트콘 |
-| choco-sundae.png | 초코 선데 |
-| churros.png | 츄러스 |
-| apple-pie.png | 애플파이 |
-| zero-cola.png | 제로 콜라 |
-| ice-tea.png | 아이스티 |
-| orange-juice.png | 오렌지주스 |
-| milk-shake.png | 밀크쉐이크 |
-| water.png | 생수 |
+| hot-latte.png | 따뜻한 카페라떼 |
+| ice-latte.png | 아이스 카페라떼 |
 
-- strawberry-shake.png 은 지금 딸기주스 사진을 재활용 중 — 진짜 쉐이크 사진이 있으면 교체.
 - 새 파일을 넣은 뒤 `python scripts/make_menu_images.py`를 한 번 돌리면 세트 이미지가 자동으로 따라간다
-  (세트는 해당 버거 사진을 복사해 쓰므로, 버거 4종 사진만 넣으면 세트 4종도 같이 좋아짐).
+  (세트는 해당 버거 사진을 복사해 쓰므로, 버거 사진만 넣으면 세트도 같이 좋아짐).
+- ⚠ make_menu_images.py는 products/ 폴더의 **PNG 기준**으로 판단한다. 실사진을 넣을 때는
+  반드시 PNG 투입 → make_menu_images.py → optimize-images.sh 순서로.
 
 ## 2. 세트 전용 사진 (선택 — 있으면 더 좋음)
 

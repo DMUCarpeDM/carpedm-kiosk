@@ -13,13 +13,17 @@ import {
 import type { CartItem, OrderResponse, VoiceState } from "../types";
 
 const GREETING = "안녕하세요, 롯데리아입니다.";
-const GREETING_SUB = "가운데 빨간 단추를 누르고 천천히 말씀해 주세요.";
+const GREETING_SUB = "마이크 버튼을 누르고 주문하실 메뉴를 말씀해 주세요.";
+const PROMPT_SHORT = "주문하실 메뉴를 말씀해 주세요."; // 재진입 시 — 풀 인사는 세션당 1회
 const MAX_RECORD_MS = 7000; // 최대 녹음 길이 — 누르는 걸 잊어도 자동 완료
+
+/** 풀 인사(full) / 짧은 안내(short) / 무음 재시도(none) */
+export type GreetingMode = "full" | "short" | "none";
 
 const EXAMPLES = [
   "불고기버거 세트 하나 주세요",
   "새우버거 두 개랑 콜라 하나",
-  "매운 거 추천해 줘요",
+  "매운 거 추천해 줘",
   "감자 튀김은 빼 주세요",
 ];
 
@@ -27,14 +31,31 @@ type Props = {
   cart: CartItem[];
   sessionId: string | null;
   onBack: () => void;
+  /** 마이크 실패 시 터치 주문으로 안내 (음성·터치 병행 원칙) */
+  onOpenMenu: () => void;
   /** 서버 /order 성공 (STT+해석+TTS 완료) */
   onOrderResult: (res: OrderResponse) => void;
   /** 브라우저 STT 폴백 등 텍스트만 얻었을 때 */
   onUtterance: (text: string) => void;
-  skipGreeting?: boolean;
+  greeting?: GreetingMode;
+  /** 풀 인사가 나간 뒤 호출 — 같은 세션에서는 다시 풀 인사를 하지 않는다 */
+  onGreeted?: () => void;
 };
 
-export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtterance, skipGreeting = false }: Props) {
+// 텍스트 입력은 개발·자동 검증 전용(?dev=1) — 실사용 화면에는 타자 입력을 두지 않는다
+// 프로덕션 빌드에서는 ?dev=1을 붙여도 노출되지 않는다 (시연 중 오터치 방지)
+const DEV_MODE = import.meta.env.DEV && new URLSearchParams(window.location.search).has("dev");
+
+export function VoiceOrderScreen({
+  cart,
+  sessionId,
+  onBack,
+  onOpenMenu,
+  onOrderResult,
+  onUtterance,
+  greeting = "full",
+  onGreeted,
+}: Props) {
   const [voiceState, setVoiceState] = useState<VoiceState>("idle");
   const [statusText, setStatusText] = useState<string | null>(null);
   const [testInput, setTestInput] = useState("");
@@ -61,7 +82,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
       timerRef.current = window.setTimeout(() => void finishListening(), MAX_RECORD_MS);
     } catch {
       setVoiceState("error");
-      setStatusText("마이크를 사용할 수 없어요. 아래에 적어 주시거나 메뉴에서 골라 주세요.");
+      setStatusText("마이크를 사용할 수 없습니다. 다시 시도하시거나 메뉴판에서 골라 주세요.");
     }
   };
 
@@ -72,7 +93,13 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
     clearTimer();
     setVoiceState("processing");
     try {
-      const wav = await rec.stop();
+      const { blob: wav, peak, voicedMs } = await rec.stop();
+      // 거의 무음이면 API를 부르지 않고 바로 다시 안내 (소음 환경에서 흔한 실패)
+      if (peak < 0.015 || voicedMs < 250) {
+        setVoiceState("error");
+        setStatusText("목소리가 잘 들리지 않았어요. 마이크 가까이에서 또박또박 말씀해 주세요.");
+        return;
+      }
       const res = await orderVoice(wav, cart, sessionId);
       if (!mountedRef.current) return;
       if (res.ok) {
@@ -98,7 +125,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
     } catch {
       if (!mountedRef.current) return;
       setVoiceState("error");
-      setStatusText("서버에 연결할 수 없어요. 아래에 적어 주시거나 메뉴에서 골라 주세요.");
+      setStatusText("서버에 연결할 수 없습니다. 메뉴판에서 골라 주세요.");
     }
   };
 
@@ -108,17 +135,20 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
   };
 
   // ── 인사말 (Google TTS 캐시 → 브라우저 폴백) 후 자동 듣기 ──
+  // 풀 인사는 세션당 1회만 — "말로 주문"을 다시 눌러도 반복하지 않는다 (짧은 안내로 대체)
   useEffect(() => {
     mountedRef.current = true;
 
     const begin = async () => {
-      if (!skipGreeting) {
+      const line = greeting === "full" ? `${GREETING} ${GREETING_SUB}` : greeting === "short" ? PROMPT_SHORT : null;
+      if (line) {
         setVoiceState("speaking");
-        const audio = await fetchTtsAudio(`${GREETING} ${GREETING_SUB}`);
+        const audio = await fetchTtsAudio(line);
         if (!mountedRef.current) return;
         if (audio) await playSpeech("", audio.b64, audio.mime);
-        else await new Promise<void>((r) => speak(`${GREETING} ${GREETING_SUB}`, undefined, () => r()));
+        else await new Promise<void>((r) => speak(line, undefined, () => r()));
         if (!mountedRef.current) return;
+        if (greeting === "full") onGreeted?.();
       }
       await startListening();
     };
@@ -132,7 +162,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
       stopAllAudio();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [skipGreeting]);
+  }, [greeting]);
 
   const submitTest = () => {
     const t = testInput.trim();
@@ -145,7 +175,7 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
 
   return (
     <div className="lk-voice">
-      <h1 className="lk-voice__title">{GREETING}</h1>
+      <h1 className="lk-voice__title">{greeting === "full" ? GREETING : "무엇을 드릴까요?"}</h1>
       <p className="lk-voice__sub">{GREETING_SUB}</p>
 
       <VoiceWaveform active={voiceState === "listening" || voiceState === "speaking"} />
@@ -153,11 +183,11 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
 
       <p className="lk-voice__status" aria-live="polite">
         {statusText ?? voiceStateLabel(voiceState)}
-        {voiceState === "listening" ? " — 다 말씀하셨으면 단추를 한 번 더 누르세요" : ""}
+        {voiceState === "listening" ? " — 말씀이 끝나면 버튼을 한 번 더 눌러 주세요" : ""}
       </p>
 
       <section className="lk-examples" aria-label="말하기 예시">
-        <p className="lk-examples__title">이렇게 말씀해 보세요</p>
+        <p className="lk-examples__title">이렇게 말씀하실 수 있습니다</p>
         <div className="lk-examples__list">
           {EXAMPLES.map((e) => (
             <span key={e} className="lk-examples__chip">“{e}”</span>
@@ -167,20 +197,29 @@ export function VoiceOrderScreen({ cart, sessionId, onBack, onOrderResult, onUtt
 
       {showFallback ? (
         <div className="lk-voice-fallback">
-          <div className="lk-voice-fallback__row">
-            <input
-              className="lk-voice-fallback__input"
-              value={testInput}
-              onChange={(e) => setTestInput(e.target.value)}
-              placeholder="예: 불고기버거 한 개 주세요"
-              onKeyDown={(e) => e.key === "Enter" && submitTest()}
-            />
-            <button type="button" className="lk-voice-fallback__submit" onClick={submitTest}>
-              확인
+          {/* 타자 입력 대신 큰 버튼 2개 — 음성이 안 되면 터치로 자연스럽게 회복 */}
+          <div className="lk-voice-fallback__actions">
+            <button type="button" className="lk-voice-fallback__retry" onClick={() => void startListening()}>
+              다시 말하기
+            </button>
+            <button type="button" className="lk-voice-fallback__menu" onClick={onOpenMenu}>
+              메뉴판에서 고르기
             </button>
           </div>
-          <button type="button" className="lk-mode__back" onClick={() => void startListening()}>
-            🎤 다시 말하기
+        </div>
+      ) : null}
+
+      {DEV_MODE ? (
+        <div className="lk-voice-fallback__row">
+          <input
+            className="lk-voice-fallback__input"
+            value={testInput}
+            onChange={(e) => setTestInput(e.target.value)}
+            placeholder="개발용 텍스트 입력"
+            onKeyDown={(e) => e.key === "Enter" && submitTest()}
+          />
+          <button type="button" className="lk-voice-fallback__submit" onClick={submitTest}>
+            확인
           </button>
         </div>
       ) : null}

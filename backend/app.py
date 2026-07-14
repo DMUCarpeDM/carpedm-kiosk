@@ -33,6 +33,7 @@ from backend.interpreter import (
     load_menu,
     make_provider,
 )
+from backend.presence import make_presence_monitor
 from backend.providers.stt import SttError, make_stt_provider
 from backend.providers.tts import TtsError, make_tts_provider
 
@@ -50,14 +51,29 @@ MENU = load_menu()
 EXPRESSIONS = load_expressions()
 PROVIDER = make_provider()
 FALLBACK = RuleProvider()
+
+# 규칙 우선 게이트 — 표현 사전으로 확실히 풀리는 발화는 LLM API를 부르지 않는다 (비용·지연 절감).
+# "0"=끔 / "1"(기본)=주문·확정만 규칙으로 / "all"=추천·거절까지 규칙으로 (절감 최대).
+# 규칙이 clarify를 내면(못 알아들음) 기존대로 LLM이 의미 해석을 맡는다.
+RULE_FIRST = os.getenv("KIOSK_RULE_FIRST", "1").strip().lower()
+
+
+def rule_first_accepts(action: str) -> bool:
+    if RULE_FIRST in ("0", "off", "false", ""):
+        return False
+    if RULE_FIRST == "all":
+        return action in ("update", "confirm", "recommend", "reject")
+    return action in ("update", "confirm")
 STT = make_stt_provider(MENU)
 TTS = make_tts_provider()
+PRESENCE = make_presence_monitor()  # 카메라(기본)/PIR — 미장착 환경에서는 자동 비활성
 
 
 class InterpretReq(BaseModel):
     utterance: str
     cart: list[CartItem] = []
     session_id: str | None = None
+    site: str | None = None  # 실증 장소·팀원 태그 (?site= 로 프론트가 전달)
 
 
 class TtsReq(BaseModel):
@@ -71,7 +87,14 @@ def log_event(rec: dict) -> None:
 
 
 def run_interpret(utterance: str, cart: list[CartItem]) -> tuple[InterpretResult, bool, str | None]:
-    """해석 실행 — 실패 시 규칙 폴백 (FR-V2, P-4). (결과, 폴백 여부, 오류) 반환."""
+    """해석 실행 — 규칙 우선, 실패 시 규칙 폴백 (FR-V2, P-4). (결과, 폴백 여부, 오류) 반환."""
+    if PROVIDER.name != FALLBACK.name:
+        try:
+            pre = FALLBACK.interpret(utterance, cart, MENU, EXPRESSIONS)
+            if rule_first_accepts(pre.action):
+                return pre, False, None
+        except Exception:
+            pass  # 규칙 우선은 최적화일 뿐 — 실패해도 LLM 경로로 계속
     try:
         return PROVIDER.interpret(utterance, cart, MENU, EXPRESSIONS), False, None
     except Exception as e:
@@ -84,7 +107,7 @@ def run_interpret(utterance: str, cart: list[CartItem]) -> tuple[InterpretResult
                 InterpretResult(
                     action="clarify",
                     cart=cart,
-                    question="죄송해요, 잘 알아듣지 못했어요. 화면의 큰 버튼으로 골라 주셔도 돼요.",
+                    question="죄송합니다. 잘 알아듣지 못했습니다. 화면에서 직접 선택하실 수도 있습니다.",
                     provider="error",
                 ),
                 fallback_used,
@@ -104,12 +127,19 @@ def healthz():
         "provider": PROVIDER.name,
         "stt": STT.name if STT else None,
         "tts": TTS.name if TTS else None,
+        "presence": type(PRESENCE).__name__ if PRESENCE.enabled else False,
     }
 
 
 @app.get("/api/menu")
 def get_menu():
     return {"items": list(MENU.values())}
+
+
+@app.get("/api/presence")
+def presence():
+    """인체 감지 상태(카메라/PIR) — 프론트 대기 화면이 2초 간격으로 조회한다."""
+    return PRESENCE.status()
 
 
 @app.post("/api/interpret")
@@ -122,6 +152,7 @@ def interpret(req: InterpretReq) -> dict:
         {
             "ts": datetime.now(timezone.utc).isoformat(),
             "session": sid,
+            "site": req.site,
             "utterance": req.utterance,
             "cart_before": [c.model_dump() for c in req.cart],
             "action": result.action,
@@ -141,6 +172,7 @@ async def order(
     file: UploadFile = File(...),
     cart: str = Form("[]"),
     session_id: str | None = Form(None),
+    site: str | None = Form(None),
 ) -> dict:
     """음성 주문 한 사이클: 오디오 → STT → 해석 → TTS. 단계별 지연을 로깅한다."""
     sid = session_id or uuid.uuid4().hex[:12]
@@ -172,6 +204,7 @@ async def order(
             {
                 "ts": datetime.now(timezone.utc).isoformat(),
                 "session": sid,
+                "site": site,
                 "stage": "stt_failed",
                 "stt_provider": STT.name if STT else None,
                 "stt_ms": stt_ms,
@@ -182,7 +215,7 @@ async def order(
             "ok": False,
             "stage": "stt",
             "session_id": sid,
-            "message": "말씀이 잘 들리지 않았어요. 다시 한 번 천천히 말씀해 주세요.",
+            "message": "음성이 잘 들리지 않았습니다. 다시 한 번 말씀해 주세요.",
         }
 
     # 2) 해석
@@ -210,6 +243,7 @@ async def order(
         {
             "ts": datetime.now(timezone.utc).isoformat(),
             "session": sid,
+            "site": site,
             "utterance": text,
             "cart_before": [c.model_dump() for c in cart_items],
             "action": result.action,
@@ -262,3 +296,13 @@ def text_to_speech(req: TtsReq):
         return {"audio_b64": base64.b64encode(r.audio).decode("ascii"), "mime": r.mime, "cached": r.cached}
     except TtsError as e:
         return {"audio_b64": None, "error": str(e)}
+
+
+# ── 운영/태블릿 모드: 빌드된 프론트(frontend/dist)를 백엔드가 직접 서빙 ──
+# 태블릿은 https://<서버IP>:8443 단일 주소로 접속 (docs/tablet.md).
+# API 라우트가 먼저 등록되므로 이 마운트가 API를 가리지 않는다.
+_DIST = ROOT / "frontend" / "dist"
+if _DIST.is_dir():
+    from fastapi.staticfiles import StaticFiles
+
+    app.mount("/", StaticFiles(directory=_DIST, html=True), name="frontend")

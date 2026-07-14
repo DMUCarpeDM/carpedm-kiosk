@@ -13,7 +13,8 @@ const CATEGORIES = [
 ] as const;
 
 type CategoryId = (typeof CATEGORIES)[number]["id"];
-const ITEMS_PER_PAGE = 6;
+// 고령층 배려: 한 화면에 4개(2×2)만 — 카드·사진을 크게, 인지 부담을 낮춘다
+const ITEMS_PER_PAGE = 4;
 
 type Props = {
   items: MenuItem[];
@@ -79,7 +80,7 @@ export function MenuListScreen({
   return (
     <div className="lk-menu">
       <div className="lk-banner" aria-hidden="true">
-        <img src="/rsc/lotteria_header2.png" alt="" />
+        <img src="/rsc/lotteria_header2.webp" alt="" />
       </div>
 
       <nav className="lk-cats" aria-label="메뉴 분류">
@@ -125,6 +126,13 @@ export function MenuListScreen({
           >
             다음 →
           </button>
+
+          <button type="button" className="lk-mic-fab" onClick={onVoice}>
+            <span className="lk-mic-fab__icon">
+              <IconMic size={28} />
+            </span>
+            말로 주문
+          </button>
         </div>
       </div>
 
@@ -137,7 +145,7 @@ export function MenuListScreen({
         </div>
         <div className="lk-cart__rows" aria-live="polite">
           {cart.length === 0 ? (
-            <p className="lk-cart__empty">아직 담은 메뉴가 없어요. 사진을 눌러 골라 주세요.</p>
+            <p className="lk-cart__empty">선택한 메뉴가 없습니다. 사진을 눌러 담아 주세요.</p>
           ) : (
             cart.map((c) => {
               const m = items.find((i) => i.id === c.id);
@@ -185,16 +193,9 @@ export function MenuListScreen({
           전체 삭제
         </button>
         <button type="button" className="lk-paybar__btn lk-paybar__btn--pay" onClick={onPay} disabled={cart.length === 0}>
-          {cart.length === 0 ? "메뉴를 골라 주세요" : `${total.toLocaleString("ko-KR")}원 결제하기`}
+          {cart.length === 0 ? "메뉴를 선택해 주세요" : `${total.toLocaleString("ko-KR")}원 결제하기`}
         </button>
       </div>
-
-      <button type="button" className="lk-mic-fab" onClick={onVoice}>
-        <span className="lk-mic-fab__icon">
-          <IconMic size={28} />
-        </span>
-        말로 주문
-      </button>
     </div>
   );
 }

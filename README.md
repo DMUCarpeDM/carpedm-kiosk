@@ -17,20 +17,23 @@
 
 - **② 해석 엔진**: 5개 행위(update/confirm/clarify/reject/recommend), 환각 차단(메뉴 id만 반환),
   멀티턴 장바구니, 모호하면 되묻기. 오프라인에서도 규칙 폴백으로 동작.
+  **규칙 우선 게이트**(`KIOSK_RULE_FIRST=1` 기본): 표현 사전으로 확실히 풀리는 주문은
+  LLM API를 부르지 않고 즉시 처리 — API 비용·지연 절감, 모호한 발화만 LLM이 해석.
 - **① ③ 음성**: `backend/providers/`의 인터페이스 뒤에 있어 벤더 교체가 파일 한 곳 수정으로 끝남.
   `POST /order` 한 번으로 STT→해석→TTS 사이클 처리, 단계별 지연 로깅.
 
-## ✅ 현재 상태 (2026-07-03)
+## ✅ 현재 상태 (2026-07-11)
 
 | 구성 요소 | 상태 |
 |---|---|
-| 해석 엔진 + 환각 차단 + 멀티턴 | ✅ **Claude 96.3% / 규칙 폴백 98.8%** (테스트셋 246건) |
-| 롯데리아 메뉴 50종 + 표현 사전 324개(충돌 검사기 포함) | ✅ 완성 |
+| 해석 엔진 + 환각 차단 + 멀티턴 | ✅ **규칙 폴백 98.8%** (신 메뉴 테스트셋 248건, 2026-07-12) · Claude 96.3%는 구 메뉴 기준 → 재측정 예정 |
+| 롯데리아 메뉴 49종(2026-07 라인업, 단종 반영) + 표현 사전 325개(충돌 검사기 포함) | ✅ 완성 |
 | STT(CLOVA)·TTS(Google) 실연동 | ✅ 확인 — 음성 1사이클 3.7초 (STT 1.6s + 해석 1.6s + TTS 0.5s) |
 | 키오스크 UI (매장/포장→방식→메뉴→결제, 세트 업셀, 알레르기 게이트) | ✅ 완성 — docs/screenshots/ 참고 |
 | 배리어프리 (낮은 화면·큰 글씨·직원 호출·단계 표시·자막) | ✅ 대비 4.5:1↑, 터치 표적 48dp↑ |
 | 라즈베리파이 통합 | ⬜ [docs/raspberry-pi.md](docs/raspberry-pi.md) 순서대로 진행 |
-| 현장 실증 (경로당·복지관) | ⬜ 7/6~7/10 예정 — 현장 수치는 실증 후 기재 |
+| 태블릿(iPad·갤럭시탭) 클라이언트 | ✅ [docs/tablet.md](docs/tablet.md) — HTTPS 서빙 + 홈 화면 전체화면 실행 |
+| 현장 실증 (경로당·복지관) | ✅ 7/6~7/10 완료 — 로그·기록지·설문 취합 및 분석 중, 집계는 `scripts/report.py` |
 
 ## 🚀 실행 방법
 
@@ -59,6 +62,9 @@ python scripts/smoke_voice.py
 python scripts/measure.py --provider rule              # 오프라인 기준선
 python scripts/measure.py --provider claude --strict   # AI 적용 측정 (키 필요)
 
+# 실증 로그 집계 (utterances.jsonl → reports/field_summary.md)
+python scripts/report.py --from 2026-07-06 --to 2026-07-10
+
 # 품질 검사 / 테스트셋·이미지 재생성
 python -m pytest tests/ -q
 python scripts/gen_testset.py
@@ -71,10 +77,10 @@ backend/
   interpreter.py       해석 엔진: 말 → 주문, 환각 차단, 추천, 규칙 폴백
   app.py               API: /order(음성 사이클), /api/interpret·stt·tts·menu
   providers/           stt.py(CLOVA+Gemini 폴백) · tts.py(Google+캐시)
-data/                  menu.json(롯데리아 50종) · expressions.yaml · testset.jsonl(222건)
+data/                  menu.json(롯데리아 49종, 2026-07 라인업) · expressions.yaml · testset.jsonl(248건)
 frontend/              React 키오스크 UI (push-to-talk WAV 녹음, 자막, 음성·터치 병행)
-scripts/               measure(정확도) · gen_testset · smoke_voice · make_menu_images
-tests/                 pytest 30개 (구조·정책·프로바이더·오케스트레이션)
+scripts/               measure(정확도) · report(실증 집계) · gen_testset · smoke_voice · make_menu_images
+tests/                 pytest 42개 (구조·정책·프로바이더·오케스트레이션·규칙 우선 게이트)
 docs/planning/         기획·설계·실증 문서
 ```
 
@@ -82,9 +88,9 @@ docs/planning/         기획·설계·실증 문서
 | 시기 | 할 일 |
 |---|---|
 | ~7/3 | 기획·해석엔진·음성 파이프라인·롯데리아 UI ✅ |
-| 7/4~7/5 | 실키 연동 확인 + 라즈베리파이 통합 + 리허설 |
-| 7/6~7/10 | 현장 실증 (경로당·복지관) — 로그로 정확도·성공률·지연 실측 |
-| 7/13~7/17 | 분석 · 보고서 · 발표 |
+| 7/4~7/5 | 실키 연동 확인 + 태블릿 클라이언트 + 리허설 ✅ |
+| 7/6~7/10 | 현장 실증 (경로당·복지관) ✅ — 수집 데이터 취합·분석 중 |
+| 7/13~7/17 | **← 지금** 분석 · 보고서 · 발표 (계획: [docs/planning/10_대상수상전략.md](docs/planning/10_대상수상전략.md)) |
 
 ## ⚠️ 보안 주의
 - **API 키(.env, secrets/)는 절대 커밋하지 마세요.** `.gitignore`에 막아뒀습니다.
