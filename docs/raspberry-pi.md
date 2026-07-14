@@ -186,13 +186,15 @@ WantedBy=multi-user.target
 > `VITE_API_BASE=http://127.0.0.1:8000 npm run build`
 > (api.ts가 `VITE_API_BASE`를 읽는다 — 이미 구현돼 있음)
 
-Chromium 키오스크 자동 실행 — `~/.config/autostart/kiosk.desktop`:
-```ini
-[Desktop Entry]
-Type=Application
-Name=CarpeDM Kiosk
-Exec=chromium-browser --kiosk --noerrdialogs --disable-infobars --check-for-update-interval=31536000 --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required http://localhost:5173
+Chromium 키오스크 자동 실행 — 스크립트 1회 실행:
+```bash
+bash scripts/setup-pi-kiosk.sh
 ```
+
+> **왜 스크립트인가**: Bookworm은 데스크톱이 Wayland(labwc/wayfire)로 바뀌어
+> 예전 X11 방식(`~/.config/autostart/kiosk.desktop`)만으로는 **자동 실행이 무시**될 수 있다
+> (증상: 부팅 후 민트색 바탕화면만 뜸). 스크립트가 labwc·wayfire·XDG 세 방식에 모두
+> 등록하고, 서버가 뜨기 전에 브라우저가 열리는 타이밍 문제도 대기 래퍼로 막는다.
 
 활성화:
 ```bash
@@ -250,6 +252,8 @@ Chromium 캐시 — `Ctrl+Shift+R` 강력 새로고침.
 
 | 증상 | 확인 |
 |---|---|
+| 부팅 후 민트색 바탕화면만 뜸 (키오스크 안 열림) | Wayland가 예전 autostart를 무시하는 것 → `bash scripts/setup-pi-kiosk.sh` 실행 후 재부팅. 수동 확인: `~/kiosk-launch.sh` 직접 실행 |
+| 키오스크는 뜨는데 "연결할 수 없음" | 서비스 미기동 → `sudo systemctl enable --now kiosk-backend kiosk-frontend`, `curl localhost:5173` 확인 |
 | 마이크가 안 잡힘 | `arecord -l`에 장치가 보이는지, Chromium 실행 인자에 `--use-fake-ui-for-media-stream` 있는지 |
 | STT 401/404 | `.env`의 CLOVA 값 — `python scripts/smoke_voice.py`로 단독 확인 |
 | 음성은 되는데 느림 | `data/logs/utterances.jsonl`의 stt_ms/interpret_ms/tts_ms로 병목 확인 |
