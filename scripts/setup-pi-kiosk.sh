@@ -10,14 +10,27 @@ set -e
 
 URL="http://localhost:5173"
 
+# 사용법: bash scripts/setup-pi-kiosk.sh [회전각]
+#   회전각(선택): 90 | 180 | 270 — 세로 설치 모니터용 화면 회전을 부팅마다 자동 적용.
+#   (wlr-randr를 손으로 치면 재부팅 시 풀린다 — 여기 등록해야 고정됨)
+ROTATE="${1:-}"
+case "$ROTATE" in ""|90|180|270) ;; *) echo "회전각은 90|180|270 중 하나"; exit 1;; esac
+
 # 크로미움 실행 파일 이름이 OS 버전에 따라 다름
 if command -v chromium-browser >/dev/null 2>&1; then CHROMIUM=chromium-browser
 elif command -v chromium >/dev/null 2>&1; then CHROMIUM=chromium
 else echo "크로미움이 없습니다: sudo apt install -y chromium-browser"; exit 1; fi
 
-# ── 1) 실행 래퍼: 서버가 응답할 때까지(최대 90초) 기다렸다가 전체화면 실행 ──
+# ── 1) 실행 래퍼: (회전 적용 →) 서버 대기(최대 90초) → 전체화면 실행 ──
+ROTATE_CMD=""
+if [ -n "$ROTATE" ]; then
+  # 출력 이름(HDMI-A-1 등)은 부팅 시점에 자동 감지. 실패해도 키오스크는 계속 뜬다.
+  ROTATE_CMD="OUT=\$(wlr-randr 2>/dev/null | awk 'NR==1{print \$1}'); [ -n \"\$OUT\" ] && wlr-randr --output \"\$OUT\" --transform $ROTATE || true"
+fi
+
 cat > "$HOME/kiosk-launch.sh" <<EOF
 #!/bin/bash
+$ROTATE_CMD
 for i in \$(seq 1 90); do
   curl -s -o /dev/null "$URL" && break
   sleep 1
@@ -27,7 +40,7 @@ exec $CHROMIUM --kiosk --noerrdialogs --disable-infobars \\
   --autoplay-policy=no-user-gesture-required "$URL"
 EOF
 chmod +x "$HOME/kiosk-launch.sh"
-echo "✓ 실행 래퍼: ~/kiosk-launch.sh"
+echo "✓ 실행 래퍼: ~/kiosk-launch.sh$([ -n "$ROTATE" ] && echo " (화면 회전 ${ROTATE}° 포함)")"
 
 # ── 2) labwc (Bookworm 2024-10 이후 기본) ──
 mkdir -p "$HOME/.config/labwc"
