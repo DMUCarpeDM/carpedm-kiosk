@@ -51,6 +51,19 @@ MENU = load_menu()
 EXPRESSIONS = load_expressions()
 PROVIDER = make_provider()
 FALLBACK = RuleProvider()
+
+# 규칙 우선 게이트 — 표현 사전으로 확실히 풀리는 발화는 LLM API를 부르지 않는다 (비용·지연 절감).
+# "0"=끔 / "1"(기본)=주문·확정만 규칙으로 / "all"=추천·거절까지 규칙으로 (절감 최대).
+# 규칙이 clarify를 내면(못 알아들음) 기존대로 LLM이 의미 해석을 맡는다.
+RULE_FIRST = os.getenv("KIOSK_RULE_FIRST", "1").strip().lower()
+
+
+def rule_first_accepts(action: str) -> bool:
+    if RULE_FIRST in ("0", "off", "false", ""):
+        return False
+    if RULE_FIRST == "all":
+        return action in ("update", "confirm", "recommend", "reject")
+    return action in ("update", "confirm")
 STT = make_stt_provider(MENU)
 TTS = make_tts_provider()
 PRESENCE = make_presence_monitor()  # 카메라(기본)/PIR — 미장착 환경에서는 자동 비활성
@@ -73,7 +86,14 @@ def log_event(rec: dict) -> None:
 
 
 def run_interpret(utterance: str, cart: list[CartItem]) -> tuple[InterpretResult, bool, str | None]:
-    """해석 실행 — 실패 시 규칙 폴백 (FR-V2, P-4). (결과, 폴백 여부, 오류) 반환."""
+    """해석 실행 — 규칙 우선, 실패 시 규칙 폴백 (FR-V2, P-4). (결과, 폴백 여부, 오류) 반환."""
+    if PROVIDER.name != FALLBACK.name:
+        try:
+            pre = FALLBACK.interpret(utterance, cart, MENU, EXPRESSIONS)
+            if rule_first_accepts(pre.action):
+                return pre, False, None
+        except Exception:
+            pass  # 규칙 우선은 최적화일 뿐 — 실패해도 LLM 경로로 계속
     try:
         return PROVIDER.interpret(utterance, cart, MENU, EXPRESSIONS), False, None
     except Exception as e:

@@ -98,13 +98,6 @@ def main() -> None:
     by_id = {m["id"]: m for m in MENU}
     copied, created, kept = 0, 0, 0
 
-    # 딸기 쉐이크: 기존 딸기 주스 사진 재활용
-    legacy = IMG_DIR / "strawberry-juice.png"
-    target = IMG_DIR / "strawberry-shake.png"
-    if legacy.exists() and not target.exists():
-        shutil.copy(legacy, target)
-        copied += 1
-
     for m in MENU:
         out = IMG_DIR / f"{m['id']}.png"
         if out.exists():

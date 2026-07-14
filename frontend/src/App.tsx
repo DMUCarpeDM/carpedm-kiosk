@@ -446,9 +446,11 @@ export default function App() {
               <br />
               라즈베리파이는 docs/raspberry-pi.md 3.6절, 태블릿은 docs/tablet.md 참조.
             </p>
-            <button type="button" className="lk-rotate__skip" onClick={() => setRotateDismissed(true)}>
-              그대로 진행 (개발용)
-            </button>
+            {import.meta.env.DEV ? (
+              <button type="button" className="lk-rotate__skip" onClick={() => setRotateDismissed(true)}>
+                그대로 진행 (개발용)
+              </button>
+            ) : null}
           </div>
         </div>
       ) : null}

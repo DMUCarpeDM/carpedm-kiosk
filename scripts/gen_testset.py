@@ -1,8 +1,9 @@
-"""테스트셋 생성기 — 롯데리아 도메인 v1.
+"""테스트셋 생성기 — 롯데리아 도메인 v2 (2026-07 라인업).
 
 data/menu.json·expressions.yaml을 근거로 결정적(deterministic) 테스트셋을 생성한다.
 케이스의 expected는 '규칙 프로바이더의 출력'이 아니라 '사람이 판단한 정답'이다.
 일부 케이스(세트 전환 등)는 규칙 폴백이 못 푸는 LLM 변별용 케이스로 의도적으로 포함한다.
+2026-07-12: 메뉴 최신화 반영 — 단종 메뉴(티렉스·츄러스·쉐이크 등) 주문은 reject가 정답.
 
 사용: python scripts/gen_testset.py   # data/testset.jsonl 재생성
 """
@@ -48,33 +49,41 @@ for m in MENU.values():
 DICT_SINGLE = [
     ("불고기 하나 줘", "bulgogi-burger"),
     ("고기 든 빵 주세요", "bulgogi-burger"),
+    ("리아 불고기 하나 줘요", "bulgogi-burger"),
+    ("빅불 하나 줘", "bulgogi-burger-double"),
+    ("더블 불고기 하나 주세요", "bulgogi-burger-double"),
     ("한우 버거로 하나 줘요", "hanwoo-burger"),
     ("데리 하나 주쇼", "teriyaki-burger"),
     ("간장 맛 버거 있으면 하나 줘", "teriyaki-burger"),
-    ("공룡 버거 하나 주세요", "t-rex-burger"),
-    ("티렉스 하나요", "t-rex-burger"),
-    ("제일 큰 버거 줘", "t-rex-burger"),
-    ("불새 하나 줘요", "bulsae-burger"),
+    ("새우 든 거 하나 줘", "shrimp-burger"),
+    ("통새우 버거 하나 주세요", "shrimp-burger"),
     ("매콤한 버거 하나 줘", "hot-crispy-burger"),
+    ("콩고기 버거 하나 주세요", "miracle-burger"),
+    ("고기 없는 버거 하나 줘요", "miracle-burger"),
+    ("밥 버거 하나 줘요", "bibim-rice-burger"),
+    ("전주 버거 하나 주세요", "bibim-rice-burger"),
     ("모짜렐라 버거 하나", "mozzarella-burger"),
-    ("고기 두 장 든 걸로 줘", "double-cheese-burger"),
-    ("닭날개 하나 줘", "hot-wings"),
-    ("매운 날개 튀김 주세요", "hot-wings"),
+    ("베이컨 버거 하나 줘", "mozzarella-burger"),
+    ("더블 치즈 하나 줘", "double-cheese-burger"),
+    ("닭날개 하나 줘", "fire-wing"),
+    ("매운 날개 튀김 주세요", "fire-wing"),
     ("너겟 하나 줘요", "chicken-nugget"),
     ("너게트 주세요", "chicken-nugget"),
-    ("텐더 하나 줘", "chicken-tender"),
-    ("닭가슴살 튀긴 거 줘", "chicken-tender"),
-    ("바삭한 치킨 하나 주세요", "crispy-chicken"),
+    ("텐더 하나 줘", "chicken-fillet"),
+    ("닭가슴살 튀긴 거 줘", "chicken-fillet"),
+    ("뼈 없는 치킨 하나 주세요", "chicken-fillet"),
+    ("닭다리 하나 줘요", "chicken-leg"),
     ("감자 튀긴 거 줘", "fries"),
     ("포테토 하나 주세요", "fries"),
-    ("양파 튀긴 거 하나", "onion-rings"),
+    ("양념 감자 하나 줘", "seasoned-fries"),
+    ("시즈닝 감자 주세요", "seasoned-fries"),
     ("오징어 튀긴 거 줘요", "squid-rings"),
     ("긴 치즈 주세요", "long-cheese-stick"),
     ("양배추 샐러드 줘", "coleslaw"),
     ("고깔 아이스크림 하나", "soft-cone"),
-    ("초코 아이스크림 줘", "choco-sundae"),
-    ("츄러스 하나 주세요", "churros"),
-    ("사과 파이 하나요", "apple-pie"),
+    ("컵 아이스크림 하나 줘", "sundae-icecream"),
+    ("초코 아이스크림 줘", "tornado-choco"),
+    ("딸기 아이스크림 하나 줘", "tornado-strawberry"),
     ("검은 탄산 물 하나 줘", "cola"),
     ("까만 사이다 한 병 줘", "cola"),
     ("꼴라 한 캔 주쇼", "cola"),
@@ -83,33 +92,25 @@ DICT_SINGLE = [
     ("복숭아 물 하나 줘요", "ice-tea"),
     ("오렌지 주스 한 잔", "orange-juice"),
     ("귤 주스 주세요", "orange-juice"),
-    ("딸기 간 거 하나 줘", "strawberry-shake"),
+    ("레모네이드 한 잔 줘", "lemonade"),
     ("맹물 하나 주세요", "water"),
     ("생수 한 병 줘요", "water"),
-    # ── v2 확장 표현 (발음 변이·별칭·구어체) ──
+    # ── 발음 변이·별칭·구어체 ──
     ("데리야끼 버거 하나 줘", "teriyaki-burger"),
-    ("티라노 버거 하나 주세요", "t-rex-burger"),
-    ("닭다리살 버거 하나요", "t-rex-burger"),
     ("매운 치킨 버거 하나 줘", "hot-crispy-burger"),
-    ("곱빼기 버거 하나 주세요", "double-cheese-burger"),
-    ("매운 불고기 버거 하나 줘요", "bulsae-burger"),
     ("감튀 하나 주세요", "fries"),
-    ("어니언링 두 개 줘", ("onion-rings", 2)),
-    ("스퀴드링 하나요", "squid-rings"),
-    ("옛날 통닭 하나 줘", "crispy-chicken"),
-    ("클래식 치킨 하나 주세요", "crispy-chicken"),
-    ("윙 네 개 줘요", ("hot-wings", 4)),
+    ("통오징어 두 개 줘", ("squid-rings", 2)),
+    ("옛날 통닭 다리 하나 줘", "chicken-leg"),
     ("나겟 하나 주세요", "chicken-nugget"),
-    ("가슴살 튀김 하나 줘", "chicken-tender"),
     ("소프트 아이스크림 하나요", "soft-cone"),
-    ("선데이 하나 줘", "choco-sundae"),
-    ("설탕 꽈배기 두 개 주세요", ("churros", 2)),
+    ("선데이 하나 줘", "sundae-icecream"),
+    ("회오리 아이스크림 초코 하나 줘", "tornado-choco"),
     ("코크 하나 줘", "cola"),
+    ("펩시 하나 주세요", "cola"),
     ("다이어트 콜라 하나 주세요", "zero-cola"),
+    ("칠성 사이다 한 캔 줘요", "cider"),
     ("복숭아티 한 잔 줘요", "ice-tea"),
-    ("밀크셰이크 하나 주세요", "milk-shake"),
-    ("우유 쉐이크 한 잔 줘", "milk-shake"),
-    ("딸기 우유 하나 주세요", "strawberry-shake"),
+    ("레몬 탄산 하나 주세요", "lemonade"),
 ]
 for utt, spec in DICT_SINGLE:
     if isinstance(spec, tuple):
@@ -137,9 +138,7 @@ for utt, mid in ATTR:
 CLARIFY = [
     "커피 하나 줘",
     "라떼 주세요",
-    "쉐이크 하나 줘요",
     "아이스크림 주세요",
-    "새우 든 거 하나 줘",
     "치즈 들어간 거 줘",
     "탄산 음료 하나 주세요",
     "치킨 하나 줘",
@@ -148,6 +147,8 @@ CLARIFY = [
     "튀김 하나 줘요",
     "세트 하나 주세요",
     "우유 하나 줘",
+    "회오리 아이스크림 하나 줘",
+    "고기 두 장 든 거 줘",
 ]
 for utt in CLARIFY:
     add("single", "clarify", utt, {"action": "clarify"})
@@ -158,7 +159,7 @@ ATTRIBUTE_ASK = [
     "부드러운 거 하나 줘",
     "달달한 거 주세요",
     "바삭한 거 하나",
-    "꽈배기 같은 거 줘",
+    "씹기 편한 거 뭐 있어요",
     "속 편한 거 뭐 있어요",
 ]
 for utt in ATTRIBUTE_ASK:
@@ -174,16 +175,16 @@ QTY = [
     ("불고기 버거 네 개 줘", [("bulgogi-burger", 4)]),
     ("새우 버거 두 개 주세요", [("shrimp-burger", 2)]),
     ("생수 4개 줘요", [("water", 4)]),
-    ("츄러스 세 개 줘", [("churros", 3)]),
+    ("치즈 스틱 세 개 줘", [("cheese-sticks", 3)]),
     ("아이스크림 콘 두 개 주세요", [("soft-cone", 2)]),
     ("사이다 한 캔 줘", [("cider", 1)]),
-    ("티렉스 버거 세트 두 개 주세요", [("t-rex-burger-set", 2)]),
-    ("양파 튀김 두 봉지 줘", [("onion-rings", 2)]),
-    ("매운 닭날개 여섯 개 줘요", [("hot-wings", 6)]),
+    ("데리 버거 세트 두 개 주세요", [("teriyaki-burger-set", 2)]),
+    ("양념 감자 두 개 줘", [("seasoned-fries", 2)]),
+    ("매운 닭날개 여섯 개 줘요", [("fire-wing", 6)]),
     ("데리 버거 열 개 주세요", [("teriyaki-burger", 10)]),
     ("오렌지 주스 두 잔 줘", [("orange-juice", 2)]),
-    ("밀크 쉐이크 두 잔 주세요", [("milk-shake", 2)]),
-    ("치즈 스틱 두 개 줘요", [("cheese-sticks", 2)]),
+    ("레몬 에이드 두 잔 주세요", [("lemonade", 2)]),
+    ("닭다리 튀김 두 개 줘요", [("chicken-leg", 2)]),
     ("한우 불고기 버거 두 개 주세요", [("hanwoo-burger", 2)]),
     ("복숭아 아이스티 2잔 줘", [("ice-tea", 2)]),
 ]
@@ -194,14 +195,14 @@ for utt, items in QTY:
 MULTI_ITEM = [
     ("불고기 버거 한 개랑 콜라 두 개 줘", [("bulgogi-burger", 1), ("cola", 2)]),
     ("새우 버거 두 개하고 사이다 한 캔 주세요", [("shrimp-burger", 2), ("cider", 1)]),
-    ("티렉스 버거 세트 한 개랑 아이스크림 콘 두 개 줘요", [("t-rex-burger-set", 1), ("soft-cone", 2)]),
+    ("치킨 버거 세트 한 개랑 아이스크림 콘 두 개 줘요", [("chicken-burger-set", 1), ("soft-cone", 2)]),
     ("치즈 버거 한 개, 감자 튀김 한 개 주세요", [("cheese-burger", 1), ("fries", 1)]),
     ("불고기 버거 세트 두 개랑 생수 한 병 줘", [("bulgogi-burger-set", 2), ("water", 1)]),
-    ("크리스피 치킨 한 개하고 콜라 한 캔 줘요", [("crispy-chicken", 1), ("cola", 1)]),
-    ("데리 버거 한 개랑 밀크 쉐이크 한 잔 주세요", [("teriyaki-burger", 1), ("milk-shake", 1)]),
-    ("치킨 텐더 두 개랑 사이다 두 캔 줘", [("chicken-tender", 2), ("cider", 2)]),
-    ("에이지 버거 한 개랑 양파 튀김 한 개 줘요", [("az-burger", 1), ("onion-rings", 1)]),
-    ("한우 불고기 버거 세트 한 개하고 츄러스 두 개 주세요", [("hanwoo-burger-set", 1), ("churros", 2)]),
+    ("순살 치킨 한 개하고 콜라 한 캔 줘요", [("chicken-fillet", 1), ("cola", 1)]),
+    ("데리 버거 한 개랑 레몬 에이드 한 잔 주세요", [("teriyaki-burger", 1), ("lemonade", 1)]),
+    ("치킨 너겟 두 개랑 사이다 두 캔 줘", [("chicken-nugget", 2), ("cider", 2)]),
+    ("미라클 버거 한 개랑 양념 감자 한 개 줘요", [("miracle-burger", 1), ("seasoned-fries", 1)]),
+    ("한우 불고기 버거 세트 한 개하고 컵 아이스크림 두 개 주세요", [("hanwoo-burger-set", 1), ("sundae-icecream", 2)]),
 ]
 for utt, items in MULTI_ITEM:
     add("single", "multi_item", utt, upd(*items))
@@ -209,14 +210,14 @@ for utt, items in MULTI_ITEM:
 # ── G. 멀티턴: 추가 (add) ────────────────────────────
 ADD = [
     ([("bulgogi-burger", 1)], "콜라도 하나 줘", [("bulgogi-burger", 1), ("cola", 1)]),
-    ([("bulgogi-burger-set", 1)], "츄러스 하나 추가해줘", [("bulgogi-burger-set", 1), ("churros", 1)]),
+    ([("bulgogi-burger-set", 1)], "양념 감자 하나 추가해줘", [("bulgogi-burger-set", 1), ("seasoned-fries", 1)]),
     ([("cola", 2)], "감자 튀김 두 개 더 줘", [("cola", 2), ("fries", 2)]),
     ([("shrimp-burger", 1)], "새우 버거 하나 더 주세요", [("shrimp-burger", 2)]),
-    ([("t-rex-burger-set", 1)], "아이스크림 콘 하나 주세요", [("t-rex-burger-set", 1), ("soft-cone", 1)]),
+    ([("chicken-burger-set", 1)], "아이스크림 콘 하나 주세요", [("chicken-burger-set", 1), ("soft-cone", 1)]),
     ([("cheese-burger", 1), ("cola", 1)], "치즈 스틱도 하나 줘요", [("cheese-burger", 1), ("cola", 1), ("cheese-sticks", 1)]),
-    ([("crispy-chicken", 1)], "매운 닭날개 두 개 추가요", [("crispy-chicken", 1), ("hot-wings", 2)]),
+    ([("chicken-fillet", 1)], "매운 닭날개 두 개 추가요", [("chicken-fillet", 1), ("fire-wing", 2)]),
     ([("hanwoo-burger", 1)], "생수 한 병 주세요", [("hanwoo-burger", 1), ("water", 1)]),
-    ([("bulsae-burger", 1)], "복숭아 아이스티 한 잔 줘", [("bulsae-burger", 1), ("ice-tea", 1)]),
+    ([("miracle-burger", 1)], "복숭아 아이스티 한 잔 줘", [("miracle-burger", 1), ("ice-tea", 1)]),
     ([("teriyaki-burger-set", 1)], "데리 버거 세트 하나 더요", [("teriyaki-burger-set", 2)]),
     ([("fries", 1)], "오징어 튀긴 거도 줘", [("fries", 1), ("squid-rings", 1)]),
     ([("cola", 1)], "제로 콜라로 하나 더 줘요", [("cola", 1), ("zero-cola", 1)]),
@@ -230,10 +231,10 @@ REMOVE = [
     ([("bulgogi-burger", 1), ("cola", 1)], "불고기 버거 빼주세요", [("cola", 1)]),
     ([("cola", 3)], "콜라 하나 빼줘", [("cola", 2)]),
     ([("shrimp-burger", 2), ("cider", 1)], "새우 버거 하나만 빼줘요", [("shrimp-burger", 1), ("cider", 1)]),
-    ([("t-rex-burger-set", 1), ("soft-cone", 2)], "아이스크림 콘은 빼주세요", [("t-rex-burger-set", 1)]),
-    ([("churros", 2), ("water", 1)], "츄러스는 빼고 주세요", [("water", 1)]),
-    ([("hot-wings", 1), ("cola", 1)], "닭날개는 됐어요 빼줘", [("cola", 1)]),
-    ([("cheese-burger-set", 1), ("milk-shake", 1)], "밀크 쉐이크 빼줘요", [("cheese-burger-set", 1)]),
+    ([("chicken-burger-set", 1), ("soft-cone", 2)], "아이스크림 콘은 빼주세요", [("chicken-burger-set", 1)]),
+    ([("seasoned-fries", 2), ("water", 1)], "양념 감자는 빼고 주세요", [("water", 1)]),
+    ([("fire-wing", 1), ("cola", 1)], "닭날개는 됐어요 빼줘", [("cola", 1)]),
+    ([("cheese-burger-set", 1), ("lemonade", 1)], "레몬 에이드 빼줘요", [("cheese-burger-set", 1)]),
     ([("fries", 2)], "감자 튀김 하나 빼줘", [("fries", 1)]),
     ([("bulgogi-burger", 1), ("teriyaki-burger", 1)], "데리 버거는 빼주세요", [("bulgogi-burger", 1)]),
 ]
@@ -245,9 +246,9 @@ QTY_CHANGE = [
     ([("cola", 1)], "콜라 두 개로 바꿔줘", [("cola", 2)]),
     ([("fries", 3)], "감자 튀김 한 개로 해주세요", [("fries", 1)]),
     ([("bulgogi-burger", 1)], "불고기 버거 세 개로 늘려줘", [("bulgogi-burger", 3)]),
-    ([("churros", 2)], "츄러스 네 개로 해줘요", [("churros", 4)]),
+    ([("cheese-sticks", 2)], "치즈 스틱 네 개로 해줘요", [("cheese-sticks", 4)]),
     ([("soft-cone", 1)], "하나 더 줘", [("soft-cone", 2)]),
-    ([("milk-shake", 1)], "한 개 더 주세요", [("milk-shake", 2)]),
+    ([("sundae-icecream", 1)], "한 개 더 주세요", [("sundae-icecream", 2)]),
     ([("shrimp-burger-set", 1)], "하나 더요", [("shrimp-burger-set", 2)]),
 ]
 for cart, utt, items in QTY_CHANGE:
@@ -257,8 +258,8 @@ for cart, utt, items in QTY_CHANGE:
 CANCEL = [
     ([("cola", 1), ("fries", 2)], "전부 취소해줘"),
     ([("bulgogi-burger-set", 1)], "다 취소해주세요"),
-    ([("t-rex-burger", 1), ("cider", 1)], "전체 다 빼줘"),
-    ([("churros", 3)], "취소해줘"),
+    ([("chicken-burger", 1), ("cider", 1)], "전체 다 빼줘"),
+    ([("seasoned-fries", 3)], "취소해줘"),
     ([("hanwoo-burger-set", 1), ("water", 1)], "다 빼주세요"),
 ]
 for cart, utt in CANCEL:
@@ -269,11 +270,11 @@ CONFIRM = [
     ([("bulgogi-burger-set", 1)], "네 맞아요"),
     ([("cola", 2), ("fries", 1)], "그걸로 주문해줘"),
     ([("shrimp-burger", 1)], "응 됐어요"),
-    ([("t-rex-burger-set", 1), ("soft-cone", 1)], "주문할게요"),
+    ([("chicken-burger-set", 1), ("soft-cone", 1)], "주문할게요"),
     ([("cheese-burger", 1)], "예 확인했어요"),
-    ([("hot-wings", 2)], "이대로 계산해주세요"),
+    ([("fire-wing", 2)], "이대로 계산해주세요"),
     ([("teriyaki-burger-set", 1)], "그래 그걸로 줘"),
-    ([("milk-shake", 1)], "맞습니다"),
+    ([("lemonade", 1)], "맞습니다"),
 ]
 for cart, utt in CONFIRM:
     add("multi", "confirm", utt, {"action": "confirm", "cart": [{"id": i, "qty": q} for i, q in cart]}, [{"id": i, "qty": q} for i, q in cart])
@@ -296,7 +297,7 @@ RECOMMEND = [
 for utt in RECOMMEND:
     add("single", "recommend", utt, {"action": "recommend"})
 
-# ── M. 없는 메뉴 거절 (reject) ───────────────────────
+# ── M. 없는 메뉴 거절 (reject) — 타 음식 + 단종 메뉴 ─
 REJECT = [
     "짜장면 하나 줘",
     "김밥 두 줄 주세요",
@@ -308,6 +309,10 @@ REJECT = [
     "국밥 한 그릇 주세요",
     "소주 한 병 줘",
     "팥빙수 하나 주세요",
+    # 단종 메뉴 (2026-07 라인업에서 빠짐) — 없는 메뉴로 안내해야 한다
+    "밀크 쉐이크 하나 줘요",
+    "츄러스 두 개 주세요",
+    "애플 파이 하나 줘",
 ]
 for utt in REJECT:
     add("single", "reject", utt, {"action": "reject"})
@@ -316,7 +321,7 @@ for utt in REJECT:
 SET_CONVERT = [
     ([("bulgogi-burger", 1)], "세트로 바꿔줘", [("bulgogi-burger-set", 1)]),
     ([("shrimp-burger", 1)], "그거 세트로 해주세요", [("shrimp-burger-set", 1)]),
-    ([("t-rex-burger", 2)], "둘 다 세트로 바꿔줘요", [("t-rex-burger-set", 2)]),
+    ([("chicken-burger", 2)], "둘 다 세트로 바꿔줘요", [("chicken-burger-set", 2)]),
 ]
 for cart, utt, items in SET_CONVERT:
     add("multi", "set_convert", utt, upd(*items), [{"id": i, "qty": q} for i, q in cart])
@@ -328,9 +333,7 @@ HARD = [
     ("여기 젤 잘 나가는 버거가 뭐요", {"action": "recommend"}),
     ("이가 안 좋아서 부드러운 걸로 추천해줘", {"action": "recommend"}),
     ("커피 말고 다른 마실 거 뭐 있어", {"action": "recommend"}),
-    ("아까 그 버거 말고 새우 버거로 줘", None),  # placeholder, 아래에서 교체
 ]
-HARD = HARD[:-1]
 for utt, exp in HARD:
     add("single", "hard", utt, exp)
 add(

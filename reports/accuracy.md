@@ -1,5 +1,9 @@
 # 매핑 정확도 리포트
 
+> ⚠ 2026-07-03 측정 — **구(舊) 메뉴 기준** 수치입니다. 2026-07-12 메뉴 최신화 이후의
+> Claude 정확도는 `python scripts/measure.py --provider claude` 재실행으로 갱신해야 합니다.
+> 규칙 폴백의 최신(새 메뉴) 수치는 [accuracy_rule.md](accuracy_rule.md) — 98.8% (245/248).
+
 - provider: **claude**
 - 케이스: 246건 / 소요: 459.6s
 - **전체 정확도: 96.3%** (목표 ≥90%)

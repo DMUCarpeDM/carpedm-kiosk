@@ -37,7 +37,8 @@ type Props = {
 };
 
 // 텍스트 입력은 개발·자동 검증 전용(?dev=1) — 실사용 화면에는 타자 입력을 두지 않는다
-const DEV_MODE = new URLSearchParams(window.location.search).has("dev");
+// 프로덕션 빌드에서는 ?dev=1을 붙여도 노출되지 않는다 (시연 중 오터치 방지)
+const DEV_MODE = import.meta.env.DEV && new URLSearchParams(window.location.search).has("dev");
 
 export function VoiceOrderScreen({
   cart,
