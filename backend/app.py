@@ -73,6 +73,7 @@ class InterpretReq(BaseModel):
     utterance: str
     cart: list[CartItem] = []
     session_id: str | None = None
+    site: str | None = None  # 실증 장소·팀원 태그 (?site= 로 프론트가 전달)
 
 
 class TtsReq(BaseModel):
@@ -151,6 +152,7 @@ def interpret(req: InterpretReq) -> dict:
         {
             "ts": datetime.now(timezone.utc).isoformat(),
             "session": sid,
+            "site": req.site,
             "utterance": req.utterance,
             "cart_before": [c.model_dump() for c in req.cart],
             "action": result.action,
@@ -170,6 +172,7 @@ async def order(
     file: UploadFile = File(...),
     cart: str = Form("[]"),
     session_id: str | None = Form(None),
+    site: str | None = Form(None),
 ) -> dict:
     """음성 주문 한 사이클: 오디오 → STT → 해석 → TTS. 단계별 지연을 로깅한다."""
     sid = session_id or uuid.uuid4().hex[:12]
@@ -201,6 +204,7 @@ async def order(
             {
                 "ts": datetime.now(timezone.utc).isoformat(),
                 "session": sid,
+                "site": site,
                 "stage": "stt_failed",
                 "stt_provider": STT.name if STT else None,
                 "stt_ms": stt_ms,
@@ -239,6 +243,7 @@ async def order(
         {
             "ts": datetime.now(timezone.utc).isoformat(),
             "session": sid,
+            "site": site,
             "utterance": text,
             "cart_before": [c.model_dump() for c in cart_items],
             "action": result.action,

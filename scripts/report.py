@@ -126,6 +126,7 @@ def main() -> None:
 
     actions = Counter(e.get("action") for e in interp)
     providers = Counter(e.get("provider") for e in interp)
+    sites = Counter(e.get("site") or "(미지정)" for e in events)
     fallbacks = sum(1 for e in interp if e.get("fallback"))
     errors = sum(1 for e in interp if e.get("error"))
     by_day = Counter(e["_kst"].strftime("%Y-%m-%d") for e in events)
@@ -144,6 +145,9 @@ def main() -> None:
         "",
         "## 날짜별 건수 (KST)",
         *[f"- {d}: {n}건" for d, n in sorted(by_day.items())],
+        "",
+        "## 장소·팀원별 건수 (?site= 태그)",
+        *[f"- {s}: {n}건" for s, n in sites.most_common()],
         "",
         "## 해석 결과",
         f"- 액션 분포: " + ", ".join(f"{a} {n}건" for a, n in actions.most_common()),

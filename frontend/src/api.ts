@@ -2,6 +2,22 @@ import type { CartItem, InterpretResult, MenuItem, OrderResponse } from "./types
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 
+/** 실증 장소·팀원 태그 — ?site=경로당A 처럼 붙이면 모든 로그에 기록된다.
+    홈 화면 추가(PWA)로 열어 쿼리가 사라져도 localStorage로 유지. */
+function siteTag(): string {
+  try {
+    const q = new URLSearchParams(window.location.search).get("site");
+    if (q) {
+      localStorage.setItem("kiosk_site", q);
+      return q;
+    }
+    return localStorage.getItem("kiosk_site") ?? "";
+  } catch {
+    return "";
+  }
+}
+const SITE = siteTag();
+
 export async function fetchMenu(): Promise<MenuItem[]> {
   const res = await fetch(`${API_BASE}/api/menu`);
   if (!res.ok) throw new Error(`menu ${res.status}`);
@@ -21,6 +37,7 @@ export async function interpretUtterance(
       utterance,
       cart,
       session_id: sessionId ?? undefined,
+      site: SITE || undefined,
     }),
   });
   if (!res.ok) throw new Error(`interpret ${res.status}`);
@@ -37,6 +54,7 @@ export async function orderVoice(
   form.append("file", audio, "record.wav");
   form.append("cart", JSON.stringify(cart));
   if (sessionId) form.append("session_id", sessionId);
+  if (SITE) form.append("site", SITE);
   const res = await fetch(`${API_BASE}/order`, { method: "POST", body: form });
   if (!res.ok) throw new Error(`order ${res.status}`);
   return res.json() as Promise<OrderResponse>;
