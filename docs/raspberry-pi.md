@@ -200,6 +200,43 @@ sudo systemctl enable --now kiosk-backend kiosk-frontend
 sudo reboot   # 재부팅하면 키오스크 화면까지 자동으로 뜬다
 ```
 
+## 4.5 업데이트 — 파이에 새 버전 반영하기
+
+전제: 맥에서 먼저 `git push` 되어 있어야 한다 (파이는 GitHub에서 받는다).
+
+```bash
+cd ~/carpedm-kiosk
+
+# 1) 새 코드 받기 — 작업 브랜치가 바뀌었으면 checkout부터
+git fetch origin
+git checkout feature/tablet-support   # 최신 작업 브랜치 (이미 이 브랜치면 생략)
+git pull
+
+# 2) 백엔드 의존성 (카메라 인체감지용 opencv 추가됨 — 몇 분 걸릴 수 있음)
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# 3) 프론트 다시 빌드 (vite preview는 프록시가 없으므로 백엔드 주소를 박는다)
+cd frontend
+npm install
+VITE_API_BASE=http://127.0.0.1:8000 npm run build
+cd ..
+
+# 4) 서비스 재시작
+sudo systemctl restart kiosk-backend kiosk-frontend
+```
+
+확인: `curl localhost:8000/healthz` → ok:true, 브라우저 새로고침(Chromium에서 F5
+또는 재부팅) 후 메뉴판에 **실사진**이 뜨면 성공. 이미지가 예전 것으로 보이면
+Chromium 캐시 — `Ctrl+Shift+R` 강력 새로고침.
+
+> 현장에 인터넷이 없어 GitHub를 못 받을 때(비상용): 맥에서 직접 전송
+> ```bash
+> rsync -av --exclude node_modules --exclude .venv --exclude dist --exclude .git \
+>   ~/Desktop/LivingLab/carpedm-kiosk/ pi@<파이IP>:~/carpedm-kiosk/
+> ```
+> 그 후 파이에서 위 2)~4)만 실행.
+
 ## 5. 현장 리허설 체크리스트 (실증 전날)
 
 - [ ] 부팅 → 키오스크 화면까지 자동 진입 (전원만 꽂으면 됨)
