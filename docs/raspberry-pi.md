@@ -209,9 +209,9 @@ sudo reboot   # 재부팅하면 키오스크 화면까지 자동으로 뜬다
 ```bash
 cd ~/carpedm-kiosk
 
-# 1) 새 코드 받기 — 작업 브랜치가 바뀌었으면 checkout부터
+# 1) 새 코드 받기 — 모든 작업이 main에 통합됨 (2026-07-14)
 git fetch origin
-git checkout feature/tablet-support   # 최신 작업 브랜치 (이미 이 브랜치면 생략)
+git checkout main   # 이미 main이면 생략
 git pull
 
 # 2) 백엔드 의존성 (카메라 인체감지용 opencv 추가됨 — 몇 분 걸릴 수 있음)
