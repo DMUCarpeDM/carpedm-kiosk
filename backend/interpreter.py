@@ -214,7 +214,16 @@ CONFIRM_RE = re.compile(
 )
 NEG_RE = re.compile(r"(빼|취소|추가|더 |말고|바꿔|아니)")
 REMOVE_RE = re.compile(r"(빼|없애|취소|말고)")
+REPLACE_RE = re.compile(r"(바꿔|바꾸|교체|변경)")
 CANCEL_ALL_RE = re.compile(r"(전부|전체|다)\s*(취소|빼)|^\s*취소(해줘|해 줘|요)?\s*$")
+
+
+def particle_ro(word: str) -> str:
+    """'로/으로' 조사 선택 — 받침이 있으면 '으로', 없거나 ㄹ 받침이면 '로'."""
+    code = ord(word[-1]) if word else 0
+    if 0xAC00 <= code <= 0xD7A3 and (code - 0xAC00) % 28 not in (0, 8):
+        return "으로"
+    return "로"
 MORE_RE = re.compile(r"^.{0,6}(하나|한 개|한개)?\s*더\s*(줘|주세요|요)?.{0,3}$")
 RECOMMEND_RE = re.compile(r"(추천|뭐가\s*(맛있|좋|괜찮)|뭐\s*(먹|마시|있)|아무거나|골라|좋은\s*거|인기\s*있는|많이\s*(먹|시키|찾)|잘\s*나가|게\s*뭐)")
 FOOD_CONTEXT_RE = re.compile(r"(먹|마시|줘|주세요|있어|하나|한 개|한개|개|잔|병|줘요|주세요|주요|드릴까|할게|세트|세 개|두 개|한 잔|한 병|한 봉지|줘라|다오|주소|포장|갑)")
@@ -433,6 +442,50 @@ class RuleProvider:
                 {"action": "clarify", "question": "어떤 것을 뺄까요?"}, cart, menu, self.name
             )
 
+        # 3.5) 항목 교체 — "새우버거를 불고기버거로 바꿔줘"
+        # 담긴 항목 하나 + 새 메뉴 하나가 정확히 짚어질 때만 처리. 모호하면 그대로 흘려보내
+        # 되묻기/LLM이 맡는다 (확신 없는 규칙이 확신에 찬 오답을 내지 않도록).
+        if cart and REPLACE_RE.search(u) and matches:
+            resolved: list[str] = []
+            for _, ids in matches:
+                ids2 = self._temp_filter(ids, u, menu, expressions)
+                if len(set(ids2)) == 1 and ids2[0] not in resolved:
+                    resolved.append(ids2[0])
+
+            def cart_id_for(mid: str) -> str | None:
+                """언급 메뉴가 담겨 있으면 그 id, 단품을 말했는데 세트가 담겨 있으면 세트 id."""
+                if mid in cart_map:
+                    return mid
+                return next((c for c in cart_map if menu.get(c, {}).get("set_of") == mid), None)
+
+            src_in_cart: str | None = None
+            tgt: str | None = None
+            if len(resolved) == 2:
+                pairs = [(m, cart_id_for(m)) for m in resolved]
+                sources = [(m, cid) for m, cid in pairs if cid]
+                news = [m for m, cid in pairs if cid is None]
+                if len(sources) == 1 and len(news) == 1:
+                    src_said, src_in_cart = sources[0]
+                    tgt = news[0]
+                    if src_in_cart != src_said:  # 세트가 담겨 있었으면 교체도 세트로
+                        tgt = next((k for k, m in menu.items() if m.get("set_of") == tgt), tgt)
+            elif len(resolved) == 1 and cart_id_for(resolved[0]) is None and len(cart_map) == 1:
+                # "불고기버거로 바꿔줘" — 담긴 게 하나뿐이면 그것을 교체 대상으로 본다
+                src_in_cart = next(iter(cart_map))
+                tgt = resolved[0]
+                if menu.get(src_in_cart, {}).get("set_of"):  # 담긴 게 세트면 세트로 교체
+                    tgt = next((k for k, m in menu.items() if m.get("set_of") == tgt), tgt)
+
+            if src_in_cart and tgt:
+                qty = cart_map.pop(src_in_cart)
+                cart_map[tgt] = cart_map.get(tgt, 0) + qty
+                new_cart = [{"id": k, "qty": v} for k, v in cart_map.items()]
+                src_name, tgt_name = menu[src_in_cart]["easy_name"], menu[tgt]["easy_name"]
+                reply = f"{src_name} 대신 {tgt_name}{particle_ro(tgt_name)} 바꿔 담았습니다."
+                return finalize(
+                    {"action": "update", "cart": new_cart, "reply": reply}, cart, menu, self.name
+                )
+
         # 4) "하나 더" — 메뉴 언급이 없을 때만 (있으면 6번 추가 로직이 처리)
         if cart and not matches and MORE_RE.search(u):
             last = cart[-1]
@@ -444,7 +497,9 @@ class RuleProvider:
             )
 
         # 5) 장바구니 항목 수량 변경 ("콜라 두 개로 해줘/바꿔줘")
-        if cart and re.search(r"(개로|잔으로|으로|로)\s*(해|바꿔|변경|늘려|줄여|맞춰|설정)", u):
+        # 수량을 실제로 말했을 때만 — 없는데 '바꿔'만 보고 수량 변경으로 오인하면
+        # 교체 요청이 여기서 확신에 찬 오답으로 끝나 버린다 (규칙 우선 게이트가 LLM을 건너뜀)
+        if cart and self._qty_candidates(u) and re.search(r"(개로|잔으로|으로|로)\s*(해|바꿔|변경|늘려|줄여|맞춰|설정)", u):
             targets = [i for _, ids in matches for i in ids if i in cart_map]
             if len(set(targets)) == 1:
                 cart_map[targets[0]] = self._qty(u)

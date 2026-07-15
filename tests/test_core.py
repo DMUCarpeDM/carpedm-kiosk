@@ -176,6 +176,24 @@ def test_rule_replace_item():
     assert r.action == "update" and carts(r) == [("shrimp-burger", 1)]
 
 
+def test_rule_replace_a_to_b():
+    # "A를 B로 바꿔줘" — 수량 변경으로 오인하거나 둘 다 담으면 안 된다 (2026-07-15 실증 리허설 발견)
+    r = run("새우버거를 불고기버거로 바꿔줘", [{"id": "shrimp-burger", "qty": 1}])
+    assert r.action == "update" and carts(r) == [("bulgogi-burger", 1)]
+
+
+def test_rule_replace_keeps_qty_and_set():
+    # 세트가 담겨 있으면 교체도 세트로, 수량은 유지
+    r = run("새우버거를 불고기버거로 바꿔줘", [{"id": "shrimp-burger-set", "qty": 2}])
+    assert r.action == "update" and carts(r) == [("bulgogi-burger-set", 2)]
+
+
+def test_rule_replace_target_only():
+    # 담긴 게 하나뿐이면 "B로 바꿔줘"만 말해도 교체
+    r = run("불고기버거로 바꿔줘", [{"id": "shrimp-burger", "qty": 1}])
+    assert r.action == "update" and carts(r) == [("bulgogi-burger", 1)]
+
+
 # ── API + 로깅 (FR-B1/D1, P-6) ───────────────────────
 def test_api_interpret_and_pii_free_logging(tmp_path):
     os.environ["KIOSK_LOG_DIR"] = str(tmp_path)
