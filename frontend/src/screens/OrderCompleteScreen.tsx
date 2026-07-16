@@ -79,6 +79,9 @@ export function OrderCompleteScreen({ orderNo, dining, cart, menu, onHome }: Pro
 
       <p className="lk-complete__hint">카운터 화면에 번호가 표시되면 받아 가세요.</p>
 
+      {/* 정직성: 실제 결제·조리가 아닌 시연용 모의 주문임을 분명히 밝힌다 */}
+      <p className="lk-complete__demo">체험용 시연입니다 · 실제 결제와 조리는 이루어지지 않습니다</p>
+
       <button type="button" className="lk-complete__home" onClick={onHome}>
         처음으로 ({left}초 후 자동 이동)
       </button>

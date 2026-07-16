@@ -35,11 +35,11 @@ export function TopBar({
 }
 
 /* ── 진행 단계 표시 (유니버설 디자인: 내가 어디쯤인지 항상 보인다) ── */
-const STEPS = ["식사 장소", "주문 방법", "메뉴 고르기", "확인·결제"] as const;
+const STEPS = ["주문 방법", "메뉴 고르기", "확인·결제"] as const;
 
-export function StepBar({ current }: { current: 1 | 2 | 3 | 4 }) {
+export function StepBar({ current }: { current: 1 | 2 | 3 }) {
   return (
-    <nav className="lk-steps" aria-label={`4단계 중 ${current}단계`}>
+    <nav className="lk-steps" aria-label={`3단계 중 ${current}단계`}>
       {STEPS.map((label, i) => {
         const n = i + 1;
         const state = n < current ? "done" : n === current ? "now" : "todo";

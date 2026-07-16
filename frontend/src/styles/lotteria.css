@@ -345,6 +345,84 @@ img {
   font-weight: 900;
 }
 
+.lk-start__reassure {
+  margin: 0.75rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  opacity: 0.97;
+}
+
+/* 음성 우선 첫 화면 — '말로 주문'을 크게 앞세워 심리적 부담을 낮춘다 */
+.lk-start__voice {
+  margin: 2rem 1.75rem 1rem;
+  background: var(--lk-card);
+  border: 4px solid var(--lk-red);
+  border-radius: 1.75rem;
+  box-shadow: 0 0.75rem 2rem rgba(218, 41, 28, 0.22);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.75rem 2rem;
+  transition: transform 0.1s ease;
+}
+
+.lk-start__voice:active {
+  transform: scale(0.985);
+}
+
+.lk-start__voice-icon {
+  flex-shrink: 0;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: var(--lk-red);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lk-now-pulse 1.6s ease-in-out infinite;
+}
+
+.lk-start__voice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  text-align: left;
+  min-width: 0;
+}
+
+.lk-start__voice-label {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--lk-red-dark);
+}
+
+.lk-start__voice-sub {
+  font-size: 1.4375rem;
+  font-weight: 600;
+  color: var(--lk-gray);
+}
+
+.lk-start__touch {
+  margin: 0 1.75rem;
+  background: transparent;
+  border: 3px solid var(--lk-line);
+  border-radius: 1.375rem;
+  padding: 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--lk-ink);
+  min-height: max(4rem, 48px);
+}
+
+.lk-start__touch:active {
+  border-color: var(--lk-red);
+}
+
 .lk-start__choices {
   flex: 1;
   display: flex;
@@ -1165,6 +1243,59 @@ img {
   line-height: 1.5;
 }
 
+/* 매장/포장 선택 모달 (결제 직전) */
+.lk-dining {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.lk-dining__btn {
+  flex: 1;
+  background: var(--lk-card);
+  border: 3px solid var(--lk-line);
+  border-radius: 1.375rem;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: max(9rem, 48px);
+  transition: transform 0.1s ease;
+}
+
+.lk-dining__btn:active {
+  transform: scale(0.98);
+  border-color: var(--lk-red);
+}
+
+.lk-dining__icon {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  background: #fdecea;
+  color: var(--lk-red-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lk-dining__label {
+  font-size: 1.6875rem;
+  font-weight: 900;
+  color: var(--lk-ink);
+}
+
+.lk-modal__cancel {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--lk-gray);
+  text-decoration: underline;
+}
+
 .lk-modal__imgs {
   display: flex;
   justify-content: center;
@@ -1913,6 +2044,16 @@ img {
   font-size: 1.375rem;
   color: var(--lk-gray);
   font-weight: 500;
+}
+
+.lk-complete__demo {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background: #fff4d6;
+  color: #8a6100;
+  font-size: 1.1875rem;
+  font-weight: 800;
 }
 
 .lk-complete__home {

@@ -24,3 +24,4 @@ Thumbs.db
 # 이미지 원본 백업 (최적화 전 대용량 — 커밋 안 함)
 rsc/product-originals/
 rsc/banner-originals/
+.vite/

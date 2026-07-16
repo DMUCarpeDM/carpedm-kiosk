@@ -1,6 +1,5 @@
 export type Screen =
   | "main"
-  | "order-mode"
   | "voice-order"
   | "voice-result"
   | "menu-list"

@@ -6,11 +6,11 @@ import { isLocalConfirmFallback, viewFromInterpret } from "./interpretFlow";
 import { playSpeech } from "./speech";
 import { AllergyGate } from "./screens/AllergyGate";
 import { AttractOverlay } from "./screens/AttractOverlay";
+import { DiningGate } from "./screens/DiningGate";
 import { MainScreen } from "./screens/MainScreen";
 import { MenuDetailScreen } from "./screens/MenuDetailScreen";
 import { MenuListScreen } from "./screens/MenuListScreen";
 import { OrderCompleteScreen } from "./screens/OrderCompleteScreen";
-import { OrderModeScreen } from "./screens/OrderModeScreen";
 import { VoiceOrderScreen, type GreetingMode } from "./screens/VoiceOrderScreen";
 import { VoiceResultScreen } from "./screens/VoiceResultScreen";
 import type {
@@ -45,6 +45,7 @@ export default function App() {
   const [lowScreen, setLowScreen] = useState(false);
   const [bigText, setBigText] = useState(false);
   const [gateOpen, setGateOpen] = useState(false); // 결제 전 알레르기 확인
+  const [diningOpen, setDiningOpen] = useState(false); // 결제 직전 매장/포장 선택
   const [helpOpen, setHelpOpen] = useState(false); // 직원 호출
 
   // 대기(어트랙트) 화면 + PIR 인체 감지 — ?attract=1 로 강제 표시(시연·검증용)
@@ -140,22 +141,31 @@ export default function App() {
     setDining(null);
   }, []);
 
-  const goComplete = () => {
+  /** 실제 완료 처리 — 주문번호 발급 후 완료 화면 (모의 주문) */
+  const finishOrder = () => {
     setGateOpen(false);
-    setOrderNo(Math.floor(Math.random() * 90) + 10); // 실증용 임의 주문번호
+    setDiningOpen(false);
+    setOrderNo(Math.floor(Math.random() * 90) + 10); // 시연용 임의 주문번호(실결제 아님)
     setScreen("order-complete");
   };
 
-  /** 결제 요청 — 알레르기 성분이 있으면 확인 게이트를 먼저 연다 (보고서 4.4) */
-  const requestComplete = () => {
+  /** 매장/포장 선택 이후 — 알레르기 성분이 있으면 확인 게이트를 먼저 연다 (보고서 4.4) */
+  const afterDining = () => {
+    setDiningOpen(false);
     const hasAllergens = cart.some((c) => (menuById(menu, c.id)?.allergens?.length ?? 0) > 0);
     if (hasAllergens) setGateOpen(true);
-    else goComplete();
+    else finishOrder();
+  };
+
+  /** 결제 요청 — 첫 화면 부담을 줄이려 매장/포장을 이 시점에 묻는다. 이후 알레르기 확인 */
+  const requestComplete = () => {
+    if (!dining) setDiningOpen(true);
+    else afterDining();
   };
 
   const showResultView = (view: VoiceResultView | "confirm") => {
     if (view === "confirm") {
-      goComplete();
+      requestComplete();
       return;
     }
     setVoiceView(view);
@@ -171,14 +181,8 @@ export default function App() {
     setApiDown(false);
 
     if (res.action === "confirm") {
-      // 알레르기 성분이 있으면 게이트가 대신 안내한다
-      const hasAllergens = res.cart.some((c) => (menuById(menu, c.id)?.allergens?.length ?? 0) > 0);
-      if (hasAllergens) {
-        setGateOpen(true);
-      } else {
-        void playSpeech(res.say, res.audio_b64, res.audio_mime);
-        goComplete();
-      }
+      void playSpeech(res.say, res.audio_b64, res.audio_mime);
+      requestComplete(); // 매장/포장 → 알레르기 → 완료
       return;
     }
     const result: InterpretResult = {
@@ -206,16 +210,11 @@ export default function App() {
 
       const say = (result.question || result.reply || "").trim();
       if (result.action === "confirm") {
-        const hasAllergens = result.cart.some((c) => (menuById(menu, c.id)?.allergens?.length ?? 0) > 0);
-        if (hasAllergens) {
-          setGateOpen(true);
-          return;
-        }
         if (say) {
           const audio = await fetchTtsAudio(say);
           void playSpeech(say, audio?.b64, audio?.mime);
         }
-        goComplete();
+        requestComplete(); // 매장/포장 → 알레르기 → 완료
         return;
       }
       setVoiceSay(say || undefined);
@@ -225,7 +224,7 @@ export default function App() {
       setApiDown(true);
       // ponytail: API 미연동 시에만 로컬 확정 키워드 판단
       if (currentCart.length > 0 && isLocalConfirmFallback(text)) {
-        goComplete();
+        requestComplete();
         return;
       }
       setVoiceSay(undefined);
@@ -310,27 +309,14 @@ export default function App() {
           current={
             screen === "main"
               ? 1
-              : screen === "order-mode"
-                ? 2
-                : screen === "order-complete"
-                  ? 4
-                  : gateOpen
-                    ? 4
-                    : 3
+              : screen === "order-complete" || gateOpen || diningOpen
+                ? 3
+                : 2
           }
         />
 
         {screen === "main" ? (
-          <MainScreen
-            onSelect={(d) => {
-              setDining(d);
-              setScreen("order-mode");
-            }}
-          />
-        ) : null}
-
-        {screen === "order-mode" ? (
-          <OrderModeScreen onVoice={openVoiceOrder} onTouch={() => setScreen("menu-list")} onBack={goMain} />
+          <MainScreen onVoice={openVoiceOrder} onTouch={() => setScreen("menu-list")} />
         ) : null}
 
         {screen === "voice-order" ? (
@@ -341,7 +327,7 @@ export default function App() {
             onGreeted={() => {
               greetedRef.current = true;
             }}
-            onBack={() => setScreen("order-mode")}
+            onBack={goMain}
             onOpenMenu={() => setScreen("menu-list")}
             onOrderResult={handleOrderResult}
             onUtterance={onVoiceUtterance}
@@ -404,11 +390,21 @@ export default function App() {
         />
       </div>
 
+      {diningOpen ? (
+        <DiningGate
+          onSelect={(d) => {
+            setDining(d);
+            afterDining();
+          }}
+          onCancel={() => setDiningOpen(false)}
+        />
+      ) : null}
+
       {gateOpen ? (
         <AllergyGate
           cart={cart}
           menu={menu}
-          onProceed={goComplete}
+          onProceed={finishOrder}
           onRemoveItem={removeFromCart}
           onOpenMenu={() => {
             setGateOpen(false);
