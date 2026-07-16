@@ -13,6 +13,7 @@ export type DiningOption = "store" | "togo";
 export type VoiceState =
   | "idle"
   | "speaking"
+  | "cue" // '삐' 신호음 재생 중 — 곧 듣기 시작
   | "listening"
   | "processing"
   | "result"

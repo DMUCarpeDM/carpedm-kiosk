@@ -4,6 +4,7 @@ import { MicButton, VoiceWaveform } from "../components";
 import { startRecording, type Recorder } from "../recorder";
 import {
   listenOnce,
+  playBeep,
   playSpeech,
   speak,
   speechSupported,
@@ -13,8 +14,8 @@ import {
 import type { CartItem, OrderResponse, VoiceState } from "../types";
 
 const GREETING = "안녕하세요, 롯데리아입니다.";
-const GREETING_SUB = "마이크 버튼을 누르고 주문하실 메뉴를 말씀해 주세요.";
-const PROMPT_SHORT = "주문하실 메뉴를 말씀해 주세요."; // 재진입 시 — 풀 인사는 세션당 1회
+const GREETING_SUB = "잠시 후 ‘삐’ 소리가 나면 주문하실 메뉴를 말씀해 주세요.";
+const PROMPT_SHORT = "‘삐’ 소리가 나면 말씀해 주세요."; // 재진입 시 — 풀 인사는 세션당 1회
 const MAX_RECORD_MS = 7000; // 최대 녹음 길이 — 누르는 걸 잊어도 자동 완료
 
 /** 풀 인사(full) / 짧은 안내(short) / 무음 재시도(none) */
@@ -74,6 +75,10 @@ export function VoiceOrderScreen({
   const startListening = async () => {
     stopAllAudio();
     setStatusText(null);
+    // 마이크를 열기 직전 '삐' 소리로 "지금 말하세요" 신호를 준다 (어르신 타이밍 안내)
+    setVoiceState("cue");
+    await playBeep();
+    if (!mountedRef.current) return;
     try {
       const rec = await startRecording();
       recorderRef.current = rec;
@@ -131,7 +136,8 @@ export function VoiceOrderScreen({
 
   const onMicClick = () => {
     if (voiceState === "listening") void finishListening();
-    else if (voiceState !== "processing") void startListening();
+    // 신호음 재생 중(cue)·처리 중(processing)에는 다시 시작하지 않는다
+    else if (voiceState !== "processing" && voiceState !== "cue") void startListening();
   };
 
   // ── 인사말 (Google TTS 캐시 → 브라우저 폴백) 후 자동 듣기 ──
@@ -172,18 +178,34 @@ export function VoiceOrderScreen({
   };
 
   const showFallback = voiceState === "error";
+  const listening = voiceState === "listening";
 
   return (
     <div className="lk-voice">
-      <h1 className="lk-voice__title">{greeting === "full" ? GREETING : "무엇을 드릴까요?"}</h1>
-      <p className="lk-voice__sub">{GREETING_SUB}</p>
+      {listening ? (
+        // 듣는 중 — "지금 말씀하세요"를 크고 분명하게 보여 준다 (어르신 타이밍 안내)
+        <div className="lk-voice__now" role="status" aria-live="assertive">
+          <span className="lk-voice__nowdot" aria-hidden="true" />
+          <h1 className="lk-voice__nowtitle">지금 말씀하세요</h1>
+        </div>
+      ) : (
+        <>
+          <h1 className="lk-voice__title">
+            {voiceState === "cue" ? "잠시만요…" : greeting === "full" ? GREETING : "무엇을 드릴까요?"}
+          </h1>
+          <p className="lk-voice__sub">{GREETING_SUB}</p>
+        </>
+      )}
 
       <VoiceWaveform active={voiceState === "listening" || voiceState === "speaking"} />
       <MicButton active={voiceState === "listening"} onClick={onMicClick} />
 
       <p className="lk-voice__status" aria-live="polite">
-        {statusText ?? voiceStateLabel(voiceState)}
-        {voiceState === "listening" ? " — 말씀이 끝나면 버튼을 한 번 더 눌러 주세요" : ""}
+        {listening ? (
+          <>말이 끝나면 <b>이 버튼</b>을 눌러 주세요</>
+        ) : (
+          statusText ?? voiceStateLabel(voiceState)
+        )}
       </p>
 
       <section className="lk-examples" aria-label="말하기 예시">

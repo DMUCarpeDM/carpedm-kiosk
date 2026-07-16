@@ -107,6 +107,8 @@ export function voiceStateLabel(state: VoiceState): string {
   switch (state) {
     case "speaking":
       return "안내 음성이 나오고 있습니다";
+    case "cue":
+      return "잠시 후 말씀하실 수 있습니다";
     case "listening":
       return "말씀을 듣고 있습니다";
     case "processing":
@@ -142,6 +144,56 @@ export function unlockAudioPlayback(): void {
     window.speechSynthesis.speak(u);
   } catch {
     /* noop */
+  }
+  primeBeep(); // '지금 말하세요' 삐 소리용 오디오 컨텍스트도 제스처 안에서 깨워 둔다(iOS)
+}
+
+// ── '지금 말씀하세요' 안내음(삐) ────────────────────────────────
+// 어르신이 언제 말해야 할지 알 수 있도록, 마이크가 열리는 순간 부드러운 두 음을 낸다.
+let beepCtx: AudioContext | null = null;
+
+function getBeepCtx(): AudioContext | null {
+  try {
+    const Ctor = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctor) return null;
+    if (!beepCtx || beepCtx.state === "closed") beepCtx = new Ctor();
+    return beepCtx;
+  } catch {
+    return null;
+  }
+}
+
+/** 첫 터치에서 미리 컨텍스트를 깨워 둔다(iOS는 제스처 밖 resume을 막음) */
+function primeBeep(): void {
+  const ctx = getBeepCtx();
+  if (ctx && ctx.state === "suspended") void ctx.resume();
+}
+
+/** 마이크가 열릴 때 부드러운 두 음("딩-동")을 내고, 끝나면 resolve */
+export async function playBeep(): Promise<void> {
+  const ctx = getBeepCtx();
+  if (!ctx) return;
+  try {
+    if (ctx.state === "suspended") await ctx.resume();
+    const now = ctx.currentTime;
+    const tone = (freq: number, start: number, dur: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, now + start);
+      gain.gain.linearRampToValueAtTime(0.22, now + start + 0.02); // 부드러운 페이드로 '딱' 소리 방지
+      gain.gain.linearRampToValueAtTime(0, now + start + dur);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + start);
+      osc.stop(now + start + dur + 0.02);
+    };
+    // 올라가는 두 음 — '이제 말하세요' 신호로 자연스럽다
+    tone(660, 0, 0.16);
+    tone(880, 0.14, 0.24);
+    await new Promise((r) => setTimeout(r, 420));
+  } catch {
+    /* 삐 소리 실패해도 화면의 '지금 말씀하세요' 신호로 진행 */
   }
 }
 
