@@ -103,8 +103,7 @@ SYSTEM_TMPL = """너는 고령 어르신을 돕는 롯데리아(햄버거 가게
 [어르신 표현 사전 (참고)]
 {expr_lines}
 
-[현재 장바구니]
-{cart_line}
+[현재 장바구니]는 이어지는 사용자 메시지에 함께 제공된다.
 
 출력 규칙 — 반드시 지킨다:
 1) JSON 객체 하나만 출력한다. 마크다운, 백틱, 설명 금지.
@@ -127,7 +126,10 @@ SYSTEM_TMPL = """너는 고령 어르신을 돕는 롯데리아(햄버거 가게
 18) "~도 줘", "~도 하나"는 기존 장바구니를 유지한 채 그 메뉴를 추가한다."""
 
 
-def build_system_prompt(menu: dict[str, dict], expressions: dict, cart: list[CartItem]) -> str:
+def build_system_prompt(menu: dict[str, dict], expressions: dict) -> str:
+    """메뉴·표현사전·규칙만으로 구성 — 발화·장바구니에 무관하게 항상 동일하다.
+    이 고정 프리픽스를 프롬프트 캐시에 올려(cache_control) 매 호출의 재처리 비용·지연을 없앤다.
+    """
     menu_lines = "\n".join(
         f"- {m['id']} | {m['easy_name']} | {m.get('original_name') or '-'} | {m.get('category', '-')} | {','.join(m.get('tags', []))}"
         for m in menu.values()
@@ -136,10 +138,13 @@ def build_system_prompt(menu: dict[str, dict], expressions: dict, cart: list[Car
         f"- {' / '.join(mp['phrases'])} → {', '.join(mp['ids'])}"
         for mp in expressions.get("mappings", [])
     )
-    cart_line = (
-        json.dumps([c.model_dump() for c in cart], ensure_ascii=False) if cart else "(비어 있음)"
-    )
-    return SYSTEM_TMPL.format(menu_lines=menu_lines, expr_lines=expr_lines, cart_line=cart_line)
+    return SYSTEM_TMPL.format(menu_lines=menu_lines, expr_lines=expr_lines)
+
+
+def build_user_content(utterance: str, cart: list[CartItem]) -> str:
+    """장바구니(매 턴 변함)와 발화를 사용자 메시지로 — 캐시 프리픽스(시스템)를 깨지 않는다."""
+    cart_line = json.dumps([c.model_dump() for c in cart], ensure_ascii=False) if cart else "(비어 있음)"
+    return f"[현재 장바구니]\n{cart_line}\n\n[주문 발화]\n{utterance}"
 
 
 def parse_llm_json(text: str) -> dict:
@@ -194,11 +199,23 @@ class ClaudeProvider:
             model=self.model,
             max_tokens=700,
             temperature=0,
-            system=build_system_prompt(menu, expressions, cart),
-            messages=[{"role": "user", "content": utterance}],
+            # 고정 프리픽스(메뉴·사전·규칙 ~7천 토큰)를 캐시 → 같은 손님의 멀티턴에서 재처리 없이 빠르게 응답
+            system=[{"type": "text", "text": build_system_prompt(menu, expressions), "cache_control": {"type": "ephemeral"}}],
+            messages=[{"role": "user", "content": build_user_content(utterance, cart)}],
         )
         text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
         return finalize(parse_llm_json(text), cart, menu, self.name)
+
+    def warm(self, menu: dict[str, dict], expressions: dict) -> None:
+        """고정 프리픽스를 캐시에 미리 올린다(max_tokens=0). 첫 손님의 첫 발화도 캐시 적중으로 빠르게.
+        캐시 TTL은 5분이라, 손님 간격이 길면 이 워밍은 부팅 직후 첫 손님에게만 유효하다(무해)."""
+        self.client.messages.create(
+            model=self.model,
+            max_tokens=0,
+            temperature=0,
+            system=[{"type": "text", "text": build_system_prompt(menu, expressions), "cache_control": {"type": "ephemeral"}}],
+            messages=[{"role": "user", "content": "워밍"}],
+        )
 
 
 # ── 규칙 폴백 프로바이더 (오프라인 최소 주문, FR-V2) ─

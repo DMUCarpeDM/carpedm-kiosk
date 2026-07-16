@@ -53,6 +53,18 @@ EXPRESSIONS = load_expressions()
 PROVIDER = make_provider()
 FALLBACK = RuleProvider()
 
+# LLM 프롬프트 캐시 미리 데우기 — 첫 손님의 첫 발화도 캐시 적중으로 빠르게 (백그라운드, 실패 무해)
+if hasattr(PROVIDER, "warm"):
+    import threading
+
+    def _warm() -> None:
+        try:
+            PROVIDER.warm(MENU, EXPRESSIONS)
+        except Exception:
+            pass  # 캐시 워밍은 최적화일 뿐 — 실패해도 정상 동작
+
+    threading.Thread(target=_warm, daemon=True).start()
+
 # 규칙 우선 게이트 — 표현 사전으로 확실히 풀리는 발화는 LLM API를 부르지 않는다 (비용·지연 절감).
 # "0"=끔 / "1"(기본)=주문·확정만 규칙으로 / "all"=추천·거절까지 규칙으로 (절감 최대).
 # 규칙이 clarify를 내면(못 알아들음) 기존대로 LLM이 의미 해석을 맡는다.
