@@ -116,7 +116,11 @@ export function VoiceOrderScreen({
         setVoiceState("listening");
         setStatusText("다시 한 번 말씀해 주세요.");
         listenOnce({
-          onResult: (text) => mountedRef.current && onUtterance(text),
+          onResult: (text) => {
+            if (!mountedRef.current) return;
+            setVoiceState("processing"); // 확인 중 화면을 즉시 보여 준다
+            onUtterance(text);
+          },
           onError: () => {
             if (!mountedRef.current) return;
             setVoiceState("error");
@@ -179,10 +183,18 @@ export function VoiceOrderScreen({
 
   const showFallback = voiceState === "error";
   const listening = voiceState === "listening";
+  const processing = voiceState === "processing";
 
   return (
     <div className="lk-voice">
-      {listening ? (
+      {processing ? (
+        // 처리 중 — "주문을 확인하고 있어요"를 상단에 크게 (어르신이 대기 상태를 분명히 알도록)
+        <div className="lk-voice__now" role="status" aria-live="assertive">
+          <span className="lk-voice__spinner" aria-hidden="true" />
+          <h1 className="lk-voice__nowtitle lk-voice__nowtitle--wait">주문을 확인하고 있어요</h1>
+          <p className="lk-voice__waitsub">잠시만 기다려 주세요</p>
+        </div>
+      ) : listening ? (
         // 듣는 중 — "지금 말씀하세요"를 크고 분명하게 보여 준다 (어르신 타이밍 안내)
         <div className="lk-voice__now" role="status" aria-live="assertive">
           <span className="lk-voice__nowdot" aria-hidden="true" />
@@ -197,25 +209,30 @@ export function VoiceOrderScreen({
         </>
       )}
 
-      <VoiceWaveform active={voiceState === "listening" || voiceState === "speaking"} />
-      <MicButton active={voiceState === "listening"} onClick={onMicClick} />
+      {/* 처리 중에는 파형·마이크·예시를 숨겨 '확인 중' 안내에 집중시킨다 */}
+      {!processing ? (
+        <>
+          <VoiceWaveform active={listening || voiceState === "speaking"} />
+          <MicButton active={listening} onClick={onMicClick} />
 
-      <p className="lk-voice__status" aria-live="polite">
-        {listening ? (
-          <>말이 끝나면 <b>이 버튼</b>을 눌러 주세요</>
-        ) : (
-          statusText ?? voiceStateLabel(voiceState)
-        )}
-      </p>
+          <p className="lk-voice__status" aria-live="polite">
+            {listening ? (
+              <>말이 끝나면 <b>이 버튼</b>을 눌러 주세요</>
+            ) : (
+              statusText ?? voiceStateLabel(voiceState)
+            )}
+          </p>
 
-      <section className="lk-examples" aria-label="말하기 예시">
-        <p className="lk-examples__title">이렇게 말씀하실 수 있습니다</p>
-        <div className="lk-examples__list">
-          {EXAMPLES.map((e) => (
-            <span key={e} className="lk-examples__chip">“{e}”</span>
-          ))}
-        </div>
-      </section>
+          <section className="lk-examples" aria-label="말하기 예시">
+            <p className="lk-examples__title">이렇게 말씀하실 수 있습니다</p>
+            <div className="lk-examples__list">
+              {EXAMPLES.map((e) => (
+                <span key={e} className="lk-examples__chip">“{e}”</span>
+              ))}
+            </div>
+          </section>
+        </>
+      ) : null}
 
       {showFallback ? (
         <div className="lk-voice-fallback">
