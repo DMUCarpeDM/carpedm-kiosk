@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { menuById, menuDisplayName, menuSubName } from "../api";
-import { menuImageSrc } from "../menuImages";
+import { menuImageFallback, menuImageSrc } from "../menuImages";
 import { QuantitySelector } from "../components";
 import { IconCheck, IconWarning } from "../icons";
 import { findSetVariant, findSingleVariant } from "../menuDetailConfig";
@@ -39,11 +39,11 @@ function UpsellModal({
           감자 튀김과 콜라가 함께 제공됩니다.
         </p>
         <div className="lk-modal__imgs" aria-hidden="true">
-          <img src={menuImageSrc(single)} alt="" />
+          <img src={menuImageSrc(single)} alt="" onError={menuImageFallback} />
           <span className="lk-modal__plus">+</span>
-          <img src="/menu/products/fries.webp" alt="" />
+          <img src="/menu/products/fries.webp" alt="" onError={menuImageFallback} />
           <span className="lk-modal__plus">+</span>
-          <img src="/menu/products/cola.webp" alt="" />
+          <img src="/menu/products/cola.webp" alt="" onError={menuImageFallback} />
         </div>
         <div className="lk-modal__actions">
           <button type="button" className="lk-modal__btn lk-modal__btn--yes" onClick={onSet}>
@@ -111,7 +111,7 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
       <div className="lk-detail__body">
         <div className="lk-detail__hero">
           <div className="lk-detail__photo">
-            <img src={menuImageSrc(chosen)} alt="" />
+            <img src={menuImageSrc(chosen)} alt="" onError={menuImageFallback} />
           </div>
           <div>
             <h2 className="lk-detail__name">{menuDisplayName(chosen)}</h2>
@@ -155,17 +155,17 @@ export function MenuDetailScreen({ menuId, menu, qty, onQtyChange, onOrder, onBa
             <h3 className="lk-section__title">세트 구성</h3>
             <div className="lk-includes">
               <span className="lk-includes__item">
-                <img src={menuImageSrc(singleVariant)} alt="" />
+                <img src={menuImageSrc(singleVariant)} alt="" onError={menuImageFallback} />
                 <span>버거</span>
               </span>
               <span className="lk-includes__plus" aria-hidden="true">+</span>
               <span className="lk-includes__item">
-                <img src="/menu/products/fries.webp" alt="" />
+                <img src="/menu/products/fries.webp" alt="" onError={menuImageFallback} />
                 <span>감자 튀김</span>
               </span>
               <span className="lk-includes__plus" aria-hidden="true">+</span>
               <span className="lk-includes__item">
-                <img src="/menu/products/cola.webp" alt="" />
+                <img src="/menu/products/cola.webp" alt="" onError={menuImageFallback} />
                 <span>콜라</span>
               </span>
             </div>

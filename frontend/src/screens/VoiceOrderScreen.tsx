@@ -148,23 +148,28 @@ export function VoiceOrderScreen({
   // 풀 인사는 세션당 1회만 — "말로 주문"을 다시 눌러도 반복하지 않는다 (짧은 안내로 대체)
   useEffect(() => {
     mountedRef.current = true;
+    // 이 이펙트 실행 전용 취소 플래그 — mountedRef만 쓰면 StrictMode 이중 실행이나
+    // 재진입 시 이전 begin()이 되살아나 인사를 서로 끊는다 (말 끊김의 원인)
+    let cancelled = false;
 
     const begin = async () => {
       const line = greeting === "full" ? `${GREETING} ${GREETING_SUB}` : greeting === "short" ? PROMPT_SHORT : null;
       if (line) {
         setVoiceState("speaking");
         const audio = await fetchTtsAudio(line);
-        if (!mountedRef.current) return;
+        if (cancelled || !mountedRef.current) return;
         if (audio) await playSpeech("", audio.b64, audio.mime);
         else await new Promise<void>((r) => speak(line, undefined, () => r()));
-        if (!mountedRef.current) return;
+        if (cancelled || !mountedRef.current) return;
         if (greeting === "full") onGreeted?.();
       }
+      if (cancelled) return;
       await startListening();
     };
     void begin();
 
     return () => {
+      cancelled = true;
       mountedRef.current = false;
       clearTimer();
       recorderRef.current?.cancel();

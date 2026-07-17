@@ -182,9 +182,9 @@ RestartSec=3
 WantedBy=multi-user.target
 ```
 
-> 주의: `vite preview`는 프록시를 지원하지 않으므로, 프론트 빌드 시 백엔드 주소를 환경변수로 박는다:
-> `VITE_API_BASE=http://127.0.0.1:8000 npm run build`
-> (api.ts가 `VITE_API_BASE`를 읽는다 — 이미 구현돼 있음)
+> 참고: `vite preview`도 vite.config.ts의 `server.proxy`를 그대로 쓴다(Vite 4+, 로컬 검증 완료 2026-07-18).
+> 따라서 평범한 `npm run build`로 충분하다. 만약 /api 호출이 안 되면(구버전 vite 등)
+> `VITE_API_BASE=http://127.0.0.1:8000 npm run build`로 백엔드 주소를 박으면 된다.
 
 Chromium 키오스크 자동 실행 — 스크립트 1회 실행:
 ```bash
@@ -218,10 +218,11 @@ git pull
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# 3) 프론트 다시 빌드 (vite preview는 프록시가 없으므로 백엔드 주소를 박는다)
+# 3) 프론트 다시 빌드 — 이 단계를 건너뛰면 메뉴판 사진이 옛것/깨진 채로 남는다!
+#    (파이 화면은 frontend/dist를 서빙하므로, pull 후 반드시 다시 빌드해야 한다)
 cd frontend
 npm install
-VITE_API_BASE=http://127.0.0.1:8000 npm run build
+npm run build
 cd ..
 
 # 4) 서비스 재시작

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { menuById, menuDisplayName } from "../api";
 import { MicButton, recommendReason } from "../components";
 import { IconSpeaker } from "../icons";
-import { menuImageSrc } from "../menuImages";
+import { menuImageFallback, menuImageSrc } from "../menuImages";
 import { playSpeech, stopAllAudio } from "../speech";
 import type { CartItem, MenuItem, VoiceResultView } from "../types";
 
@@ -83,7 +83,7 @@ export function VoiceResultScreen({
               return (
                 <div key={c.id} role="listitem" className={`lk-cartrow${changed ? " lk-cartrow--new" : ""}`}>
                   <span className="lk-cartrow__img">
-                    <img src={menuImageSrc(m)} alt="" />
+                    <img src={menuImageSrc(m)} alt="" onError={menuImageFallback} />
                   </span>
                   <span className="lk-cartrow__body">
                     <span className="lk-cartrow__name">{menuDisplayName(m)}</span>
@@ -107,7 +107,7 @@ export function VoiceResultScreen({
                 <button key={id} type="button" className="lk-suggest" onClick={() => onPickSuggestion(id)}>
                   <span className="lk-suggest__reason">{recommendReason(m)}</span>
                   <span className="lk-suggest__img">
-                    <img src={menuImageSrc(m)} alt="" />
+                    <img src={menuImageSrc(m)} alt="" onError={menuImageFallback} />
                   </span>
                   <span className="lk-suggest__name">{menuDisplayName(m)}</span>
                   {m.desc ? <span className="lk-suggest__desc">{m.desc}</span> : null}

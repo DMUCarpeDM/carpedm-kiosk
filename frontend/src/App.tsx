@@ -3,7 +3,7 @@ import { fetchMenu, fetchPresence, fetchTtsAudio, interpretUtterance, menuById }
 import { A11yBar, StepBar, TopBar } from "./components";
 import { IconBell } from "./icons";
 import { isLocalConfirmFallback, viewFromInterpret } from "./interpretFlow";
-import { playSpeech } from "./speech";
+import { playSpeech, speechGeneration } from "./speech";
 import { AllergyGate } from "./screens/AllergyGate";
 import { AttractOverlay } from "./screens/AttractOverlay";
 import { DiningGate } from "./screens/DiningGate";
@@ -99,12 +99,17 @@ export default function App() {
       터치 웨이크는 사용자 제스처라 태블릿(자동재생 차단 환경)에서도 확실히 소리가 난다. */
   const wake = useCallback((source: "presence" | "touch") => {
     setAttract(false);
+    // 여기서 브랜드 인사를 했으므로 음성 화면에서는 짧은 안내만 (인사 반복 방지)
+    greetedRef.current = true;
     const say =
       source === "presence"
-        ? "어서 오세요, 롯데리아입니다. 화면을 터치하시면 주문이 시작됩니다."
-        : "어서 오세요, 롯데리아입니다. 어디에서 드실지 화면에서 눌러 주세요.";
+        ? "어서 오세요, 롯데리아입니다. 화면에서 주문 방법을 골라 주세요."
+        : "어서 오세요, 롯데리아입니다. 말로 주문할지, 화면을 보고 고를지 눌러 주세요.";
     void (async () => {
+      const gen = speechGeneration();
       const audio = await fetchTtsAudio(say);
+      // TTS를 기다리는 사이 다른 안내(음성 주문 인사 등)가 시작됐으면 끼어들지 않는다
+      if (speechGeneration() !== gen) return;
       void playSpeech(say, audio?.b64, audio?.mime);
     })();
   }, []);

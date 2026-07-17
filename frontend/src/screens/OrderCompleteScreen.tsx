@@ -16,22 +16,30 @@ type Props = {
 
 export function OrderCompleteScreen({ orderNo, dining, cart, menu, onHome }: Props) {
   const [left, setLeft] = useState(AUTO_HOME_SEC);
+  // 안내 음성이 끝난 뒤에야 초읽기 시작 — 도중에 홈으로 넘어가 말이 끊기지 않게
+  const [counting, setCounting] = useState(false);
 
   useEffect(() => {
+    if (!counting) return;
     const tick = setInterval(() => setLeft((s) => s - 1), 1000);
     return () => clearInterval(tick);
-  }, []);
+  }, [counting]);
 
-  // 주문 완료 음성 안내 (자막은 화면 전체가 대신한다)
+  // 주문 완료 음성 안내 (자막은 화면 전체가 대신한다) — 재생 완료 후 초읽기 시작
   useEffect(() => {
     const say = `주문이 완료되었습니다. 주문 번호는 ${orderNo}번입니다. 카운터 화면에 번호가 표시되면 받아 가세요. 감사합니다.`;
     let cancelled = false;
+    // 안내가 어떤 이유로든 끝나지 않아도 화면이 영원히 머물지 않도록 안전장치
+    const safety = window.setTimeout(() => setCounting(true), 15000);
     void (async () => {
       const audio = await fetchTtsAudio(say);
-      if (!cancelled) void playSpeech(say, audio?.b64, audio?.mime);
+      if (cancelled) return;
+      await playSpeech(say, audio?.b64, audio?.mime);
+      if (!cancelled) setCounting(true);
     })();
     return () => {
       cancelled = true;
+      window.clearTimeout(safety);
       stopAllAudio();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

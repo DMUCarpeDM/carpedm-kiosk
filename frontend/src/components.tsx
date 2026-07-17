@@ -1,6 +1,6 @@
 import { menuDisplayName } from "./api";
 import { IconBell, IconHome, IconMic, IconTextSize, IconWheelchair } from "./icons";
-import { menuImageSrc } from "./menuImages";
+import { menuImageFallback, menuImageSrc } from "./menuImages";
 import type { DiningOption, MenuItem } from "./types";
 
 export { IconMic };
@@ -149,7 +149,7 @@ export function ProductCard({ item, onClick }: { item: MenuItem; onClick: () => 
     <button type="button" className="lk-card" onClick={onClick}>
       <MenuBadge item={item} />
       <span className="lk-card__img">
-        <img src={menuImageSrc(item)} alt="" />
+        <img src={menuImageSrc(item)} alt="" onError={menuImageFallback} />
       </span>
       <span className="lk-card__name">{menuDisplayName(item)}</span>
       {/* 칼로리는 카드에서 빼고 상세 화면(열량 ○○kcal)에서만 — 메뉴판은 이름·가격만 크게 */}

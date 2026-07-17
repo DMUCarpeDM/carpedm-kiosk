@@ -759,6 +759,11 @@ img {
   padding: 0.625rem 12.5rem 0.25rem;
 }
 
+/* 큰 글씨 모드: zoom으로 폭이 좁아져 '다음'이 말로 주문 버튼에 가려지는 것 방지 */
+.lk-app--big .lk-pager {
+  padding-left: 1.5rem;
+}
+
 .lk-pager__btn {
   min-width: 8.25rem;
   min-height: max(3.375rem, 48px); /* 터치 표적 48px 보장 */

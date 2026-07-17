@@ -30,7 +30,19 @@ export function speechSupported(): boolean {
   return getRecognitionCtor() !== null && "speechSynthesis" in window;
 }
 
+// ── 안내 세대 토큰 ──────────────────────────────────────────────
+// 안내(TTS·삐 소리)가 새로 시작될 때마다 증가한다. TTS fetch를 기다리는 동안
+// 다른 안내가 시작됐다면, 늦게 도착한 오디오는 재생을 포기해야 한다 —
+// 그렇지 않으면 재생 중인 인사를 끊고 끼어들어 "말이 뚝뚝 끊기는" 현상이 된다.
+let generation = 0;
+
+/** 현재 안내 세대 — fetch 전에 기억해 두고, fetch 후 달라졌으면 재생하지 않는다 */
+export function speechGeneration(): number {
+  return generation;
+}
+
 export function speak(text: string, onStart?: () => void, onEnd?: () => void): void {
+  generation++;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "ko-KR";
@@ -171,6 +183,7 @@ function primeBeep(): void {
 
 /** 마이크가 열릴 때 부드러운 두 음("딩-동")을 내고, 끝나면 resolve */
 export async function playBeep(): Promise<void> {
+  generation++; // 삐 소리 이후에는 옛 인사 오디오가 재생되면 안 된다
   const ctx = getBeepCtx();
   if (!ctx) return;
   try {
@@ -207,6 +220,7 @@ function settleCurrent(): void {
 }
 
 export function stopAllAudio(): void {
+  generation++; // 새 안내가 시작되기 직전 신호 — 대기 중이던 옛 TTS 재생을 무효화
   if (sharedAudio && playing) sharedAudio.pause();
   settleCurrent(); // 중단된 재생의 await가 영원히 걸리지 않도록 즉시 resolve
   window.speechSynthesis.cancel();
