@@ -31,13 +31,35 @@ fi
 cat > "$HOME/kiosk-launch.sh" <<EOF
 #!/bin/bash
 $ROTATE_CMD
+
+# 화면 절전·블랭킹 방지 — 무인 키오스크는 손님이 없어도 화면이 꺼지면 안 된다.
+# (X11 세션이면 xset가 먹고, Wayland/labwc는 기본적으로 블랭킹이 없다. 둘 다 무해)
+xset s off -dpms s noblank 2>/dev/null || true
+
+# 정전·강제종료 후 뜨는 "이전 페이지를 복원하시겠습니까?" 풍선을 막는다 —
+# 지난 세션을 '정상 종료'로 표시해 복원 배너·크래시 버블이 안 뜨게 한다.
+PREF="\$HOME/.config/chromium/Default/Preferences"
+[ -f "\$PREF" ] && sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]*"/"exit_type":"Normal"/' "\$PREF" 2>/dev/null || true
+
+# 서버(vite preview)가 응답할 때까지 최대 90초 대기 후 전체화면 실행
 for i in \$(seq 1 90); do
   curl -s -o /dev/null "$URL" && break
   sleep 1
 done
+
+# 키오스크 플래그:
+#  --password-store=basic       gnome-keyring 잠금해제 대기로 부팅 시 멈추는 것 방지(파이 필수)
+#  --disable-session-crashed-bubble / --disable-features=InfiniteSessionRestore  정전 후 복원 배너 차단
+#  --use-fake-ui-for-media-stream  마이크 권한 팝업 자동 허용(음성 주문)
+#  --autoplay-policy=...        인사말 TTS가 사용자 제스처 없이도 재생되게
+#  --disable-pinch / --overscroll-history-navigation=0  터치 확대·스와이프 뒤로가기 오작동 방지
 exec $CHROMIUM --kiosk --noerrdialogs --disable-infobars \\
-  --check-for-update-interval=31536000 --use-fake-ui-for-media-stream \\
-  --autoplay-policy=no-user-gesture-required "$URL"
+  --check-for-update-interval=31536000 \\
+  --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required \\
+  --password-store=basic \\
+  --disable-session-crashed-bubble --disable-features=InfiniteSessionRestore,Translate \\
+  --disable-pinch --overscroll-history-navigation=0 --hide-scrollbars \\
+  --disable-component-update "$URL"
 EOF
 chmod +x "$HOME/kiosk-launch.sh"
 echo "✓ 실행 래퍼: ~/kiosk-launch.sh$([ -n "$ROTATE" ] && echo " (화면 회전 ${ROTATE}° 포함)")"

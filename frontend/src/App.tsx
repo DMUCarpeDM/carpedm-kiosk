@@ -53,7 +53,8 @@ export default function App() {
   // 풀 인사("안녕하세요, 롯데리아입니다")는 세션당 1회 — 이후 재진입은 짧은 안내만
   const greetedRef = useRef(false);
   const prevPresentRef = useRef(false);
-  const IDLE_TO_ATTRACT_MS = 45000;
+  const IDLE_TO_ATTRACT_MS = 45000; // 첫 화면 방치 → 대기 화면
+  const SESSION_IDLE_MS = 90000; // 주문 중 방치 → 세션 리셋 (천천히 고르는 어르신 배려로 넉넉히)
 
   // 세로 화면 전용 — 가로로 켜져 있으면 회전 안내 (개발 편의를 위해 닫을 수 있음)
   const [landscape, setLandscape] = useState(window.innerWidth > window.innerHeight);
@@ -79,21 +80,6 @@ export default function App() {
   useEffect(() => {
     void loadMenu();
   }, [loadMenu]);
-
-  // 첫 화면에서 45초간 조작이 없으면 대기 화면으로
-  useEffect(() => {
-    if (screen !== "main" || attract) return;
-    let timer = window.setTimeout(() => setAttract(true), IDLE_TO_ATTRACT_MS);
-    const reset = () => {
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => setAttract(true), IDLE_TO_ATTRACT_MS);
-    };
-    window.addEventListener("pointerdown", reset);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("pointerdown", reset);
-    };
-  }, [screen, attract]);
 
   /** 대기 화면 해제 — 감지(카메라/PIR)든 터치든 첫 만남에는 인사 음성이 나간다.
       터치 웨이크는 사용자 제스처라 태블릿(자동재생 차단 환경)에서도 확실히 소리가 난다. */
@@ -145,6 +131,29 @@ export default function App() {
     setVoiceAudio(null);
     setDining(null);
   }, []);
+
+  // 무조작 방치 시 자동 초기화 — 첫 화면은 대기 화면으로, 주문 중 화면은 세션까지 리셋한다.
+  // (손님이 메뉴·음성 화면에서 그냥 떠나도 다음 손님에게 이전 장바구니·주문이 남지 않게 —
+  //  무인 시연·실증에서 흔한 상황. order-complete는 자체 12초 복귀가 있어 이 타이머는 안전망.)
+  useEffect(() => {
+    if (attract) return;
+    const onMain = screen === "main";
+    const ms = onMain ? IDLE_TO_ATTRACT_MS : SESSION_IDLE_MS;
+    const fire = () => {
+      if (!onMain) goMain(); // 세션 리셋(장바구니·발화·매장선택 비움) 후 브랜드 대기 화면으로
+      setAttract(true);
+    };
+    let timer = window.setTimeout(fire, ms);
+    const reset = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(fire, ms);
+    };
+    window.addEventListener("pointerdown", reset);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", reset);
+    };
+  }, [screen, attract, goMain]);
 
   /** 실제 완료 처리 — 주문번호 발급 후 완료 화면 (모의 주문) */
   const finishOrder = () => {

@@ -21,10 +21,13 @@ sudo raspi-config
 sudo apt update && sudo apt install -y git python3-venv nodejs npm chromium-browser
 ```
 
-한국어 폰트(화면 표시용):
+한국어 폰트(최종 안전망):
 ```bash
 sudo apt install -y fonts-noto-cjk
 ```
+> 화면 글꼴(Noto Sans KR·Fredoka)은 앱에 **로컬 내장**되어 인터넷 없이도 뜬다
+> (`frontend/public/fonts`). 이 apt 폰트는 내장 폰트를 어떤 이유로든 못 불러왔을 때를
+> 위한 시스템 폴백이다 — 설치해 두면 한글이 □(두부)로 깨지는 일이 절대 없다.
 
 ## 2. 프로젝트 설치
 

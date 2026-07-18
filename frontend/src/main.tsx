@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { unlockAudioPlayback } from "./speech";
 import { unlockRecorder } from "./recorder";
+import "./styles/fonts.css";
 import "./styles/lotteria.css";
 
 // iOS Safari·Android Chrome: 오디오 재생/녹음은 사용자 제스처 후에만 허용
