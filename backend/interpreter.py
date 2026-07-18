@@ -190,7 +190,9 @@ class ClaudeProvider:
         import anthropic  # 지연 임포트: 폴백 단독 환경에서도 동작
 
         self.client = anthropic.Anthropic()  # ANTHROPIC_API_KEY 환경변수 (FR-B1)
-        self.model = model or os.getenv("KIOSK_MODEL", "claude-sonnet-4-6")
+        # 기본값은 .env의 권장값(비용·지연이 낮은 Haiku)과 일치시킨다 — KIOSK_MODEL이
+        # 비어 있어도 존재하는 모델로 안전하게 뜨도록. 품질을 올리려면 .env에서 교체.
+        self.model = model or os.getenv("KIOSK_MODEL", "claude-haiku-4-5-20251001")
 
     def interpret(
         self, utterance: str, cart: list[CartItem], menu: dict[str, dict], expressions: dict

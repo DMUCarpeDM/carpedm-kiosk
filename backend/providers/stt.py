@@ -69,7 +69,8 @@ class ClovaSttProvider(SttProvider):
             raise SttError("CLOVA_SPEECH_SECRET_KEY 미설정")
         self.long_mode = "/external/" in self.invoke_url
         self.boost_words = build_boost_words(menu or {})
-        self.timeout = float(os.getenv("KIOSK_STT_TIMEOUT", "15"))
+        # 기본 8초 — 소음으로 인식이 오래 걸려도 어르신을 오래 세우지 않고 다음 엔진/터치로 넘긴다
+        self.timeout = float(os.getenv("KIOSK_STT_TIMEOUT", "8"))
 
     def _headers(self, content_type: str | None = None) -> dict[str, str]:
         h: dict[str, str] = {}
@@ -167,8 +168,8 @@ class GeminiSttProvider(SttProvider):
         try:
             res = self._model.generate_content(
                 [prompt, {"mime_type": content_type, "data": audio}],
-                # 무한 대기 방지 — 폴백 단계에서 어르신을 오래 기다리게 하지 않는다
-                request_options={"timeout": float(os.getenv("KIOSK_STT_TIMEOUT", "15"))},
+                # 무한 대기 방지 — 폴백 단계에서 어르신을 오래 기다리게 하지 않는다 (기본 8초)
+                request_options={"timeout": float(os.getenv("KIOSK_STT_TIMEOUT", "8"))},
             )
             text = (res.text or "").strip()
         except Exception as e:
