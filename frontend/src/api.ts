@@ -18,8 +18,21 @@ function siteTag(): string {
 }
 const SITE = siteTag();
 
+/** 타임아웃이 있는 fetch — 현장 Wi-Fi가 요청 도중 끊겨도 무한 대기하지 않는다.
+    기본 fetch는 타임아웃이 없어, 네트워크가 끊기면 "주문을 확인하고 있어요" 화면이
+    영원히 멈춘다. AbortController로 상한을 두면 호출부가 즉시 폴백(터치 주문)한다. */
+async function fetchWithTimeout(url: string, opts: RequestInit = {}, ms = 20000): Promise<Response> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...opts, signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function fetchMenu(): Promise<MenuItem[]> {
-  const res = await fetch(`${API_BASE}/api/menu`);
+  const res = await fetchWithTimeout(`${API_BASE}/api/menu`, {}, 10000);
   if (!res.ok) throw new Error(`menu ${res.status}`);
   const data = (await res.json()) as { items: MenuItem[] };
   return data.items;
@@ -30,7 +43,7 @@ export async function interpretUtterance(
   cart: CartItem[],
   sessionId?: string | null,
 ): Promise<InterpretResult> {
-  const res = await fetch(`${API_BASE}/api/interpret`, {
+  const res = await fetchWithTimeout(`${API_BASE}/api/interpret`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -39,7 +52,7 @@ export async function interpretUtterance(
       session_id: sessionId ?? undefined,
       site: SITE || undefined,
     }),
-  });
+  }, 20000);
   if (!res.ok) throw new Error(`interpret ${res.status}`);
   return res.json() as Promise<InterpretResult>;
 }
@@ -55,7 +68,8 @@ export async function orderVoice(
   form.append("cart", JSON.stringify(cart));
   if (sessionId) form.append("session_id", sessionId);
   if (SITE) form.append("site", SITE);
-  const res = await fetch(`${API_BASE}/order`, { method: "POST", body: form });
+  // STT+해석+TTS 한 사이클 — 소음 재시도까지 고려해 조금 넉넉히(25초). 넘으면 폴백.
+  const res = await fetchWithTimeout(`${API_BASE}/order`, { method: "POST", body: form }, 25000);
   if (!res.ok) throw new Error(`order ${res.status}`);
   return res.json() as Promise<OrderResponse>;
 }
@@ -63,11 +77,11 @@ export async function orderVoice(
 /** 고정 안내문(인사말 등) 음성 합성 — 서버 캐시됨. 실패 시 null(브라우저 TTS 폴백). */
 export async function fetchTtsAudio(text: string): Promise<{ b64: string; mime: string } | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/tts`, {
+    const res = await fetchWithTimeout(`${API_BASE}/api/tts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
-    });
+    }, 12000);
     if (!res.ok) return null;
     const data = (await res.json()) as { audio_b64: string | null; mime?: string };
     if (!data.audio_b64) return null;
@@ -80,7 +94,7 @@ export async function fetchTtsAudio(text: string): Promise<{ b64: string; mime: 
 /** PIR 인체 감지 상태 (센서 미장착이면 enabled=false) */
 export async function fetchPresence(): Promise<{ enabled: boolean; present: boolean } | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/presence`);
+    const res = await fetchWithTimeout(`${API_BASE}/api/presence`, {}, 3000);
     if (!res.ok) return null;
     return (await res.json()) as { enabled: boolean; present: boolean };
   } catch {
