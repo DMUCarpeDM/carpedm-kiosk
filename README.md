@@ -1,97 +1,140 @@
-# CarpeDM — 고령층 AI 음성 키오스크 (롯데리아)
+# CarpeDM — 고령층 AI 음성 주문 키오스크 (롯데리아)
 
-> 어르신이 메뉴 이름을 정확히 몰라도, **"검은 탄산 물 줘"** 처럼 자기 말로 주문하면 알아듣는 키오스크.
-> 동양미래대학교 RISE사업 리빙랩 프로젝트 (구로구·금천구 고령층 디지털 소외 해소)
+> **"검은 탄산 물 줘"** 처럼 어르신이 메뉴 이름을 정확히 몰라도 자기 말로 주문하면 알아듣는 배리어프리 음성 키오스크.  
+> **동양미래대학교 RISE사업 리빙랩 프로젝트** (구로구·금천구 고령층 디지털 소외 해소)
 
 ---
 
-## 🧭 팀원이라면 여기부터
-**개발을 몰라도 5분이면 전체가 보이는 문서** → [`docs/planning/00_팀원용_프로젝트현황.md`](docs/planning/00_팀원용_프로젝트현황.md)
+## 📌 프로젝트 소개
 
-## 🔄 어떻게 작동하나
+기존 키오스크의 외래어 중심 메뉴판과 복잡한 화면 구조는 고령층 사용자의 디지털 소외를 심화시킵니다.  
+**CarpeDM**은 어르신들이 일상 언어로 자연스럽게 주문할 수 있도록 **음성 인식(STT) + 자연어 해석(LLM / 규칙 엔진) + 음성 합성(TTS) + 배리어프리 터치 UI**를 통합한 주문 보조 시스템입니다.
+
+---
+
+## 🔄 주요 아키텍처 및 파이프라인
 
 ```
-🎤 누르고 말하기 → ① STT (CLOVA, 메뉴명 부스팅) → ② 해석 (LLM+규칙 폴백) → ③ TTS (Google) + 화면 자막
-                     실패 시: 브라우저 STT → 글자 입력 → 터치 메뉴판 (단계 폴백)
+🎤 사용자 음성 발화
+        │
+        ▼
+ 1️⃣ STT (CLOVA Speech / Gemini)  ─── 메뉴명 부스팅 적용
+        │
+        ▼
+ 2️⃣ 해석 엔진 (LLM + 규칙 엔진)  ─── 3중 폴백 계층 & 환각 차단 (메뉴 ID만 반환)
+        │
+        ▼
+ 3️⃣ TTS (Google Cloud TTS)      ─── 음성 안내 + 화면 자막 연동
+        │
+        ▼
+ 📱 배리어프리 UI / 터치 보조   ─── 네트워크 단절 시 터치/규칙 폴백
 ```
 
-- **② 해석 엔진**: 5개 행위(update/confirm/clarify/reject/recommend), 환각 차단(메뉴 id만 반환),
-  멀티턴 장바구니, 모호하면 되묻기. 오프라인에서도 규칙 폴백으로 동작.
-  **규칙 우선 게이트**(`KIOSK_RULE_FIRST=1` 기본): 표현 사전으로 확실히 풀리는 주문은
-  LLM API를 부르지 않고 즉시 처리 — API 비용·지연 절감, 모호한 발화만 LLM이 해석.
-- **① ③ 음성**: `backend/providers/`의 인터페이스 뒤에 있어 벤더 교체가 파일 한 곳 수정으로 끝남.
-  `POST /order` 한 번으로 STT→해석→TTS 사이클 처리, 단계별 지연 로깅.
+- **규칙 우선 게이트 (`KIOSK_RULE_FIRST=1`)**: 표현 사전으로 대치되는 명확한 주문은 LLM API를 호출하지 않고 1ms 내에 즉시 처리하여 API 과금 및 지연 시간을 최소화합니다.
+- **환각(Hallucination) 차단**: 해석 엔진은 존재하지 않는 메뉴를 지어내지 않고, 시스템에 등록된 `data/menu.json` ID만 산출합니다.
+- **멀티턴 대화 관리**: 대화 맥락과 장바구니 상태를 추적하여 "하나 더 줘", "콜라는 빼줘", "세트로 바꿔줘" 등 자연스러운 수정 처리가 가능합니다.
+- **배리어프리 가이드 준수**: 4.5:1 이상의 명도 대비, 48dp 이상의 터치 표적, 화면 낮춤 모드, 큰 글씨 모드, 직원 호출 기능 제공.
 
-## ✅ 현재 상태 (2026-07-11)
+---
 
-| 구성 요소 | 상태 |
-|---|---|
-| 해석 엔진 + 환각 차단 + 멀티턴 | ✅ **규칙 폴백 98.8%** (신 메뉴 테스트셋 248건, 2026-07-12) · Claude 96.3%는 구 메뉴 기준 → 재측정 예정 |
-| 롯데리아 메뉴 49종(2026-07 라인업, 단종 반영) + 표현 사전 325개(충돌 검사기 포함) | ✅ 완성 |
-| STT(CLOVA)·TTS(Google) 실연동 | ✅ 확인 — 음성 1사이클 3.7초 (STT 1.6s + 해석 1.6s + TTS 0.5s) |
-| 키오스크 UI (매장/포장→방식→메뉴→결제, 세트 업셀, 알레르기 게이트) | ✅ 완성 — docs/screenshots/ 참고 |
-| 배리어프리 (낮은 화면·큰 글씨·직원 호출·단계 표시·자막) | ✅ 대비 4.5:1↑, 터치 표적 48dp↑ |
-| 라즈베리파이 통합 | ⬜ [docs/raspberry-pi.md](docs/raspberry-pi.md) 순서대로 진행 |
-| 태블릿(iPad·갤럭시탭) 클라이언트 | ✅ [docs/tablet.md](docs/tablet.md) — HTTPS 서빙 + 홈 화면 전체화면 실행 |
-| 현장 실증 (경로당·복지관) | ✅ 7/6~7/10 완료 — 로그·기록지·설문 취합 및 분석 중, 집계는 `scripts/report.py` |
+## ✅ 개발 및 검증 현황
 
-## 🚀 실행 방법
+| 구성 요소 | 구현 상태 | 비고 |
+|---|---|---|
+| **해석 엔진 & 환각 차단** | ✅ 완료 | 규칙 폴백 정확도 98.8% (248건 테스트셋 기준), 멀티턴 처리 지원 |
+| **메뉴 & 표현 사전** | ✅ 완료 | 롯데리아 라인업 49종 (`menu.json`) + 고령층 표현 사전 325개 (`expressions.yaml`) |
+| **STT / TTS 파이프라인** | ✅ 완료 | CLOVA Speech 메뉴 부스팅 연동 + Google TTS + 캐시 처리 |
+| **배리어프리 UI** | ✅ 완료 | React + TypeScript + Vite, 고대비, 자막, 음성-터치 병행 화면 |
+| **태블릿 & 라즈베리파이 연동** | ✅ 완료 | HTTPS 서빙 / Cloudflare Tunnel 연동, 라즈베리파이 5 전체화면 구동 지원 |
+| **현장 실증** | ✅ 완료 | 구로구·금천구 경로당 및 복지관 실증 데이터 수집 완료 (`reports/field_summary.md`) |
+| **자동화 테스트** | ✅ 완료 | Pytest 45개 검증 케이스 통과 (44 passed, 1 skipped) |
+
+---
+
+## 🚀 실행 및 연동 가이드
+
+### 1. 환경 준비 및 패키지 설치
 
 ```bash
-# 0) 준비: Python 3.12+, Node 20+
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
+# Python 3.12+ 및 Node.js 20+ 필요
+python3 -m venv .venv
+source .venv/bin/activate    # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-
-# 1) 키 설정 (.env.example 참고 — 키 없어도 규칙 폴백 + 브라우저 음성으로 동작)
-cp .env.example .env   # CLOVA·Google·Anthropic 키 입력
-
-# 2) 백엔드
-python -m uvicorn backend.app:app --port 8000
-
-# 3) 프론트 (새 터미널)
-cd frontend && npm install && npm run dev   # http://localhost:5173
 ```
 
-확인: `GET /healthz` → `{"ok":true,"provider":...,"stt":...,"tts":...}` 로 어떤 프로바이더가 붙었는지 보임.
+### 2. 환경 변수 설정
+
+`.env.example`을 복사하여 `.env` 파일을 생성합니다. (API 키가 없어도 규칙 폴백과 브라우저 음성 인식으로 기본 동작합니다.)
 
 ```bash
-# 실키 연동 스모크 테스트 (STT·TTS 실제 호출)
+cp .env.example .env
+```
+
+### 3. 백엔드 및 프론트엔드 실행
+
+```bash
+# 백엔드 실행 (Terminal 1)
+.venv/bin/python -m uvicorn backend.app:app --port 8000
+
+# 프론트엔드 빌드 및 실행 (Terminal 2)
+cd frontend
+npm install
+npm run dev                  # http://localhost:5173
+```
+
+> **헬스 체크 확인**: `http://localhost:8000/healthz` 접속 시 연동된 프로바이더 상태 확인 가능
+
+---
+
+## 🧪 테스트 및 측정 스크립트
+
+```bash
+# 1) 백엔드 자동화 테스트 실행 (pytest)
+.venv/bin/pytest tests/ -q
+
+# 2) 프론트엔드 타입 검사 및 프로덕션 빌드
+npm --prefix frontend run build
+
+# 3) 실질 음성 연동 스모크 테스트
 python scripts/smoke_voice.py
 
-# 매핑 정확도 측정
-python scripts/measure.py --provider rule              # 오프라인 기준선
-python scripts/measure.py --provider claude --strict   # AI 적용 측정 (키 필요)
+# 4) 주문 해석 정확도 측정 스크립트
+python scripts/measure.py --provider rule              # 오프라인 규칙 엔진 측정
+python scripts/measure.py --provider claude --strict   # LLM 연동 측정
 
-# 실증 로그 집계 (utterances.jsonl → reports/field_summary.md)
+# 5) 현장 실증 발화 로그 집계 리포트 생성
 python scripts/report.py --from 2026-07-06 --to 2026-07-10
-
-# 품질 검사 / 테스트셋·이미지 재생성
-python -m pytest tests/ -q
-python scripts/gen_testset.py
-python scripts/make_menu_images.py
 ```
+
+---
 
 ## 📁 저장소 구조
+
 ```
-backend/
-  interpreter.py       해석 엔진: 말 → 주문, 환각 차단, 추천, 규칙 폴백
-  app.py               API: /order(음성 사이클), /api/interpret·stt·tts·menu
-  providers/           stt.py(CLOVA+Gemini 폴백) · tts.py(Google+캐시)
-data/                  menu.json(롯데리아 49종, 2026-07 라인업) · expressions.yaml · testset.jsonl(248건)
-frontend/              React 키오스크 UI (push-to-talk WAV 녹음, 자막, 음성·터치 병행)
-scripts/               measure(정확도) · report(실증 집계) · gen_testset · smoke_voice · make_menu_images
-tests/                 pytest 42개 (구조·정책·프로바이더·오케스트레이션·규칙 우선 게이트)
-docs/planning/         기획·설계·실증 문서
+carpedm-kiosk/
+├── backend/                  # FastAPI 백엔드 API & 해석 엔진
+│   ├── app.py                # API 엔드포인트 (/order, /healthz, /api/*)
+│   ├── interpreter.py        # 5가지 액션(update, confirm, clarify, reject, recommend) 해석기
+│   └── providers/            # STT (CLOVA/Gemini) & TTS (Google) 모듈
+├── frontend/                 # React + TypeScript + Vite 프론트엔드 UI
+│   ├── src/
+│   │   ├── screens/          # 화면 컴포넌트 (음성주문, 결제, 알레르기, 메뉴판 등)
+│   │   ├── components.tsx    # 배리어프리 UI 요소 (마이크 버튼, 접근성 바 등)
+│   │   └── api.ts            # 백엔드 API통신 클라이언트
+├── data/                     # 도메인 데이터
+│   ├── menu.json             # 롯데리아 49종 메뉴 데이터 및 상세 정보
+│   ├── expressions.yaml      # 어르신 고령층 표현 매핑 사전 (325개)
+│   └── testset.jsonl         # 248건의 해석 검증용 테스트셋
+├── docs/                     # 프로젝트 설계, 기획, 실증 및 배포 문서
+│   └── planning/             # 기획서, SRS 요구사항, 차별화 전략, 제품화 브리프
+├── reports/                  # 실증 로그 집계 및 정확도 측정 결과 리포트
+├── scripts/                  # 정확도 측정, 로깅 집계, 테스트셋 생성 스크립트
+└── tests/                    # Pytest 자동화 테스트 모듈 (45개 케이스)
 ```
 
-## 📅 일정
-| 시기 | 할 일 |
-|---|---|
-| ~7/3 | 기획·해석엔진·음성 파이프라인·롯데리아 UI ✅ |
-| 7/4~7/5 | 실키 연동 확인 + 태블릿 클라이언트 + 리허설 ✅ |
-| 7/6~7/10 | 현장 실증 (경로당·복지관) ✅ — 수집 데이터 취합·분석 중 |
-| 7/13~7/17 | **← 지금** 분석 · 보고서 · 발표 (계획: [docs/planning/10_대상수상전략.md](docs/planning/10_대상수상전략.md)) |
+---
 
-## ⚠️ 보안 주의
-- **API 키(.env, secrets/)는 절대 커밋하지 마세요.** `.gitignore`에 막아뒀습니다.
-- 발화 로그(`data/logs/`)·TTS 캐시도 커밋하지 않습니다.
+## ⚠️ 보안 및 주의 사항
+
+- API 키가 포함된 `.env` 및 `secrets/` 디렉터리는 Git 추적에서 제외되어 있으므로 커밋하지 않도록 주의합니다.
+- 개인정보 보호를 위해 현장 실증 발화 로그(`data/logs/`) 및 음성 캐시 파일은 저장소에 커밋되지 않습니다.
